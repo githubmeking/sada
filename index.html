@@ -3,371 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega Farm Oyunu</title>
+    <title>Sayı Tahmin Oyunu</title>
     <style>
-        :root {
-            --primary-color: #4CAF50;
-            --secondary-color: #2196F3;
-            --warning-color: #FFC107;
-            --danger-color: #f44336;
-            --background-color: #FFA500;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            background-color: var(--background-color);
             font-family: Arial, sans-serif;
-            color: white;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            background: rgba(0,0,0,0.2);
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .tab.active {
-            background: rgba(0,0,0,0.4);
-        }
-
-        .content-section {
-            display: none;
-            animation: fadeIn 0.3s;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        /* Ana Paneller */
-        .main-stats {
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 5px;
-        }
-
-        /* Çiftlik Alanı */
-        .farm-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .farm-plot {
-            aspect-ratio: 1;
-            background: rgba(0,0,0,0.2);
-            border-radius: 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
+            height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
         }
-
-        .farm-plot:hover {
-            transform: scale(1.05);
-        }
-
-        .farm-plot.locked {
-            background: rgba(0,0,0,0.4);
-        }
-
-        /* Mağaza */
-        .shop-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .shop-item {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .shop-item:hover {
-            transform: scale(1.02);
-        }
-
-        /* Görevler */
-        .quest-list {
-            display: grid;
-            gap: 15px;
-        }
-
-        .quest-item {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Başarımlar */
-        .achievement-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .achievement-item {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .achievement-item.locked {
-            filter: grayscale(1);
-        }
-
-        /* Envanter */
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .inventory-item {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 8px;
+        .game-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
         }
-
-        /* Progressbar */
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 100px;
+            margin: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
         }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--primary-color);
-            transition: width 0.3s;
-        }
-
-        /* Butonlar */
-        .button {
+        button {
             padding: 10px 20px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: 0.3s;
-            color: white;
+            transition: background 0.3s;
         }
-
-        .button-primary {
-            background: var(--primary-color);
+        button:hover {
+            background: #45a049;
         }
-
-        .button-secondary {
-            background: var(--secondary-color);
+        #message {
+            margin: 20px 0;
+            font-size: 18px;
+            min-height: 27px;
         }
-
-        .button:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-
-        /* Animasyonlar */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes bounce {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: var(--background-color);
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 500px;
-            width: 90%;
-            position: relative;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-        }
-
-        /* Bildirimler */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            background: var(--primary-color);
-            color: white;
-            animation: slideIn 0.3s;
-            z-index: 1000;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+        #attempts {
+            color: #666;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Sekmeler -->
-        <div class="tabs">
-            <button class="tab active" data-tab="farm">Çiftlik</button>
-            <button class="tab" data-tab="shop">Mağaza</button>
-            <button class="tab" data-tab="quests">Görevler</button>
-            <button class="tab" data-tab="achievements">Başarımlar</button>
-            <button class="tab" data-tab="inventory">Envanter</button>
-            <button class="tab" data-tab="settings">Ayarlar</button>
-        </div>
-
-        <!-- Ana İstatistikler -->
-        <div class="main-stats">
-            <div class="stat-item">
-                <h3>Seviye</h3>
-                <p><span id="level">1</span></p>
-                <div class="progress-bar">
-                    <div id="xpProgress" class="progress-fill" style="width: 0%"></div>
-                </div>
-            </div>
-            <div class="stat-item">
-                <h3>Altın</h3>
-                <p><span id="gold">0</span></p>
-            </div>
-            <div class="stat-item">
-                <h3>Elmas</h3>
-                <p><span id="diamonds">0</span></p>
-            </div>
-            <div class="stat-item">
-                <h3>Enerji</h3>
-                <p><span id="energy">100</span>/100</p>
-                <div class="progress-bar">
-                    <div id="energyProgress" class="progress-fill" style="width: 100%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Çiftlik Sekmesi -->
-        <div class="content-section active" id="farm-section">
-            <div class="farm-grid" id="farmGrid">
-                <!-- Farm plotları JavaScript ile eklenecek -->
-            </div>
-        </div>
-
-        <!-- Mağaza Sekmesi -->
-        <div class="content-section" id="shop-section">
-            <div class="shop-grid">
-                <div class="shop-item" onclick="buyItem('seed_wheat')">
-                    <h3>Buğday Tohumu</h3>
-                    <p>Fiyat: 10 Altın</p>
-                </div>
-                <!-- Diğer mağaza öğeleri JavaScript ile eklenecek -->
-            </div>
-        </div>
-
-        <!-- Görevler Sekmesi -->
-        <div class="content-section" id="quests-section">
-            <div class="quest-list" id="questList">
-                <!-- Görevler JavaScript ile eklenecek -->
-            </div>
-        </div>
-
-        <!-- Başarımlar Sekmesi -->
-        <div class="content-section" id="achievements-section">
-            <div class="achievement-grid" id="achievementGrid">
-                <!-- Başarımlar JavaScript ile eklenecek -->
-            </div>
-        </div>
-
-        <!-- Envanter Sekmesi -->
-        <div class="content-section" id="inventory-section">
-            <div class="inventory-grid" id="inventoryGrid">
-                <!-- Envanter öğeleri JavaScript ile eklenecek -->
-            </div>
-        </div>
-
-        <!-- Ayarlar Sekmesi -->
-        <div class="content-section" id="settings-section">
-            <h2>Ayarlar</h2>
-            <button class="button button-primary" onclick="resetGame()">Oyunu Sıfırla</button>
-            <button class="button button-secondary" onclick="toggleSound()">Ses: Açık</button>
-        </div>
+    <div class="game-container">
+        <h2>Sayı Tahmin Oyunu</h2>
+        <p>1 ile 100 arasında bir sayı tuttum.<br>Tahmin edebilir misin?</p>
+        <input type="number" id="guess" min="1" max="100" placeholder="Tahmin">
+        <button onclick="checkGuess()">Tahmin Et</button>
+        <div id="message"></div>
+        <div id="attempts">Deneme sayısı: 0</div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
-            <div id="modalContent"></div>
-        </div>
-    </div>
-
-    
-<script src="game.js"></script>
+    <script>
+        let targetNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+        
+        function checkGuess() {
+            let guess = parseInt(document.getElementById('guess').value);
+            let messageDiv = document.getElementById('message');
+            attempts++;
+            
+            document.getElementById('attempts').textContent = `Deneme sayısı: ${attempts}`;
+            
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                messageDiv.innerHTML = "Lütfen 1-100 arası bir sayı girin!";
+                messageDiv.style.color = "red";
+                attempts--;
+                return;
+            }
+            
+            if (guess === targetNumber) {
+                messageDiv.innerHTML = `Tebrikler! ${attempts} denemede bildiniz! 🎉`;
+                messageDiv.style.color = "green";
+                document.querySelector('button').disabled = true;
+            } else if (guess < targetNumber) {
+                messageDiv.innerHTML = "Daha BÜYÜK bir sayı dene 👆";
+                messageDiv.style.color = "blue";
+            } else {
+                messageDiv.innerHTML = "Daha KÜÇÜK bir sayı dene 👇";
+                messageDiv.style.color = "blue";
+            }
+            
+            document.getElementById('guess').value = '';
+            document.getElementById('guess').focus();
+        }
+        
+        document.getElementById('guess').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkGuess();
+            }
+        });
+    </script>
 </body>
 </html>
