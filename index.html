@@ -11,15 +11,29 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             background-color: #FFA500;
             font-family: Arial, sans-serif;
         }
-        .welcome {
+        .welcome-screen {
+            text-align: center;
+        }
+        .welcome-text {
+            font-size: 32px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .game-screen {
+            display: none;
+            text-align: center;
+            width: 100%;
+        }
+        .game-welcome {
             font-size: 24px;
             color: white;
             margin-bottom: 30px;
-            text-align: center;
         }
         .farm-button {
             padding: 15px 30px;
@@ -47,56 +61,97 @@
             margin-top: 10px;
             color: white;
         }
+        .fade-out {
+            animation: fadeOut 0.5s forwards;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body>
-    <div class="welcome">Farm Oyununa Hoşgeldiniz!</div>
-    <button id="farmButton" class="farm-button" onclick="farm()">Farm Yap</button>
-    <div id="message" class="message"></div>
-    <div id="timer"></div>
+    <!-- Karşılama Ekranı -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-text">HOŞGELDİNİZ</div>
+    </div>
+
+    <!-- Oyun Ekranı -->
+    <div id="gameScreen" class="game-screen">
+        <div class="game-welcome">Farm Oyununa Hoşgeldiniz!</div>
+        <button id="farmButton" class="farm-button" onclick="farm()">Farm Yap</button>
+        <div id="message" class="message"></div>
+        <div id="timer"></div>
+    </div>
 
     <script>
-        let lastFarmTime = localStorage.getItem('lastFarmTime');
-        let farmButton = document.getElementById('farmButton');
-        let messageDiv = document.getElementById('message');
-        let timerDiv = document.getElementById('timer');
-
-        function checkFarmStatus() {
-            const now = new Date().getTime();
-            if (lastFarmTime) {
-                const timeDiff = now - parseInt(lastFarmTime);
-                const hoursLeft = 24 - Math.floor(timeDiff / (1000 * 60 * 60));
+        // Sayfa yüklendiğinde
+        window.onload = function() {
+            setTimeout(function() {
+                const welcomeScreen = document.getElementById('welcomeScreen');
+                const gameScreen = document.getElementById('gameScreen');
                 
-                if (hoursLeft > 0) {
-                    farmButton.disabled = true;
-                    messageDiv.textContent = 'Bugünlük farmınızı yaptınız!';
-                    updateTimer(hoursLeft);
-                } else {
-                    farmButton.disabled = false;
-                    messageDiv.textContent = '';
-                    timerDiv.textContent = '';
+                welcomeScreen.classList.add('fade-out');
+                
+                setTimeout(function() {
+                    welcomeScreen.style.display = 'none';
+                    gameScreen.style.display = 'block';
+                    gameScreen.classList.add('fade-in');
+                    initGame();
+                }, 500);
+            }, 3000); // 3 saniye bekle
+        };
+
+        function initGame() {
+            let lastFarmTime = localStorage.getItem('lastFarmTime');
+            let farmButton = document.getElementById('farmButton');
+            let messageDiv = document.getElementById('message');
+            let timerDiv = document.getElementById('timer');
+
+            function checkFarmStatus() {
+                const now = new Date().getTime();
+                if (lastFarmTime) {
+                    const timeDiff = now - parseInt(lastFarmTime);
+                    const hoursLeft = 24 - Math.floor(timeDiff / (1000 * 60 * 60));
+                    
+                    if (hoursLeft > 0) {
+                        farmButton.disabled = true;
+                        messageDiv.textContent = 'Bugünlük farmınızı yaptınız!';
+                        updateTimer(hoursLeft);
+                    } else {
+                        farmButton.disabled = false;
+                        messageDiv.textContent = '';
+                        timerDiv.textContent = '';
+                    }
                 }
             }
-        }
 
-        function updateTimer(hoursLeft) {
-            timerDiv.textContent = `Yeni farm için kalan süre: ${hoursLeft} saat`;
-        }
+            function updateTimer(hoursLeft) {
+                timerDiv.textContent = `Yeni farm için kalan süre: ${hoursLeft} saat`;
+            }
 
-        function farm() {
-            const now = new Date().getTime();
-            localStorage.setItem('lastFarmTime', now);
-            lastFarmTime = now;
-            messageDiv.textContent = 'Bugünlük farmınızı yaptınız!';
-            farmButton.disabled = true;
+            window.farm = function() {
+                const now = new Date().getTime();
+                localStorage.setItem('lastFarmTime', now);
+                lastFarmTime = now;
+                messageDiv.textContent = 'Bugünlük farmınızı yaptınız!';
+                farmButton.disabled = true;
+                checkFarmStatus();
+            }
+
+            // Sayfa yüklendiğinde farm durumunu kontrol et
             checkFarmStatus();
+
+            // Her dakika timer'ı güncelle
+            setInterval(checkFarmStatus, 60000);
         }
-
-        // Sayfa yüklendiğinde farm durumunu kontrol et
-        checkFarmStatus();
-
-        // Her dakika timer'ı güncelle
-        setInterval(checkFarmStatus, 60000);
     </script>
 </body>
 </html>
