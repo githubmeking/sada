@@ -1,78 +1,14 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Farm Botu</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background: #f0f8ff;
-        }
-        .container {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-        h1 {
-            color: #333;
-            font-size: 24px;
-        }
-        .command-list {
-            margin: 20px 0;
-            text-align: left;
-        }
-        .command-list h3 {
-            color: #4CAF50;
-            margin: 0;
-        }
-        .command-list p {
-            color: #555;
-            margin: 5px 0 15px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #45a049;
-        }
-    </style>
+    <title>Farm Oyunu</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Telegram Farm Botu</h1>
-        <p>Botu başlatmak ve komutları öğrenmek için aşağıdaki listeye göz atın.</p>
-        <div class="command-list">
-            <h3>/baslat</h3>
-            <p>Botu başlatır ve ilk bilgileri sağlar.</p>
-
-            <h3>/günlük</h3>
-            <p>Günlük görevleri yaparak ödüller kazanın.</p>
-
-            <h3>/topla</h3>
-            <p>Biriktirdiğiniz kaynakları toplayın ve hesabınıza ekleyin.</p>
-
-            <h3>/durum</h3>
-            <p>Mevcut kaynaklarınızı ve görev ilerlemenizi görüntüler.</p>
-        </div>
-        <button onclick="alert('Bot komutu gönderildi!')">Komut Gönder</button>
+    <div class="welcome-message">Hoş geldin!</div>
+    <div class="farm-game">
+        <p>Bakiyen: <span id="balance">0.000008</span></p>
     </div>
+    <script src="game.js"></script>
 </body>
 </html>
