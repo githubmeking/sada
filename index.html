@@ -86,15 +86,10 @@
             if (!isAutoFarming) {
                 isAutoFarming = true;
                 farmInterval = setInterval(() => {
-                    if (farmValue < 0.000010) {
-                        farmValue += 0.000002;
-                        // Değeri 8 ondalık basamakla göster
-                        document.getElementById('farm-value').textContent = 
-                            farmValue.toFixed(8);
-                    } else {
-                        // Maksimum değere ulaşıldığında otomatik farmı durdur
-                        clearInterval(farmInterval);
-                    }
+                    farmValue += 0.000002;
+                    // Değeri 8 ondalık basamakla göster
+                    document.getElementById('farm-value').textContent = 
+                        farmValue.toFixed(8);
                 }, 1000); // Her saniye güncelle
             }
         });
