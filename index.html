@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sayı Tahmin Oyunu</title>
+    <title>Telegram Farm Botu</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,22 +13,32 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: #f0f0f0;
+            background: #f0f8ff;
         }
-        .game-container {
-            background: white;
+        .container {
+            background: #ffffff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             text-align: center;
+            max-width: 400px;
+            width: 100%;
         }
-        input {
-            padding: 10px;
-            font-size: 16px;
-            width: 100px;
-            margin: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
+        h1 {
+            color: #333;
+            font-size: 24px;
+        }
+        .command-list {
+            margin: 20px 0;
+            text-align: left;
+        }
+        .command-list h3 {
+            color: #4CAF50;
+            margin: 0;
+        }
+        .command-list p {
+            color: #555;
+            margin: 5px 0 15px;
         }
         button {
             padding: 10px 20px;
@@ -43,66 +53,26 @@
         button:hover {
             background: #45a049;
         }
-        #message {
-            margin: 20px 0;
-            font-size: 18px;
-            min-height: 27px;
-        }
-        #attempts {
-            color: #666;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h2>Sayı Tahmin Oyunu</h2>
-        <p>1 ile 100 arasında bir sayı tuttum.<br>Tahmin edebilir misin?</p>
-        <input type="number" id="guess" min="1" max="100" placeholder="Tahmin">
-        <button onclick="checkGuess()">Tahmin Et</button>
-        <div id="message"></div>
-        <div id="attempts">Deneme sayısı: 0</div>
-    </div>
+    <div class="container">
+        <h1>Telegram Farm Botu</h1>
+        <p>Botu başlatmak ve komutları öğrenmek için aşağıdaki listeye göz atın.</p>
+        <div class="command-list">
+            <h3>/baslat</h3>
+            <p>Botu başlatır ve ilk bilgileri sağlar.</p>
 
-    <script>
-        let targetNumber = Math.floor(Math.random() * 100) + 1;
-        let attempts = 0;
-        
-        function checkGuess() {
-            let guess = parseInt(document.getElementById('guess').value);
-            let messageDiv = document.getElementById('message');
-            attempts++;
-            
-            document.getElementById('attempts').textContent = `Deneme sayısı: ${attempts}`;
-            
-            if (isNaN(guess) || guess < 1 || guess > 100) {
-                messageDiv.innerHTML = "Lütfen 1-100 arası bir sayı girin!";
-                messageDiv.style.color = "red";
-                attempts--;
-                return;
-            }
-            
-            if (guess === targetNumber) {
-                messageDiv.innerHTML = `Tebrikler! ${attempts} denemede bildiniz! 🎉`;
-                messageDiv.style.color = "green";
-                document.querySelector('button').disabled = true;
-            } else if (guess < targetNumber) {
-                messageDiv.innerHTML = "Daha BÜYÜK bir sayı dene 👆";
-                messageDiv.style.color = "blue";
-            } else {
-                messageDiv.innerHTML = "Daha KÜÇÜK bir sayı dene 👇";
-                messageDiv.style.color = "blue";
-            }
-            
-            document.getElementById('guess').value = '';
-            document.getElementById('guess').focus();
-        }
-        
-        document.getElementById('guess').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkGuess();
-            }
-        });
-    </script>
+            <h3>/günlük</h3>
+            <p>Günlük görevleri yaparak ödüller kazanın.</p>
+
+            <h3>/topla</h3>
+            <p>Biriktirdiğiniz kaynakları toplayın ve hesabınıza ekleyin.</p>
+
+            <h3>/durum</h3>
+            <p>Mevcut kaynaklarınızı ve görev ilerlemenizi görüntüler.</p>
+        </div>
+        <button onclick="alert('Bot komutu gönderildi!')">Komut Gönder</button>
+    </div>
 </body>
 </html>
