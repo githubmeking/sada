@@ -314,213 +314,325 @@
     </div>
 
     <script>
-        let gameState = {
-            coins: 0,
-            clickPower: 1,
-            autoCollectPower: 0,
-            multiplier: 1,
-            level: 1,
-            totalClicks: 0,
-            totalEarned: 0,
-            workers: 0,
-            tractors: 0,
-            robots: 0,
-            drones: 0,
-            upgrades: {
-                click: { level: 1, cost: 10, maxLevel: 10 },
-                auto: { level: 0, cost: 50, maxLevel: 10 },
-                multiplier: { level: 1, cost: 100, maxLevel: 5 },
-                worker: { level: 0, cost: 200, maxLevel: 5 },
-                tractor: { level: 0, cost: 500, maxLevel: 3 },
-                robot: { level: 0, cost: 1000, maxLevel: 2 },
-                drone: { level: 0, cost: 2000, maxLevel: 1 }
-            },
-            achievements: {
-                clicks: [
-                    { id: 'clicks_10', name: 'Başlangıç', description: '10 kez tıkla', requirement: 10, completed: false },
-                    { id: 'clicks_100', name: 'Çalışkan', description: '100 kez tıkla', requirement: 100, completed: false },
-                    { id: 'clicks_1000', name: 'Tıklama Ustası', description: '1000 kez tıkla', requirement: 1000, completed: false }
-                ],
-                coins: [
-                    { id: 'coins_100', name: 'İlk Birikim', description: '100 coin kazan', requirement: 100, completed: false },
-                    { id: 'coins_1000', name: 'Coin Avcısı', description: '1000 coin kazan', requirement: 1000, completed: false },
-                    { id: 'coins_10000', name: 'Zengin Çiftçi', description: '10000 coin kazan', requirement: 10000, completed: false }
-                ],
-                upgrades: [
-                    { id: 'upgrade_first', name: 'İlk Yükseltme', description: 'İlk yükseltmeni yap', requirement: 1, completed: false },
-                    { id: 'upgrade_5', name: 'Geliştirici', description: '5 yükseltme yap', requirement: 5, completed: false },
-                    { id: 'upgrade_all', name: 'Tam Donanım', description: 'Tüm yükseltmeleri en az 1 kez al', requirement: 7, completed: false }
-                ],
-                special: [
-                    { id: 'robot_unlock', name: 'Robot Çağı', description: 'İlk robotunu al', requirement: 1, completed: false },
-                    { id: 'drone_unlock', name: 'Drone Ustası', description: 'Drone teknolojisine ulaş', requirement: 1, completed: false },
-                    { id: 'max_all', name: 'Mükemmeliyetçi', description: 'Bir yükseltmeyi maksimum seviyeye çıkar', requirement: 1, completed: false }
-                ]
-            }
-        };
+    let gameState = {
+        coins: 0,
+        clickPower: 1,
+        autoCollectPower: 0,
+        multiplier: 1,
+        level: 1,
+        totalClicks: 0,
+        totalEarned: 0,
+        workers: 0,
+        tractors: 0,
+        robots: 0,
+        drones: 0,
+        upgrades: {
+            click: { level: 1, cost: 10, maxLevel: 10 },
+            auto: { level: 0, cost: 50, maxLevel: 10 },
+            multiplier: { level: 1, cost: 100, maxLevel: 5 },
+            worker: { level: 0, cost: 200, maxLevel: 5 },
+            tractor: { level: 0, cost: 500, maxLevel: 3 },
+            robot: { level: 0, cost: 1000, maxLevel: 2 },
+            drone: { level: 0, cost: 2000, maxLevel: 1 }
+        },
+        achievements: {
+            clicks: [
+                { id: 'clicks_10', name: 'Başlangıç', description: '10 kez tıkla', requirement: 10, completed: false },
+                { id: 'clicks_100', name: 'Çalışkan', description: '100 kez tıkla', requirement: 100, completed: false },
+                { id: 'clicks_1000', name: 'Tıklama Ustası', description: '1000 kez tıkla', requirement: 1000, completed: false }
+            ],
+            coins: [
+                { id: 'coins_100', name: 'İlk Birikim', description: '100 coin kazan', requirement: 100, completed: false },
+                { id: 'coins_1000', name: 'Coin Avcısı', description: '1000 coin kazan', requirement: 1000, completed: false },
+                { id: 'coins_10000', name: 'Zengin Çiftçi', description: '10000 coin kazan', requirement: 10000, completed: false }
+            ],
+            upgrades: [
+                { id: 'upgrade_first', name: 'İlk Yükseltme', description: 'İlk yükseltmeni yap', requirement: 1, completed: false },
+                { id: 'upgrade_5', name: 'Geliştirici', description: '5 yükseltme yap', requirement: 5, completed: false },
+                { id: 'upgrade_all', name: 'Tam Donanım', description: 'Tüm yükseltmeleri en az 1 kez al', requirement: 7, completed: false }
+            ],
+            special: [
+                { id: 'robot_unlock', name: 'Robot Çağı', description: 'İlk robotunu al', requirement: 1, completed: false },
+                { id: 'drone_unlock', name: 'Drone Ustası', description: 'Drone teknolojisine ulaş', requirement: 1, completed: false },
+                { id: 'max_all', name: 'Mükemmeliyetçi', description: 'Bir yükseltmeyi maksimum seviyeye çıkar', requirement: 1, completed: false }
+            ]
+        }
+    };
 
-        // Welcome screen animation
-        const welcomeText = "Hoşgeldiniz!";
-        const welcomeContainer = document.getElementById('welcome-text');
+    // Yardımcı Fonksiyonlar
+    function createCoinAnimation(x, y, value) {
+        const coin = document.createElement('div');
+        coin.className = 'coin-animation';
+        coin.textContent = `+${value}`;
+        coin.style.left = `${x}px`;
+        coin.style.top = `${y}px`;
+        document.body.appendChild(coin);
+        setTimeout(() => coin.remove(), 1000);
+    }
+
+    function showAchievement(text) {
+        const achievement = document.createElement('div');
+        achievement.className = 'achievement';
+        achievement.textContent = text;
+        document.body.appendChild(achievement);
+        setTimeout(() => achievement.remove(), 3000);
+    }
+
+    function checkLevel() {
+        const newLevel = Math.floor(gameState.totalEarned / 1000) + 1;
+        if (newLevel > gameState.level) {
+            gameState.level = newLevel;
+            showAchievement(`Yeni Seviye: ${gameState.level}`);
+            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
+        }
+    }
+
+    function updateAchievementsList() {
+        const container = document.getElementById('achievement-list');
+        container.innerHTML = '<h3>Başarımlar</h3>';
         
-        welcomeText.split('').forEach((letter, index) => {
-            const span = document.createElement('span');
-            span.textContent = letter;
-            span.className = 'welcome-letter';
-            span.style.animationDelay = `${index * 0.1}s`;
-            welcomeContainer.appendChild(span);
-        });
-
-        setTimeout(() => {
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
-        }, 3000);
-
-        // Başarımları göster/gizle
-        document.getElementById('show-achievements').addEventListener('click', () => {
-            const achievementList = document.getElementById('achievement-list');
-            achievementList.style.display = achievementList.style.display === 'none' ? 'block' : 'none';
-        });
-
-        function updateAchievementsList() {
-            const container = document.getElementById('achievement-list');
-            container.innerHTML = '<h3>Başarımlar</h3>';
-
-            // Tüm başarım kategorilerini döngüye al
-            Object.values(gameState.achievements).forEach(category => {
-                category.forEach(achievement => {
-                    const div = document.createElement('div');
-                    div.className = `achievement-item ${achievement.completed ? 'completed' : ''}`;
-                    div.innerHTML = `
-                        <strong>${achievement.name}</strong><br>
-                        ${achievement.description}
-                    `;
-                    container.appendChild(div);
-                });
+        Object.values(gameState.achievements).forEach(category => {
+            category.forEach(achievement => {
+                const div = document.createElement('div');
+                div.className = `achievement-item ${achievement.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <strong>${achievement.name}</strong><br>
+                    ${achievement.description}
+                `;
+                container.appendChild(div);
             });
+        });
+    }
+
+    function checkAchievements() {
+        // Tıklama başarımları
+        gameState.achievements.clicks.forEach(achievement => {
+            if (!achievement.completed && gameState.totalClicks >= achievement.requirement) {
+                achievement.completed = true;
+                showAchievement(`Başarım Kazanıldı: ${achievement.name}`);
+            }
+        });
+
+        // Coin başarımları
+        gameState.achievements.coins.forEach(achievement => {
+            if (!achievement.completed && gameState.totalEarned >= achievement.requirement) {
+                achievement.completed = true;
+                showAchievement(`Başarım Kazanıldı: ${achievement.name}`);
+            }
+        });
+
+        // Yükseltme başarımları
+        let totalUpgrades = Object.values(gameState.upgrades).reduce((sum, upgrade) => sum + upgrade.level, 0);
+        gameState.achievements.upgrades.forEach(achievement => {
+            if (!achievement.completed && totalUpgrades >= achievement.requirement) {
+                achievement.completed = true;
+                showAchievement(`Başarım Kazanıldı: ${achievement.name}`);
+            }
+        });
+
+        // Özel başarımlar
+        if (!gameState.achievements.special[0].completed && gameState.upgrades.robot.level > 0) {
+            gameState.achievements.special[0].completed = true;
+            showAchievement('Başarım Kazanıldı: Robot Çağı');
         }
 
-        function checkAchievements() {
-            // Tıklama başarımları
-            gameState.achievements.clicks.forEach(achievement => {
-                if (!achievement.completed && gameState.totalClicks >= achievement.requirement) {
-                    achievement.completed = true;
-                    showAchievement(`Başarım Kazanıldı: ${achievement.name}`);
-                }
-            });
+        if (!gameState.achievements.special[1].completed && gameState.upgrades.drone.level > 0) {
+            gameState.achievements.special[1].completed = true;
+            showAchievement('Başarım Kazanıldı: Drone Ustası');
+        }
 
-            // Coin başarımları
-            gameState.achievements.coins.forEach(achievement => {
-                if (!achievement.completed && gameState.totalEarned >= achievement.requirement) {
-                    achievement.completed = true;
-                    showAchievement(`Başarım Kazanıldı: ${achievement.name}`);
-                }
-            });
+        updateAchievementsList();
+    }
 
-            // Yükseltme başarımları
-            let totalUpgrades = Object.values(gameState.upgrades).reduce((sum, upgrade) => sum + upgrade.level, 0);
-            gameState.achievements.upgrades.forEach(achievement => {
-                if (!achievement.completed && totalUpgrades >= achievement.requirement) {
-                    achievement.completed = true;
-                    showAchievement(`Başarım Kazanıldı: ${achievement.name}`);
-                }
-            });
-
-            // Özel başarımlar
-            if (!gameState.achievements.special[0].completed && gameState.upgrades.robot.level > 0) {
-                gameState.achievements.special[0].completed = true;
-                showAchievement('Başarım Kazanıldı: Robot Çağı');
+    function updateProgressBars() {
+        Object.entries(gameState.upgrades).forEach(([key, upgrade]) => {
+            const progressBar = document.querySelector(`#${key}-upgrade .progress`);
+            if (progressBar) {
+                const progress = (upgrade.level / upgrade.maxLevel) * 100;
+                progressBar.style.width = `${progress}%`;
             }
+        });
+    }
 
+    function updateStats() {
+        document.getElementById('total-clicks').textContent = gameState.totalClicks;
+        document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
+    }
+
+    function updateDisplay() {
+        document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
+        document.getElementById('cps-value').textContent = 
+            (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
+        
+        Object.entries(gameState.upgrades).forEach(([key, upgrade]) => {
+            const button = document.getElementById(`${key}-upgrade`);
+            if (button) {
+                button.disabled = gameState.coins < upgrade.cost || upgrade.level >= upgrade.maxLevel;
+                button.querySelector('.upgrade-cost').textContent = 
+                    upgrade.level >= upgrade.maxLevel ? 'MAKSIMUM' : `Maliyet: ${upgrade.cost} coin`;
+            }
+        });
+
+        updateProgressBars();
+        updateStats();
+        checkAchievements();
+    }
+
+    // Welcome Screen
+    const welcomeText = "Hoşgeldiniz!";
+    const welcomeContainer = document.getElementById('welcome-text');
+    
+    welcomeText.split('').forEach((letter, index) => {
+        const span = document.createElement('span');
+        span.textContent = letter;
+        span.className = 'welcome-letter';
+        span.style.animationDelay = `${index * 0.1}s`;
+        welcomeContainer.appendChild(span);
+    });
+
+    setTimeout(() => {
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'block';
+    }, 3000);
+
+    // Event Listeners
+    document.getElementById('show-achievements').addEventListener('click', () => {
+        const achievementList = document.getElementById('achievement-list');
+        achievementList.style.display = achievementList.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.getElementById('farm-button').addEventListener('click', (event) => {
+        const reward = gameState.clickPower * gameState.multiplier;
+        gameState.coins += reward;
+        gameState.totalEarned += reward;
+        gameState.totalClicks++;
+        
+        const x = event.clientX;
+        const y = event.clientY;
+        createCoinAnimation(x, y, Math.floor(reward));
+        
+        checkLevel();
+        updateDisplay();
+    });
+
+    // Yükseltme Event Listeners
+    document.getElementById('click-upgrade').addEventListener('click', () => {
+        if (gameState.coins >= gameState.upgrades.click.cost &&
+            gameState.upgrades.click.level < gameState.upgrades.click.maxLevel) {
+            gameState.coins -= gameState.upgrades.click.cost;
+            gameState.clickPower += 1;
+            gameState.upgrades.click.level++;
+            gameState.upgrades.click.cost *= 1.5;
+            gameState.upgrades.click.cost = Math.floor(gameState.upgrades.click.cost);
+            updateDisplay();
+        }
+    });
+
+    document.getElementById('auto-upgrade').addEventListener('click', () => {
+        if (gameState.coins >= gameState.upgrades.auto.cost &&
+            gameState.upgrades.auto.level < gameState.upgrades.auto.maxLevel) {
+            gameState.coins -= gameState.upgrades.auto.cost;
+            gameState.autoCollectPower += 1;
+            gameState.upgrades.auto.level++;
+            gameState.upgrades.auto.cost *= 1.5;
+            gameState.upgrades.auto.cost = Math.floor(gameState.upgrades.auto.cost);
+            updateDisplay();
+        }
+    });
+
+    document.getElementById('multiplier-upgrade').addEventListener('click', () => {
+        if (gameState.coins >= gameState.upgrades.multiplier.cost &&
+            gameState.upgrades.multiplier.level < gameState.upgrades.multiplier.maxLevel) {
+            gameState.coins -= gameState.upgrades.multiplier.cost;
+            gameState.multiplier *= 1.5;
+            gameState.upgrades.multiplier.level++;
+            gameState.upgrades.multiplier.cost *= 2;
+            gameState.upgrades.multiplier.cost = Math.floor(gameState.upgrades.multiplier.cost);
+            updateDisplay();
+        }
+    });
+
+    document.getElementById('worker-upgrade').addEventListener('click', () => {
+        if (gameState.coins >= gameState.upgrades.worker.cost &&
+            gameState.upgrades.worker.level < gameState.upgrades.worker.maxLevel) {
+            gameState.coins -= gameState.upgrades.worker.cost;
+            gameState.workers++;
+            gameState.autoCollectPower += 2;
+            gameState.upgrades.worker.level++;
+            gameState.upgrades.worker.cost *= 2;
+            updateDisplay();
+        }
+    });
+
+    document.getElementById('tractor-upgrade').addEventListener('click', () => {
+        if (gameState.coins >= gameState.upgrades.tractor.cost &&
+            gameState.upgrades.tractor.level < gameState.upgrades.tractor.maxLevel) {
+            gameState.coins -= gameState.upgrades.tractor.cost;
+            gameState.tractors++;
+            gameState.autoCollectPower += 5;
+            gameState.upgrades.tractor.level++;
+            gameState.upgrades.tractor.cost *= 3;
+            updateDisplay();
+        }
+    });
+
+    document.getElementById('robot-upgrade').addEventListener('click', () => {
+        if (gameState.coins >= gameState.upgrades.robot.cost &&
+            gameState.upgrades.robot.level < gameState.upgrades.robot.maxLevel) {
+            gameState.coins -= gameState.upgrades.robot.cost;
+            gameState.robots++;
+            gameState.autoCollectPower += 10;
+            gameState.multiplier *= 1.5;
+            gameState.upgrades.robot.level++;
+            gameState.upgrades.robot.cost *= 4;
+            updateDisplay();
+        }
+    });
+
+    document.getElementById('drone-upgrade').addEventListener('click', () => {
+        if (gameState.coins >= gameState.upgrades.drone.cost &&
+            gameState.upgrades.drone.level < gameState.upgrades.drone.maxLevel) {
+            gameState.coins -= gameState.upgrades.drone.cost;
+            gameState.drones++;
+            gameState.autoCollectPower += 20;
+            gameState.multiplier *= 2;
+            gameState.upgrades.drone.level++;
+            gameState.upgrades.drone.cost *= 5;
+            updateDisplay();
+        }
+    });
+
+    // Otomatik Sistemler
+    setInterval(() => {
+        if (gameState.autoCollectPower > 0) {
+            const reward = gameState.autoCollectPower * gameState.multiplier;
+            gameState.coins += reward;
+            gameState.totalEarned += reward;
+            updateDisplay();
+            checkLevel();
+        }
+    }, 1000);
+
+    // Kaydetme Sistemi
+    function saveGame() {
+        localStorage.setItem('farmGameState', JSON.stringify(gameState));
+    }
+
+    function loadGame() {
+        const savedState = localStorage.getItem('farmGameState');
+        if (savedState) {
+            gameState = JSON.parse(savedState);
+            updateDisplay();
             updateAchievementsList();
         }
+    }
 
-        // Yeni yükseltme butonlarının işleyicileri
-        document.getElementById('worker-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.worker.cost) {
-                gameState.coins -= gameState.upgrades.worker.cost;
-                gameState.workers++;
-                gameState.autoCollectPower += 2;
-                gameState.upgrades.worker.level++;
-                gameState.upgrades.worker.cost *= 2;
-                updateDisplay();
-                checkAchievements();
-            }
-        });
+    setInterval(saveGame, 30000);
+    window.addEventListener('load', loadGame);
 
-        document.getElementById('tractor-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.tractor.cost) {
-                gameState.coins -= gameState.upgrades.tractor.cost;
-                gameState.tractors++;
-                gameState.autoCollectPower += 5;
-                gameState.upgrades.tractor.level++;
-                gameState.upgrades.tractor.cost *= 3;
-                updateDisplay();
-                checkAchievements();
-            }
-        });
-
-        document.getElementById('robot-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.robot.cost) {
-                gameState.coins -= gameState.upgrades.robot.cost;
-                gameState.robots++;
-                gameState.autoCollectPower += 10;
-                gameState.multiplier *= 1.5;
-                gameState.upgrades.robot.level++;
-                gameState.upgrades.robot.cost *= 4;
-                updateDisplay();
-                checkAchievements();
-            }
-        });
-
-        document.getElementById('drone-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.drone.cost) {
-                gameState.coins -= gameState.upgrades.drone.cost;
-                gameState.drones++;
-                gameState.autoCollectPower += 20;
-                gameState.multiplier *= 2;
-                gameState.upgrades.drone.level++;
-                gameState.upgrades.drone.cost *= 5;
-                updateDisplay();
-                checkAchievements();
-            }
-        });
-
-        // Progress bar güncellemesi
-        function updateProgressBars() {
-            Object.entries(gameState.upgrades).forEach(([key, upgrade]) => {
-                const progressBar = document.querySelector(`#${key}-upgrade .progress`);
-                if (progressBar) {
-                    const progress = (upgrade.level / upgrade.maxLevel) * 100;
-                    progressBar.style.width = `${progress}%`;
-                }
-            });
-        }
-
-        // Display güncelleme fonksiyonu genişletiliyor
-        function updateDisplay() {
-            // Mevcut güncellemeler...
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
-            document.getElementById('cps-value').textContent = 
-                (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
-            
-            // Yükseltme butonlarını güncelle
-            Object.entries(gameState.upgrades).forEach(([key, upgrade]) => {
-                const button = document.getElementById(`${key}-upgrade`);
-                if (button) {
-                    button.disabled = gameState.coins < upgrade.cost || upgrade.level >= upgrade.maxLevel;
-                    button.querySelector('.upgrade-cost').textContent = 
-                        upgrade.level >= upgrade.maxLevel ? 'MAKSIMUM' : `Maliyet: ${upgrade.cost} coin`;
-                }
-            });
-
-            updateProgressBars();
-            checkAchievements();
-        }
-
-        // İlk yükleme
-        updateDisplay();
-        updateAchievementsList();
-    </script>
+    // İlk Yükleme
+    updateDisplay();
+    updateAchievementsList();
+</script>
 </body>
 </html>
