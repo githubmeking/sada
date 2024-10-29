@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farm Game</title>
+    <title>Gelişmiş Farm Oyunu</title>
     <style>
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.3); }
@@ -30,11 +30,11 @@
             align-items: center;
             min-height: 100vh;
             text-align: center;
-            background: #f0f0f0;
+            background: linear-gradient(135deg, #83a4d4, #b6fbff);
         }
 
         #welcome-screen {
-            background-color: #FFA500;
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
             position: fixed;
             top: 0;
             left: 0;
@@ -48,54 +48,109 @@
             z-index: 100;
         }
 
-        #welcome-text {
-            animation: fadeIn 1s ease-out, pulse 2s infinite;
-        }
-
-        .welcome-letter {
-            display: inline-block;
-            opacity: 0;
-            animation: slideUp 0.5s ease-out forwards;
-        }
-
-        #game-screen {
-            display: none;
+        #game-container {
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: none;
             animation: fadeIn 1s ease-out;
+            max-width: 800px;
+            width: 90%;
         }
 
-        #farm-button {
+        .resource-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .resource {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-width: 150px;
+        }
+
+        .resource-title {
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .resource-value {
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+
+        .upgrades-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .upgrade-button {
             background-color: #4CAF50;
             border: none;
             color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
+            padding: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            border-radius: 4px;
-            transition: transform 0.2s, background-color 0.3s;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .upgrade-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .upgrade-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .upgrade-cost {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .achievement {
+            background: #ffd700;
+            color: #000;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px;
+            animation: slideUp 0.5s ease-out;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #farm-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         #farm-button:hover {
-            background-color: #45a049;
             transform: scale(1.05);
-        }
-
-        #farm-button:active {
-            transform: scale(0.95);
-        }
-
-        #farm-value {
-            font-size: 24px;
-            margin: 20px 0;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            animation: pulse 2s infinite;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
 
         .coin-animation {
@@ -103,11 +158,30 @@
             font-size: 20px;
             animation: floatUp 1s ease-out forwards;
             pointer-events: none;
+            color: #ffd700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         @keyframes floatUp {
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(-50px); opacity: 0; }
+        }
+
+        #level-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stats-container {
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -116,16 +190,61 @@
         <div id="welcome-text"></div>
     </div>
 
-    <div id="game-screen">
-        <div id="farm-value">0.000008</div>
+    <div id="game-container">
+        <div id="level-indicator">Seviye: 1</div>
+        
+        <div class="resource-container">
+            <div class="resource">
+                <div class="resource-title">Coin</div>
+                <div id="coin-value" class="resource-value">0</div>
+            </div>
+            <div class="resource">
+                <div class="resource-title">CPS (Saniyede Coin)</div>
+                <div id="cps-value" class="resource-value">0</div>
+            </div>
+        </div>
+
         <button id="farm-button">FARM</button>
+
+        <div class="upgrades-container">
+            <button class="upgrade-button" id="click-upgrade">
+                Tıklama Güçlendirmesi
+                <span class="upgrade-cost">Maliyet: 10 coin</span>
+            </button>
+            <button class="upgrade-button" id="auto-upgrade">
+                Otomatik Toplama
+                <span class="upgrade-cost">Maliyet: 50 coin</span>
+            </button>
+            <button class="upgrade-button" id="multiplier-upgrade">
+                Çarpan Artışı
+                <span class="upgrade-cost">Maliyet: 100 coin</span>
+            </button>
+        </div>
+
+        <div class="stats-container">
+            <h3>İstatistikler</h3>
+            <p>Toplam Tıklama: <span id="total-clicks">0</span></p>
+            <p>Toplam Kazanılan: <span id="total-earned">0</span></p>
+        </div>
     </div>
 
-    <audio id="welcome-sound" src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAUAAAiSAAYGBgYJCQkJCQwMDAwMDw8PDw8SUlJSUlVVVVVVWFhYWFhbW1tbW15eXl5eYaGhoaGkpKSkpKenp6enqqqqqqqtra2trbDw8PDw8/Pz8/P29vb29vn5+fn5/Pz8/Pz//////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAAAAAAAAAAAIkjC+JxtAAAAAAD/86xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/++MYAABNGz+XhU0AJ0Ch1L+PggBJwlCqX8vBABSlL+PBACSYu0fxUEAKiXEfw/jgIAVUoY/h4QASlUB/DwgAk4OqP4+CAEmC8Q/h4IATqXUPw8IAVEuIfx8EAEpC4j+HhACok7R/DwQAqpOEP4+EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" type="audio/mp3"></audio>
-    <audio id="click-sound" src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAADAAAGhwAzMzMzMzMzMzMzM2ZmZmZmZmZmZmZmMzMzMzMzMzMzMzP///////////////////////////////////////////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAAAAAAAAAAAAoaAWYhoAAAAAAD/86xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" type="audio/mp3"></audio>
-
     <script>
-        // Hoşgeldiniz yazısını animasyonlu olarak oluştur
+        let gameState = {
+            coins: 0,
+            clickPower: 1,
+            autoCollectPower: 0,
+            multiplier: 1,
+            level: 1,
+            totalClicks: 0,
+            totalEarned: 0,
+            upgrades: {
+                click: { level: 1, cost: 10 },
+                auto: { level: 0, cost: 50 },
+                multiplier: { level: 1, cost: 100 }
+            }
+        };
+
+        // Welcome screen animation
         const welcomeText = "Hoşgeldiniz!";
         const welcomeContainer = document.getElementById('welcome-text');
         
@@ -137,52 +256,126 @@
             welcomeContainer.appendChild(span);
         });
 
-        // Ses efektlerini yükle
-        const welcomeSound = document.getElementById('welcome-sound');
-        const clickSound = document.getElementById('click-sound');
-
-        // Sayfa yüklendiğinde hoşgeldin sesini çal
-        welcomeSound.play();
-
-        // Hoşgeldin ekranını 3 saniye sonra kaldır
         setTimeout(() => {
             document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('game-container').style.display = 'block';
         }, 3000);
 
-        let farmValue = 0.000008;
-        let isAutoFarming = false;
-        let farmInterval;
-
-        function createCoinAnimation(x, y) {
-            const coin = document.createElement('div');
-            coin.className = 'coin-animation';
-            coin.textContent = '+0.000002';
-            coin.style.left = `${x}px`;
-            coin.style.top = `${y}px`;
-            document.body.appendChild(coin);
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
+            document.getElementById('cps-value').textContent = 
+                (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
+            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
+            document.getElementById('total-clicks').textContent = gameState.totalClicks;
+            document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
             
-            // Animasyon bitince elementi kaldır
-            setTimeout(() => coin.remove(), 1000);
+            // Update upgrade buttons
+            updateUpgradeButton('click-upgrade', gameState.upgrades.click.cost);
+            updateUpgradeButton('auto-upgrade', gameState.upgrades.auto.cost);
+            updateUpgradeButton('multiplier-upgrade', gameState.upgrades.multiplier.cost);
         }
 
+        function updateUpgradeButton(id, cost) {
+            const button = document.getElementById(id);
+            button.disabled = gameState.coins < cost;
+            button.querySelector('.upgrade-cost').textContent = `Maliyet: ${cost} coin`;
+        }
+
+        function createFloatingText(x, y, amount) {
+            const text = document.createElement('div');
+            text.className = 'coin-animation';
+            text.textContent = `+${amount}`;
+            text.style.left = `${x}px`;
+            text.style.top = `${y}px`;
+            document.body.appendChild(text);
+            setTimeout(() => text.remove(), 1000);
+        }
+
+        function showAchievement(message) {
+            const achievement = document.createElement('div');
+            achievement.className = 'achievement';
+            achievement.textContent = message;
+            document.body.appendChild(achievement);
+            setTimeout(() => achievement.remove(), 3000);
+        }
+
+        function checkAchievements() {
+            if (gameState.totalClicks === 100) {
+                showAchievement('Başarım: 100 Tıklama!');
+            }
+            if (gameState.totalEarned >= 1000 && gameState.level === 1) {
+                gameState.level++;
+                showAchievement('Seviye Atladın: Seviye 2!');
+            }
+        }
+
+        // Click handler
         document.getElementById('farm-button').addEventListener('click', (e) => {
-            // Tıklama sesi çal
-            clickSound.currentTime = 0;
-            clickSound.play();
+            const earnedCoins = gameState.clickPower * gameState.multiplier;
+            gameState.coins += earnedCoins;
+            gameState.totalEarned += earnedCoins;
+            gameState.totalClicks++;
+            
+            createFloatingText(e.clientX, e.clientY, earnedCoins);
+            checkAchievements();
+            updateDisplay();
+        });
 
-            // Tıklama animasyonu
-            createCoinAnimation(e.clientX, e.clientY);
-
-            if (!isAutoFarming) {
-                isAutoFarming = true;
-                farmInterval = setInterval(() => {
-                    farmValue += 0.000002;
-                    document.getElementById('farm-value').textContent = 
-                        farmValue.toFixed(8);
-                }, 1000);
+        // Upgrade handlers
+        document.getElementById('click-upgrade').addEventListener('click', () => {
+            if (gameState.coins >= gameState.upgrades.click.cost) {
+                gameState.coins -= gameState.upgrades.click.cost;
+                gameState.clickPower *= 1.5;
+                gameState.upgrades.click.level++;
+                gameState.upgrades.click.cost *= 2;
+                updateDisplay();
             }
         });
+
+        document.getElementById('auto-upgrade').addEventListener('click', () => {
+            if (gameState.coins >= gameState.upgrades.auto.cost) {
+                gameState.coins -= gameState.upgrades.auto.cost;
+                gameState.autoCollectPower += 1;
+                gameState.upgrades.auto.level++;
+                gameState.upgrades.auto.cost *= 2;
+                updateDisplay();
+            }
+        });
+
+        document.getElementById('multiplier-upgrade').addEventListener('click', () => {
+            if (gameState.coins >= gameState.upgrades.multiplier.cost) {
+                gameState.coins -= gameState.upgrades.multiplier.cost;
+                gameState.multiplier *= 1.2;
+                gameState.upgrades.multiplier.level++;
+                gameState.upgrades.multiplier.cost *= 3;
+                updateDisplay();
+            }
+        });
+
+        // Auto-collect timer
+        setInterval(() => {
+            const autoEarned = gameState.autoCollectPower * gameState.multiplier;
+            if (autoEarned > 0) {
+                gameState.coins += autoEarned;
+                gameState.totalEarned += autoEarned;
+                updateDisplay();
+            }
+        }, 1000);
+
+        // Initial display update
+        updateDisplay();
+
+        // Save game state periodically
+        setInterval(() => {
+            localStorage.setItem('farmGameSave', JSON.stringify(gameState));
+        }, 30000);
+
+        // Load saved game state
+        const savedGame = localStorage.getItem('farmGameSave');
+        if (savedGame) {
+            gameState = JSON.parse(savedGame);
+            updateDisplay();
+        }
     </script>
 </body>
 </html>
