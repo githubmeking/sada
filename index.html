@@ -201,7 +201,7 @@
     </div>
 
     <!-- Oyun Konteyneri -->
-    <div id="game-container">
+    <div id="game-container" style="display: none;">
         <div id="level-indicator">Seviye: 1</div>
         
         <!-- Kaynaklar Konteyneri -->
@@ -286,6 +286,16 @@
             });
         }
 
+        // Karşılama ekranı animasyonu ve kapanışı
+        function showGameScreen() {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const gameContainer = document.getElementById('game-container');
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                gameContainer.style.display = 'block';
+            }, 3000); // 3 saniye sonra karşılama ekranını gizle ve oyunu göster
+        }
+
         // Oyun durumu
         let gameState = {
             coins: 0,
@@ -366,9 +376,13 @@
         const game = new Game();
         updateLanguage(document.getElementById('language').value);
 
+        // Karşılama ekranını gizleyip oyun ekranını göster
+        showGameScreen();
+
         // Her 30 saniyede bir oyun kaydı
         setInterval(() => game.saveGameState(), 30000);
     </script>
 </body>
+
 
 </html>
