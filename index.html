@@ -2,18 +2,57 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Canavar Avı Oyunu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Canavar Avı Oyunu</title>
     <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --background-color: #1a1a1a;
+            --modal-bg: #333;
+            --text-color: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             font-family: Arial, sans-serif;
-            background: #1a1a1a;
-            color: white;
+            background: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+        }
+
+        /* Mobil Uyumluluk */
+        @media (max-width: 768px) {
+            .button-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .left-buttons, .right-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            button {
+                font-size: 1em !important;
+                padding: 8px 16px !important;
+            }
+
+            .modal {
+                width: 90% !important;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
         }
 
         #welcome {
@@ -40,31 +79,33 @@
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
+            gap: 15px;
         }
 
         .left-buttons, .right-buttons {
             display: flex;
-            flex-direction: column;
             gap: 10px;
-        }
-
-        .center-button {
-            align-self: center;
         }
 
         button {
             padding: 10px 20px;
             font-size: 1.2em;
             cursor: pointer;
-            background: #4CAF50;
-            color: white;
+            background: var(--primary-color);
+            color: var(--text-color);
             border: none;
             border-radius: 5px;
-            min-width: 150px;
+            min-width: 120px;
+            transition: all 0.3s ease;
         }
 
         button:hover {
-            background: #45a049;
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
         }
 
         .modal {
@@ -73,35 +114,35 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #333;
+            background: var(--modal-bg);
             padding: 20px;
             border-radius: 10px;
             z-index: 100;
-        }
-
-        .modal button {
-            margin: 5px;
-            width: 100%;
+            width: 300px;
         }
 
         .stats {
             margin-top: 20px;
-            padding: 10px;
-            background: #333;
-            border-radius: 5px;
-            text-align: center;
+            padding: 15px;
+            background: var(--modal-bg);
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
         }
 
-        #coinDisplay {
-            font-size: 1.5em;
-            color: gold;
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
         }
 
         #battleArea {
             display: none;
             margin-top: 20px;
             padding: 20px;
-            background: #333;
+            background: var(--modal-bg);
             border-radius: 10px;
             text-align: center;
         }
@@ -112,6 +153,8 @@
             background: #555;
             border-radius: 5px;
             margin: 10px 0;
+            position: relative;
+            overflow: hidden;
         }
 
         #healthBar {
@@ -122,9 +165,99 @@
             transition: width 0.3s;
         }
 
-        .battle-info {
-            margin: 10px 0;
-            font-size: 1.2em;
+        .hit-animation {
+            animation: hitEffect 0.3s ease-out;
+        }
+
+        @keyframes hitEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .damage-number {
+            position: absolute;
+            color: #ff4444;
+            font-weight: bold;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 10;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+
+        #shop {
+            display: none;
+            padding: 20px;
+            background: var(--modal-bg);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .shop-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        #skillTree {
+            display: none;
+            padding: 20px;
+            background: var(--modal-bg);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .skill-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .skill-item.unlocked {
+            background: var(--primary-color);
+        }
+
+        .xp-bar {
+            width: 100%;
+            height: 10px;
+            background: #555;
+            border-radius: 5px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+
+        .xp-progress {
+            width: 0%;
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s;
+        }
+
+        .character-class {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -135,18 +268,34 @@
 
     <div class="game-container">
         <div class="stats">
-            <div id="coinDisplay">Coin: 0</div>
-            <div id="remainingRights">Kalan Hak: 3</div>
-            <div id="timer" style="display: none">Yeni haklar için kalan süre: <span id="timeLeft"></span></div>
+            <div class="stat-item">
+                <div id="coinDisplay">Coin: 0</div>
+            </div>
+            <div class="stat-item">
+                <div id="levelDisplay">Seviye: 1</div>
+                <div class="xp-bar">
+                    <div class="xp-progress"></div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div id="remainingRights">Kalan Hak: 3</div>
+            </div>
+            <div class="stat-item">
+                <div id="playerClass">Sınıf: Seçilmedi</div>
+            </div>
         </div>
 
         <div class="button-container">
             <div class="left-buttons">
                 <button onclick="showModal('weaponModal')">Silah</button>
                 <button onclick="showModal('ammoModal')">Mühimmat</button>
+                <button onclick="toggleShop()">Mağaza</button>
             </div>
             
-            <button class="center-button" onclick="updateCoins(100)">Coin</button>
+            <div class="center-buttons">
+                <button onclick="showModal('skillTreeModal')">Yetenekler</button>
+                <button onclick="showModal('characterModal')">Karakter</button>
+            </div>
             
             <div class="right-buttons">
                 <button onclick="showModal('monsterModal')">Canavar</button>
@@ -156,9 +305,9 @@
 
         <div id="battleArea">
             <div class="battle-info">
-                <div>Seçili Silah: <span id="currentWeapon">Yok</span></div>
-                <div>Canavar Tipi: <span id="monsterType">Yok</span></div>
-                <div>Canavar Canı: <span id="currentHealth">0</span> / <span id="maxHealth">0</span></div>
+                <div>Silah: <span id="currentWeapon">Yok</span> (Seviye: <span id="weaponLevel">0</span>)</div>
+                <div>Canavar: <span id="monsterType">Yok</span></div>
+                <div>Can: <span id="currentHealth">0</span> / <span id="maxHealth">0</span></div>
             </div>
             <div id="monsterHealth">
                 <div id="healthBar"></div>
@@ -166,22 +315,71 @@
             <button onclick="shoot()" id="shootButton">Ateş Et!</button>
         </div>
 
+        <div id="shop">
+            <h2>Mağaza</h2>
+            <div class="shop-items">
+                <div class="shop-item">
+                    <h3>Silah Yükseltme</h3>
+                    <p>Mevcut Seviye: <span id="currentWeaponLevel">0</span></p>
+                    <p>Fiyat: <span id="upgradePrice">100</span> Coin</p>
+                    <button onclick="upgradeWeapon()">Yükselt</button>
+                </div>
+                <div class="shop-item">
+                    <h3>Özel Mühimmat</h3>
+                    <p>+50% Hasar</p>
+                    <p>Fiyat: 200 Coin</p>
+                    <button onclick="buySpecialAmmo()">Satın Al</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modaller -->
         <div id="weaponModal" class="modal">
-            <button onclick="selectWeapon('Ağır Makineli', 50)">Ağır Makineli</button>
-            <button onclick="selectWeapon('Pompalı', 5)">Pompalı</button>
-            <button onclick="selectWeapon('Tabanca', 2)">Tabanca</button>
-            <button onclick="selectWeapon('Tüfek', 20)">Tüfek</button>
+            <h2>Silah Seçimi</h2>
+            <button onclick="selectWeapon('Ağır Makineli', 50)">Ağır Makineli - 50 Hasar</button>
+            <button onclick="selectWeapon('Pompalı', 5)">Pompalı - 5 Hasar</button>
+            <button onclick="selectWeapon('Tabanca', 2)">Tabanca - 2 Hasar</button>
+            <button onclick="selectWeapon('Tüfek', 20)">Tüfek - 20 Hasar</button>
             <button onclick="closeModal('weaponModal')">Kapat</button>
         </div>
 
         <div id="ammoModal" class="modal">
-            <button onclick="selectAmmo('Tabanca Mermisi')">Tabanca Mermisi</button>
-            <button onclick="selectAmmo('Tüfek Mermisi')">Tüfek Mermisi</button>
-            <button onclick="selectAmmo('Ağır Silah Mermisi')">Ağır Silah Mermisi</button>
+            <h2>Mühimmat Seçimi</h2>
+            <button onclick="selectAmmo('Normal', 1)">Normal Mermi (x1 Hasar)</button>
+            <button onclick="selectAmmo('Yakıcı', 1.5)">Yakıcı Mermi (x1.5 Hasar)</button>
+            <button onclick="selectAmmo('Delici', 2)">Delici Mermi (x2 Hasar)</button>
             <button onclick="closeModal('ammoModal')">Kapat</button>
         </div>
 
+        <div id="characterModal" class="modal">
+            <h2>Karakter Sınıfı Seçimi</h2>
+            <button onclick="selectClass('Savaşçı')">Savaşçı (+20% Hasar)</button>
+            <button onclick="selectClass('Avcı')">Avcı (+30% Kritik Şans)</button>
+            <button onclick="selectClass('Tank')">Tank (+50% Can)</button>
+            <button onclick="closeModal('characterModal')">Kapat</button>
+        </div>
+
+        <div id="skillTreeModal" class="modal">
+            <h2>Yetenek Ağacı</h2>
+            <div class="skill-grid">
+                <div class="skill-item" onclick="unlockSkill('extraDamage')">
+                    +10% Hasar
+                    <br>100 XP
+                </div>
+                <div class="skill-item" onclick="unlockSkill('criticalHit')">
+                    +5% Kritik
+                    <br>200 XP
+                </div>
+                <div class="skill-item" onclick="unlockSkill('extraHealth')">
+                    +20% Can
+                    <br>300 XP
+                </div>
+            </div>
+            <button onclick="closeModal('skillTreeModal')">Kapat</button>
+        </div>
+
         <div id="monsterModal" class="modal">
+            <h2>Canavar Seçimi</h2>
             <button onclick="startFight('Kolay', 3000)">Kolay (Can: 3000)</button>
             <button onclick="startFight('Kolay-Orta', 9000)">Kolay-Orta (Can: 9000)</button>
             <button onclick="startFight('Orta', 27000)">Orta (Can: 27000)</button>
@@ -191,23 +389,190 @@
     </div>
 
     <script>
-        let coins = 0;
-        let rights = 3;
-        let cooldownActive = false;
-        let selectedWeapon = null;
-        let selectedAmmo = null;
-        let weaponDamage = 0;
-        let currentMonsterHealth = 0;
-        let maxMonsterHealth = 0;
-        let currentMonsterType = null;
-        let activeBattle = false;
+        // Oyun durumu
+        let gameState = {
+            coins: 0,
+            level: 1,
+            xp: 0,
+            rights: 3,
+            selectedWeapon: null,
+            weaponLevel: 0,
+            selectedAmmo: null,
+            ammoMultiplier: 1,
+            playerClass: null,
+            classMultiplier: 1,
+            weaponDamage: 0,
+            currentMonsterHealth: 0,
+            maxMonsterHealth: 0,
+            currentMonsterType: null,
+            activeBattle: false,
+            skills: {
+                extraDamage: false,
+                criticalHit: false,
+                extraHealth: false
+            },
+            cooldownActive: false
+        };
 
-        // Hoş geldin ekranını 3 saniye sonra kaldır
-        setTimeout(() => {
-            document.getElementById('welcome').style.display = 'none';
-            document.querySelector('.game-container').style.display = 'block';
-        }, 3000);
+        // LocalStorage işlemleri
+        function saveGame() {
+            localStorage.setItem('gameState', JSON.stringify(gameState));
+        }
 
+        function loadGame() {
+            const savedState = localStorage.getItem('gameState');
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+                updateAllDisplays();
+            }
+        }
+
+        // Oyun başlangıcında kayıtlı verileri yükle
+        window.onload = function() {
+            loadGame();
+            setTimeout(() => {
+                document.getElementById('welcome').style.display = 'none';
+                document.querySelector('.game-container').style.display = 'block';
+            }, 3000);
+        };
+
+        // Görüntü güncellemeleri
+        function updateAllDisplays() {
+            document.getElementById('coinDisplay').textContent = `Coin: ${gameState.coins}`;
+            document.getElementById('levelDisplay').textContent = `Seviye: ${gameState.level}`;
+            document.getElementById('remainingRights').textContent = `Kalan Hak: ${gameState.rights}`;
+            document.getElementById('currentWeapon').textContent = gameState.selectedWeapon || 'Yok';
+            document.getElementById('weaponLevel').textContent = gameState.weaponLevel;
+            updateXPBar();
+        }
+
+        function updateXPBar() {
+            const xpNeeded = gameState.level * 1000;
+            const percentage = (gameState.xp / xpNeeded) * 100;
+            document.querySelector('.xp-progress').style.width = `${percentage}%`;
+        }
+
+        // Silah işlemleri
+        function selectWeapon(weapon, baseDamage) {
+            gameState.selectedWeapon = weapon;
+            gameState.weaponDamage = baseDamage * (1 + gameState.weaponLevel * 0.1);
+            if (gameState.skills.extraDamage) {
+                gameState.weaponDamage *= 1.1;
+            }
+            updateAllDisplays();
+            closeModal('weaponModal');
+            saveGame();
+        }
+
+        // Mühimmat işlemleri
+        function selectAmmo(ammo, multiplier) {
+            gameState.selectedAmmo = ammo;
+            gameState.ammoMultiplier = multiplier;
+            closeModal('ammoModal');
+            saveGame();
+        }
+
+        // Savaş işlemleri
+        function startFight(difficulty, health) {
+            if (!canStartFight()) return;
+
+            gameState.currentMonsterType = difficulty;
+            gameState.currentMonsterHealth = health;
+            gameState.maxMonsterHealth = health;
+            gameState.activeBattle = true;
+
+            document.getElementById('battleArea').style.display = 'block';
+            updateBattleDisplay();
+            closeModal('monsterModal');
+            saveGame();
+        }
+
+        function shoot() {
+            if (!gameState.activeBattle) return;
+
+            // Hasar hesaplama
+            let damage = gameState.weaponDamage * gameState.ammoMultiplier * gameState.classMultiplier;
+            
+            // Kritik vuruş kontrolü
+            if (gameState.skills.criticalHit && Math.random() < 0.05) {
+                damage *= 2;
+                showDamageNumber(damage, true);
+            } else {
+                showDamageNumber(damage, false);
+            }
+
+            // Vuruş animasyonu
+            document.getElementById('monsterHealth').classList.add('hit-animation');
+            setTimeout(() => {
+                document.getElementById('monsterHealth').classList.remove('hit-animation');
+            }, 300);
+
+            gameState.currentMonsterHealth -= damage;
+            if (gameState.currentMonsterHealth <= 0) {
+                handleMonsterDeath();
+            }
+
+            updateBattleDisplay();
+            saveGame();
+        }
+
+        function showDamageNumber(damage, isCritical) {
+            const damageDiv = document.createElement('div');
+            damageDiv.className = 'damage-number';
+            damageDiv.style.left = `${Math.random() * 80 + 10}%`;
+            damageDiv.style.color = isCritical ? '#ff0000' : '#ff4444';
+            damageDiv.textContent = isCritical ? `KRİTİK! ${Math.floor(damage)}` : Math.floor(damage);
+            document.getElementById('monsterHealth').appendChild(damageDiv);
+            setTimeout(() => damageDiv.remove(), 1000);
+        }
+
+        function handleMonsterDeath() {
+            const reward = Math.floor(gameState.maxMonsterHealth / 100);
+            const xpGain = Math.floor(gameState.maxMonsterHealth / 10);
+            
+            gameState.coins += reward;
+            addXP(xpGain);
+            
+            alert(`Tebrikler! Canavarı yendiniz!\nKazanılan coin: ${reward}\nKazanılan XP: ${xpGain}`);
+            endBattle();
+            
+            gameState.rights--;
+            if (gameState.rights <= 0) {
+                startCooldown();
+            }
+        }
+
+        // XP ve Seviye sistemi
+        function addXP(amount) {
+            gameState.xp += amount;
+            const xpNeeded = gameState.level * 1000;
+            
+            while (gameState.xp >= xpNeeded) {
+                gameState.xp -= xpNeeded;
+                gameState.level++;
+                alert(`Tebrikler! Seviye atladınız!\nYeni seviye: ${gameState.level}`);
+            }
+            
+            updateXPBar();
+            saveGame();
+        }
+
+        // Mağaza işlemleri
+        function upgradeWeapon() {
+            const upgradeCost = (gameState.weaponLevel + 1) * 100;
+            
+            if (gameState.coins >= upgradeCost) {
+                gameState.coins -= upgradeCost;
+                gameState.weaponLevel++;
+                updateAllDisplays();
+                saveGame();
+                alert('Silahınız yükseltildi!');
+            } else {
+                alert('Yeterli coininiz yok!');
+            }
+        }
+
+        // Yardımcı fonksiyonlar
         function showModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
         }
@@ -216,121 +581,32 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        function selectWeapon(weapon, damage) {
-            selectedWeapon = weapon;
-            weaponDamage = damage;
-            document.getElementById('currentWeapon').textContent = weapon;
-            alert(`${weapon} seçildi! Her atışta ${damage} hasar verecek!`);
-            closeModal('weaponModal');
+        function toggleShop() {
+            const shop = document.getElementById('shop');
+            shop.style.display = shop.style.display === 'none' ? 'block' : 'none';
         }
 
-        function selectAmmo(ammo) {
-            selectedAmmo = ammo;
-            alert(`${ammo} seçildi!`);
-            closeModal('ammoModal');
-        }
-
-        function updateCoins(amount) {
-            coins += amount;
-            document.getElementById('coinDisplay').textContent = `Coin: ${coins}`;
-        }
-
-        function showRights() {
-            alert(`Kalan hak: ${rights}`);
-        }
-
-        function startCooldown() {
-            cooldownActive = true;
-            rights = 0;
-            document.getElementById('remainingRights').textContent = `Kalan Hak: ${rights}`;
-            document.getElementById('timer').style.display = 'block';
-            
-            let timeLeft = 3600; // 1 saat
-            const timerInterval = setInterval(() => {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                document.getElementById('timeLeft').textContent = 
-                    `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    cooldownActive = false;
-                    rights = 3;
-                    document.getElementById('remainingRights').textContent = `Kalan Hak: ${rights}`;
-                    document.getElementById('timer').style.display = 'none';
-                }
-            }, 1000);
-        }
-
-        function startFight(difficulty, health) {
-            if (cooldownActive) {
+        function canStartFight() {
+            if (gameState.cooldownActive) {
                 alert('Yeni haklar için bekleme süresinin dolmasını bekleyin!');
-                return;
+                return false;
             }
 
-            if (rights <= 0) {
-                startCooldown();
+            if (gameState.rights <= 0) {
                 alert('Günlük hakkınız bitti! 1 saat sonra tekrar deneyin.');
-                return;
+                return false;
             }
 
-            if (!selectedWeapon || !selectedAmmo) {
+            if (!gameState.selectedWeapon || !gameState.selectedAmmo) {
                 alert('Lütfen önce silah ve mühimmat seçin!');
-                return;
+                return false;
             }
 
-            currentMonsterType = difficulty;
-            currentMonsterHealth = health;
-            maxMonsterHealth = health;
-            document.getElementById('monsterType').textContent = difficulty;
-            document.getElementById('currentHealth').textContent = health;
-            document.getElementById('maxHealth').textContent = health;
-            document.getElementById('healthBar').style.width = '100%';
-            document.getElementById('battleArea').style.display = 'block';
-            activeBattle = true;
-            closeModal('monsterModal');
-
-            updateHealthBar();
+            return true;
         }
 
-        function shoot() {
-            if (!activeBattle) {
-                alert('Lütfen önce bir canavar seçin!');
-                return;
-            }
-
-            currentMonsterHealth -= weaponDamage;
-            if (currentMonsterHealth < 0) currentMonsterHealth = 0;
-            
-            document.getElementById('currentHealth').textContent = currentMonsterHealth;
-            updateHealthBar();
-
-            if (currentMonsterHealth <= 0) {
-                const reward = Math.floor(maxMonsterHealth / 100);
-                updateCoins(reward);
-                alert(`Tebrikler! Canavarı yendiniz!\nKazanılan coin: ${reward}`);
-                endBattle();
-                rights--;
-                document.getElementById('remainingRights').textContent = `Kalan Hak: ${rights}`;
-                if (rights <= 0) {
-                    startCooldown();
-                }
-            }
-        }
-
-        function updateHealthBar() {
-            const percentage = (currentMonsterHealth / maxMonsterHealth) * 100;
-            document.getElementById('healthBar').style.width = percentage + '%';
-        }
-
-        function endBattle() {
-            activeBattle = false;
-            document.getElementById('battleArea').style.display = 'none';
-            currentMonsterHealth = 0;
-            maxMonsterHealth = 0;
-            currentMonsterType = null;
-        }
+        // Oyunu otomatik kaydet
+        setInterval(saveGame, 30000); // Her 30 saniyede bir kaydet
     </script>
 </body>
 </html>
