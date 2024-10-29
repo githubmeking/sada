@@ -389,7 +389,6 @@
     </div>
 
     <script>
-        // Oyun durumu
         let gameState = {
             coins: 0,
             level: 1,
@@ -397,24 +396,27 @@
             rights: 3,
             selectedWeapon: null,
             weaponLevel: 0,
-            selectedAmmo: null,
-            ammoMultiplier: 1,
-            playerClass: null,
-            classMultiplier: 1,
-            weaponDamage: 0,
-            currentMonsterHealth: 0,
-            maxMonsterHealth: 0,
-            currentMonsterType: null,
-            activeBattle: false,
-            skills: {
-                extraDamage: false,
-                criticalHit: false,
-                extraHealth: false
-            },
-            cooldownActive: false
+            passiveIncome: 0,
+            miningPower: 5,
+            miningLevel: 1,
+            lastQuestRefresh: 0,
+            quests: [],
+            achievements: {},
+            autoFightActive: false
         };
 
-        // LocalStorage işlemleri
+        // Başlangıç fonksiyonları
+        window.onload = function() {
+            loadGame();
+            initializePassiveIncome();
+            refreshQuests();
+            setTimeout(() => {
+                document.getElementById('welcome').style.display = 'none';
+                document.querySelector('.game-container').style.display = 'block';
+            }, 2000);
+        };
+
+        // Kayıt sistemi
         function saveGame() {
             localStorage.setItem('gameState', JSON.stringify(gameState));
         }
@@ -427,52 +429,148 @@
             }
         }
 
-        // Oyun başlangıcında kayıtlı verileri yükle
-        window.onload = function() {
-            loadGame();
-            setTimeout(() => {
-                document.getElementById('welcome').style.display = 'none';
-                document.querySelector('.game-container').style.display = 'block';
-            }, 3000);
-        };
-
-        // Görüntü güncellemeleri
-        function updateAllDisplays() {
-            document.getElementById('coinDisplay').textContent = `Coin: ${gameState.coins}`;
-            document.getElementById('levelDisplay').textContent = `Seviye: ${gameState.level}`;
-            document.getElementById('remainingRights').textContent = `Kalan Hak: ${gameState.rights}`;
-            document.getElementById('currentWeapon').textContent = gameState.selectedWeapon || 'Yok';
-            document.getElementById('weaponLevel').textContent = gameState.weaponLevel;
-            updateXPBar();
-        }
-
-        function updateXPBar() {
-            const xpNeeded = gameState.level * 1000;
-            const percentage = (gameState.xp / xpNeeded) * 100;
-            document.querySelector('.xp-progress').style.width = `${percentage}%`;
-        }
-
-        // Silah işlemleri
-        function selectWeapon(weapon, baseDamage) {
-            gameState.selectedWeapon = weapon;
-            gameState.weaponDamage = baseDamage * (1 + gameState.weaponLevel * 0.1);
-            if (gameState.skills.extraDamage) {
-                gameState.weaponDamage *= 1.1;
+        // Madencilik sistemi
+        function mine() {
+            const mineButton = document.getElementById('mineButton');
+            if (!mineButton.disabled) {
+                gameState.coins += gameState.miningPower;
+                mineButton.disabled = true;
+                setTimeout(() => {
+                    mineButton.disabled = false;
+                }, 1000);
+                updateAllDisplays();
+                saveGame();
             }
-            updateAllDisplays();
-            closeModal('weaponModal');
+        }
+
+        function upgradeMining() {
+            const cost = gameState.miningLevel * 100;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                gameState.miningPower += 5;
+                gameState.miningLevel++;
+                document.getElementById('mineButton').textContent = 
+                    `Madencilik Yap (+${gameState.miningPower} Coin)`;
+                document.getElementById('upgradeMiningButton').textContent = 
+                    `Madenciliği Geliştir (${gameState.miningLevel * 100} Coin)`;
+                updateAllDisplays();
+                saveGame();
+            } else {
+                showNotification('Yeterli coin yok!');
+            }
+        }
+
+        // Pasif gelir sistemi
+        function initializePassiveIncome() {
+            setInterval(() => {
+                if (gameState.passiveIncome > 0) {
+                    gameState.coins += gameState.passiveIncome;
+                    updateAllDisplays();
+                    saveGame();
+                }
+            }, 1000);
+        }
+
+        function upgradePassiveIncome() {
+            const cost = 500;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                gameState.passiveIncome += 1;
+                updateAllDisplays();
+                saveGame();
+                showNotification('Pasif gelir arttırıldı!');
+            } else {
+                showNotification('Yeterli coin yok!');
+            }
+        }
+
+        // Görev sistemi
+        function refreshQuests() {
+            const now = Date.now();
+            if (now - gameState.lastQuestRefresh > 24 * 60 * 60 * 1000 || gameState.quests.length === 0) {
+                gameState.quests = generateQuests();
+                gameState.lastQuestRefresh = now;
+                saveGame();
+            }
+            updateQuestDisplay();
+        }
+
+        function generateQuests() {
+            return [
+                {
+                    id: 1,
+                    description: '5 canavar öldür',
+                    reward: 100,
+                    target: 5,
+                    progress: 0,
+                    completed: false
+                },
+                {
+                    id: 2,
+                    description: '1000 coin kazan',
+                    reward: 200,
+                    target: 1000,
+                    progress: 0,
+                    completed: false
+                }
+            ];
+        }
+
+        questList.appendChild(questDiv);
+            });
+        }
+
+        function checkQuestProgress(type, amount) {
+            gameState.quests.forEach(quest => {
+                if (!quest.completed) {
+                    if (type === 'kill' && quest.description.includes('canavar')) {
+                        quest.progress += amount;
+                    } else if (type === 'coin' && quest.description.includes('coin')) {
+                        quest.progress += amount;
+                    }
+
+                    if (quest.progress >= quest.target) {
+                        quest.completed = true;
+                        gameState.coins += quest.reward;
+                        showNotification(`Görev tamamlandı! ${quest.reward} coin kazandınız!`);
+                    }
+                }
+            });
+            updateQuestDisplay();
             saveGame();
         }
 
-        // Mühimmat işlemleri
-        function selectAmmo(ammo, multiplier) {
-            gameState.selectedAmmo = ammo;
-            gameState.ammoMultiplier = multiplier;
-            closeModal('ammoModal');
-            saveGame();
+        // Otomatik savaş sistemi
+        function startAutoFight() {
+            if (gameState.autoFightActive) {
+                gameState.autoFightActive = false;
+                document.getElementById('autoFightButton').textContent = 'Oto Savaş';
+                return;
+            }
+
+            if (!canStartFight()) return;
+
+            gameState.autoFightActive = true;
+            document.getElementById('autoFightButton').textContent = 'Oto Savaşı Durdur';
+            
+            function autoFightTick() {
+                if (!gameState.autoFightActive) return;
+                
+                if (gameState.currentMonsterHealth > 0) {
+                    shoot();
+                } else {
+                    startFight('Kolay', 3000); // Yeni canavarla savaşı başlat
+                }
+                
+                if (gameState.autoFightActive) {
+                    setTimeout(autoFightTick, 1000);
+                }
+            }
+            
+            autoFightTick();
         }
 
-        // Savaş işlemleri
+        // Savaş sistemi
         function startFight(difficulty, health) {
             if (!canStartFight()) return;
 
@@ -490,24 +588,12 @@
         function shoot() {
             if (!gameState.activeBattle) return;
 
-            // Hasar hesaplama
-            let damage = gameState.weaponDamage * gameState.ammoMultiplier * gameState.classMultiplier;
+            const baseDamage = gameState.weaponDamage * (1 + gameState.weaponLevel * 0.1);
+            const damage = baseDamage * (Math.random() * 0.4 + 0.8); // 80%-120% random damage
             
-            // Kritik vuruş kontrolü
-            if (gameState.skills.criticalHit && Math.random() < 0.05) {
-                damage *= 2;
-                showDamageNumber(damage, true);
-            } else {
-                showDamageNumber(damage, false);
-            }
-
-            // Vuruş animasyonu
-            document.getElementById('monsterHealth').classList.add('hit-animation');
-            setTimeout(() => {
-                document.getElementById('monsterHealth').classList.remove('hit-animation');
-            }, 300);
-
             gameState.currentMonsterHealth -= damage;
+            showDamageNumber(damage);
+
             if (gameState.currentMonsterHealth <= 0) {
                 handleMonsterDeath();
             }
@@ -516,33 +602,102 @@
             saveGame();
         }
 
-        function showDamageNumber(damage, isCritical) {
+        function handleMonsterDeath() {
+            const reward = Math.floor(gameState.maxMonsterHealth / 50); // Daha fazla coin ödülü
+            const xpGain = Math.floor(gameState.maxMonsterHealth / 10);
+            
+            gameState.coins += reward;
+            checkQuestProgress('kill', 1);
+            checkQuestProgress('coin', reward);
+            addXP(xpGain);
+            
+            showNotification(`Canavar öldürüldü!\nKazanılan: ${reward} coin, ${xpGain} XP`);
+            
+            if (!gameState.autoFightActive) {
+                endBattle();
+            }
+            
+            gameState.rights--;
+            updateAllDisplays();
+        }
+
+        // Yardımcı fonksiyonlar
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'achievement-popup';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function updateAllDisplays() {
+            document.getElementById('coinDisplay').textContent = `Coin: ${Math.floor(gameState.coins)}`;
+            document.getElementById('levelDisplay').textContent = `Seviye: ${gameState.level}`;
+            document.getElementById('remainingRights').textContent = `Kalan Hak: ${gameState.rights}`;
+            document.getElementById('passivencome').textContent = `Pasif Gelir: ${gameState.passiveIncome}/sn`;
+            updateBattleDisplay();
+            updateQuestDisplay();
+        }
+
+        function updateBattleDisplay() {
+            if (gameState.activeBattle) {
+                const healthPercentage = (gameState.currentMonsterHealth / gameState.maxMonsterHealth) * 100;
+                document.getElementById('healthBar').style.width = `${Math.max(0, healthPercentage)}%`;
+                document.getElementById('currentHealth').textContent = Math.max(0, Math.floor(gameState.currentMonsterHealth));
+                document.getElementById('maxHealth').textContent = gameState.maxMonsterHealth;
+                document.getElementById('monsterType').textContent = gameState.currentMonsterType;
+            }
+        }
+
+        function showDamageNumber(damage) {
             const damageDiv = document.createElement('div');
             damageDiv.className = 'damage-number';
             damageDiv.style.left = `${Math.random() * 80 + 10}%`;
-            damageDiv.style.color = isCritical ? '#ff0000' : '#ff4444';
-            damageDiv.textContent = isCritical ? `KRİTİK! ${Math.floor(damage)}` : Math.floor(damage);
+            damageDiv.textContent = Math.floor(damage);
             document.getElementById('monsterHealth').appendChild(damageDiv);
             setTimeout(() => damageDiv.remove(), 1000);
         }
 
-        function handleMonsterDeath() {
-            const reward = Math.floor(gameState.maxMonsterHealth / 100);
-            const xpGain = Math.floor(gameState.maxMonsterHealth / 10);
-            
-            gameState.coins += reward;
-            addXP(xpGain);
-            
-            alert(`Tebrikler! Canavarı yendiniz!\nKazanılan coin: ${reward}\nKazanılan XP: ${xpGain}`);
-            endBattle();
-            
-            gameState.rights--;
+        function canStartFight() {
             if (gameState.rights <= 0) {
-                startCooldown();
+                showNotification('Günlük hakkınız bitti! Yarın tekrar deneyin.');
+                return false;
+            }
+
+            if (!gameState.selectedWeapon) {
+                showNotification('Lütfen önce silah seçin!');
+                return false;
+            }
+
+            return true;
+        }
+
+        function selectWeapon(weapon, damage) {
+            gameState.selectedWeapon = weapon;
+            gameState.weaponDamage = damage;
+            document.getElementById('currentWeapon').textContent = weapon;
+            closeModal('weaponModal');
+            saveGame();
+        }
+
+        function upgradeWeapon() {
+            const cost = (gameState.weaponLevel + 1) * 100;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                gameState.weaponLevel++;
+                document.getElementById('currentWeaponLevel').textContent = gameState.weaponLevel;
+                document.getElementById('upgradePrice').textContent = (gameState.weaponLevel + 1) * 100;
+                updateAllDisplays();
+                saveGame();
+                showNotification('Silah yükseltildi!');
+            } else {
+                showNotification('Yeterli coin yok!');
             }
         }
 
-        // XP ve Seviye sistemi
         function addXP(amount) {
             gameState.xp += amount;
             const xpNeeded = gameState.level * 1000;
@@ -550,29 +705,14 @@
             while (gameState.xp >= xpNeeded) {
                 gameState.xp -= xpNeeded;
                 gameState.level++;
-                alert(`Tebrikler! Seviye atladınız!\nYeni seviye: ${gameState.level}`);
+                showNotification(`Seviye atladınız! Yeni seviye: ${gameState.level}`);
             }
             
-            updateXPBar();
+            const percentage = (gameState.xp / xpNeeded) * 100;
+            document.querySelector('.xp-progress').style.width = `${percentage}%`;
             saveGame();
         }
 
-        // Mağaza işlemleri
-        function upgradeWeapon() {
-            const upgradeCost = (gameState.weaponLevel + 1) * 100;
-            
-            if (gameState.coins >= upgradeCost) {
-                gameState.coins -= upgradeCost;
-                gameState.weaponLevel++;
-                updateAllDisplays();
-                saveGame();
-                alert('Silahınız yükseltildi!');
-            } else {
-                alert('Yeterli coininiz yok!');
-            }
-        }
-
-        // Yardımcı fonksiyonlar
         function showModal(modalId) {
             document.getElementById(modalId).style.display = 'block';
         }
@@ -582,31 +722,18 @@
         }
 
         function toggleShop() {
-            const shop = document.getElementById('shop');
-            shop.style.display = shop.style.display === 'none' ? 'block' : 'none';
+            const shopModal = document.getElementById('shop');
+            shopModal.style.display = shopModal.style.display === 'none' ? 'block' : 'none';
         }
 
-        function canStartFight() {
-            if (gameState.cooldownActive) {
-                alert('Yeni haklar için bekleme süresinin dolmasını bekleyin!');
-                return false;
-            }
-
-            if (gameState.rights <= 0) {
-                alert('Günlük hakkınız bitti! 1 saat sonra tekrar deneyin.');
-                return false;
-            }
-
-            if (!gameState.selectedWeapon || !gameState.selectedAmmo) {
-                alert('Lütfen önce silah ve mühimmat seçin!');
-                return false;
-            }
-
-            return true;
+        function endBattle() {
+            gameState.activeBattle = false;
+            document.getElementById('battleArea').style.display = 'none';
+            saveGame();
         }
 
         // Oyunu otomatik kaydet
-        setInterval(saveGame, 30000); // Her 30 saniyede bir kaydet
+        setInterval(saveGame, 30000);
     </script>
 </body>
 </html>
