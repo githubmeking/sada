@@ -46,8 +46,7 @@
             font-size: 2em;
             color: white;
             z-index: 100;
-            opacity: 1;
-            transition: opacity 1s ease-out;
+            transition: opacity 0.5s ease-out;
         }
 
         #welcome-screen.hidden {
@@ -63,7 +62,8 @@
             max-width: 800px;
             width: 90%;
             animation: fadeIn 1s ease-out;
-            display: none;
+            opacity: 0; /* Başlangıçta gizli */
+            display: none; /* Başlangıçta gizli */
         }
 
         .resource-container {
@@ -480,16 +480,31 @@
         function showGameScreen() {
             const welcomeScreen = document.getElementById('welcome-screen');
             const gameContainer = document.getElementById('game-container');
+            
+            // Hoşgeldin ekranını 3 saniye sonra gizle
             setTimeout(() => {
-                welcomeScreen.style.display = 'none';
+                welcomeScreen.style.opacity = '0';
+                welcomeScreen.addEventListener('transitionend', () => {
+                    welcomeScreen.style.display = 'none';
+                });
+                
+                // Oyun container'ını göster
                 gameContainer.style.display = 'block';
+                setTimeout(() => {
+                    gameContainer.style.opacity = '1';
+                }, 100);
             }, 3000);
         }
 
         // Oyunu başlat
-        const game = new Game();
-        updateLanguage(document.getElementById('language').value);
-        showGameScreen();
+        document.addEventListener('DOMContentLoaded', () => {
+            const game = new Game();
+            updateLanguage(document.getElementById('language').value);
+            showGameScreen(); // Sayfa yüklendiğinde welcome screen'i göster
+        });
 
         // Her 30 saniyede bir oyun kaydı
         setInterval(() => game.saveGameState(), 30000);
+    </script>
+</body>
+</html>
