@@ -186,49 +186,107 @@
     </style>
 </head>
 <body>
+    <!-- Dil Seçici -->
+    <div id="language-selector" style="position: fixed; top: 10px; right: 10px;">
+        <label for="language">Dil Seçimi:</label>
+        <select id="language">
+            <option value="tr">Türkçe</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+
+    <!-- Karşılama Ekranı -->
     <div id="welcome-screen">
         <div id="welcome-text"></div>
     </div>
 
+    <!-- Oyun Konteyneri -->
     <div id="game-container">
         <div id="level-indicator">Seviye: 1</div>
         
+        <!-- Kaynaklar Konteyneri -->
         <div class="resource-container">
             <div class="resource">
-                <div class="resource-title">Coin</div>
+                <div class="resource-title" data-key="coin">Coin</div>
                 <div id="coin-value" class="resource-value">0</div>
             </div>
             <div class="resource">
-                <div class="resource-title">CPS (Saniyede Coin)</div>
+                <div class="resource-title" data-key="cps">CPS (Saniyede Coin)</div>
                 <div id="cps-value" class="resource-value">0</div>
             </div>
         </div>
 
-        <button id="farm-button">FARM</button>
+        <!-- FARM Butonu -->
+        <button id="farm-button" data-key="farm">FARM</button>
 
+        <!-- Yükseltmeler Konteyneri -->
         <div class="upgrades-container">
-            <button class="upgrade-button" id="click-upgrade">
+            <button class="upgrade-button" id="click-upgrade" data-key="clickUpgrade">
                 Tıklama Güçlendirmesi
                 <span class="upgrade-cost">Maliyet: 10 coin</span>
             </button>
-            <button class="upgrade-button" id="auto-upgrade">
+            <button class="upgrade-button" id="auto-upgrade" data-key="autoUpgrade">
                 Otomatik Toplama
                 <span class="upgrade-cost">Maliyet: 50 coin</span>
             </button>
-            <button class="upgrade-button" id="multiplier-upgrade">
+            <button class="upgrade-button" id="multiplier-upgrade" data-key="multiplierUpgrade">
                 Çarpan Artışı
                 <span class="upgrade-cost">Maliyet: 100 coin</span>
             </button>
         </div>
 
+        <!-- İstatistikler -->
         <div class="stats-container">
-            <h3>İstatistikler</h3>
-            <p>Toplam Tıklama: <span id="total-clicks">0</span></p>
-            <p>Toplam Kazanılan: <span id="total-earned">0</span></p>
+            <h3 data-key="statsTitle">İstatistikler</h3>
+            <p data-key="totalClicks">Toplam Tıklama: <span id="total-clicks">0</span></p>
+            <p data-key="totalEarned">Toplam Kazanılan: <span id="total-earned">0</span></p>
         </div>
     </div>
 
+    <!-- JavaScript -->
     <script>
+        // Çoklu dil desteği metinleri
+        const translations = {
+            tr: {
+                welcome: "Hayal Ettiklerin Kadar Gerçeksin.",
+                level: "Seviye",
+                coin: "Coin",
+                cps: "CPS (Saniyede Coin)",
+                farm: "FARM",
+                clickUpgrade: "Tıklama Güçlendirmesi",
+                autoUpgrade: "Otomatik Toplama",
+                multiplierUpgrade: "Çarpan Artışı",
+                cost: "Maliyet",
+                statsTitle: "İstatistikler",
+                totalClicks: "Toplam Tıklama",
+                totalEarned: "Toplam Kazanılan"
+            },
+            en: {
+                welcome: "As real as you dream.",
+                level: "Level",
+                coin: "Coin",
+                cps: "CPS (Coins per Second)",
+                farm: "FARM",
+                clickUpgrade: "Click Power",
+                autoUpgrade: "Auto Collect",
+                multiplierUpgrade: "Multiplier Boost",
+                cost: "Cost",
+                statsTitle: "Statistics",
+                totalClicks: "Total Clicks",
+                totalEarned: "Total Earned"
+            }
+        };
+
+        // Dil güncelleme fonksiyonu
+        function updateLanguage(lang) {
+            document.getElementById('welcome-text').textContent = translations[lang].welcome;
+            document.getElementById('level-indicator').textContent = `${translations[lang].level}: ${gameState.level}`;
+            document.querySelectorAll('[data-key]').forEach(el => {
+                el.textContent = translations[lang][el.dataset.key];
+            });
+        }
+
+        // Oyun durumu
         let gameState = {
             coins: 0,
             clickPower: 1,
@@ -244,138 +302,73 @@
             }
         };
 
-        // Welcome screen animation
-        const welcomeText = "Hayal Ettiklerin Kadar Gerçeksin.";
-        const welcomeContainer = document.getElementById('welcome-text');
-        
-        welcomeText.split('').forEach((letter, index) => {
-            const span = document.createElement('span');
-            span.textContent = letter;
-            span.className = 'welcome-letter';
-            span.style.animationDelay = `${index * 0.1}s`;
-            welcomeContainer.appendChild(span);
-        });
-
-        setTimeout(() => {
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
-        }, 3000);
-
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
-            document.getElementById('cps-value').textContent = 
-                (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
-            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
-            document.getElementById('total-clicks').textContent = gameState.totalClicks;
-            document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
-            
-            // Update upgrade buttons
-            updateUpgradeButton('click-upgrade', gameState.upgrades.click.cost);
-            updateUpgradeButton('auto-upgrade', gameState.upgrades.auto.cost);
-            updateUpgradeButton('multiplier-upgrade', gameState.upgrades.multiplier.cost);
-        }
-
-        function updateUpgradeButton(id, cost) {
-            const button = document.getElementById(id);
-            button.disabled = gameState.coins < cost;
-            button.querySelector('.upgrade-cost').textContent = `Maliyet: ${cost} coin`;
-        }
-
-        function createFloatingText(x, y, amount) {
-            const text = document.createElement('div');
-            text.className = 'coin-animation';
-            text.textContent = `+${amount}`;
-            text.style.left = `${x}px`;
-            text.style.top = `${y}px`;
-            document.body.appendChild(text);
-            setTimeout(() => text.remove(), 1000);
-        }
-
-        function showAchievement(message) {
-            const achievement = document.createElement('div');
-            achievement.className = 'achievement';
-            achievement.textContent = message;
-            document.body.appendChild(achievement);
-            setTimeout(() => achievement.remove(), 3000);
-        }
-
-        function checkAchievements() {
-            if (gameState.totalClicks === 100) {
-                showAchievement('Başarım: 100 Tıklama!');
+        // Oyun sınıfı
+        class Game {
+            constructor() {
+                this.updateDisplay();
+                this.loadGameState();
+                this.setupEventListeners();
             }
-            if (gameState.totalEarned >= 1000 && gameState.level === 1) {
-                gameState.level++;
-                showAchievement('Seviye Atladın: Seviye 2!');
+
+            updateDisplay() {
+                document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
+                document.getElementById('cps-value').textContent = 
+                    (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
+                document.getElementById('level-indicator').textContent = 
+                    `${translations[document.getElementById('language').value].level}: ${gameState.level}`;
+            }
+
+            setupEventListeners() {
+                document.getElementById('farm-button').addEventListener('click', () => this.farmCoins());
+                document.getElementById('click-upgrade').addEventListener('click', () => this.buyUpgrade('click'));
+                document.getElementById('auto-upgrade').addEventListener('click', () => this.buyUpgrade('auto'));
+                document.getElementById('multiplier-upgrade').addEventListener('click', () => this.buyUpgrade('multiplier'));
+                document.getElementById('language').addEventListener('change', (e) => {
+                    updateLanguage(e.target.value);
+                    this.updateDisplay();
+                });
+            }
+
+            farmCoins() {
+                const earnedCoins = gameState.clickPower * gameState.multiplier;
+                gameState.coins += earnedCoins;
+                gameState.totalEarned += earnedCoins;
+                gameState.totalClicks++;
+                this.updateDisplay();
+            }
+
+            buyUpgrade(type) {
+                const upgrade = gameState.upgrades[type];
+                if (gameState.coins >= upgrade.cost) {
+                    gameState.coins -= upgrade.cost;
+                    if (type === 'click') gameState.clickPower *= 1.5;
+                    if (type === 'auto') gameState.autoCollectPower++;
+                    if (type === 'multiplier') gameState.multiplier *= 1.2;
+                    upgrade.cost *= type === 'multiplier' ? 3 : 2;
+                    this.updateDisplay();
+                }
+            }
+
+            loadGameState() {
+                const savedGame = localStorage.getItem('farmGameSave');
+                if (savedGame) {
+                    gameState = JSON.parse(savedGame);
+                    this.updateDisplay();
+                }
+            }
+
+            saveGameState() {
+                localStorage.setItem('farmGameSave', JSON.stringify(gameState));
             }
         }
 
-        // Click handler
-        document.getElementById('farm-button').addEventListener('click', (e) => {
-            const earnedCoins = gameState.clickPower * gameState.multiplier;
-            gameState.coins += earnedCoins;
-            gameState.totalEarned += earnedCoins;
-            gameState.totalClicks++;
-            
-            createFloatingText(e.clientX, e.clientY, earnedCoins);
-            checkAchievements();
-            updateDisplay();
-        });
+        // Oyunu başlat
+        const game = new Game();
+        updateLanguage(document.getElementById('language').value);
 
-        // Upgrade handlers
-        document.getElementById('click-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.click.cost) {
-                gameState.coins -= gameState.upgrades.click.cost;
-                gameState.clickPower *= 1.5;
-                gameState.upgrades.click.level++;
-                gameState.upgrades.click.cost *= 2;
-                updateDisplay();
-            }
-        });
-
-        document.getElementById('auto-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.auto.cost) {
-                gameState.coins -= gameState.upgrades.auto.cost;
-                gameState.autoCollectPower += 1;
-                gameState.upgrades.auto.level++;
-                gameState.upgrades.auto.cost *= 2;
-                updateDisplay();
-            }
-        });
-
-        document.getElementById('multiplier-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.multiplier.cost) {
-                gameState.coins -= gameState.upgrades.multiplier.cost;
-                gameState.multiplier *= 1.2;
-                gameState.upgrades.multiplier.level++;
-                gameState.upgrades.multiplier.cost *= 3;
-                updateDisplay();
-            }
-        });
-
-        // Auto-collect timer
-        setInterval(() => {
-            const autoEarned = gameState.autoCollectPower * gameState.multiplier;
-            if (autoEarned > 0) {
-                gameState.coins += autoEarned;
-                gameState.totalEarned += autoEarned;
-                updateDisplay();
-            }
-        }, 1000);
-
-        // Initial display update
-        updateDisplay();
-
-        // Save game state periodically
-        setInterval(() => {
-            localStorage.setItem('farmGameSave', JSON.stringify(gameState));
-        }, 30000);
-
-        // Load saved game state
-        const savedGame = localStorage.getItem('farmGameSave');
-        if (savedGame) {
-            gameState = JSON.parse(savedGame);
-            updateDisplay();
-        }
+        // Her 30 saniyede bir oyun kaydı
+        setInterval(() => game.saveGameState(), 30000);
     </script>
 </body>
+
 </html>
