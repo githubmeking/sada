@@ -2,379 +2,334 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gelişmiş Farm Oyunu</title>
+    <title>Canavar Avı Oyunu</title>
     <style>
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.3); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
         body {
             margin: 0;
-            padding: 0;
+            padding: 20px;
             font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            text-align: center;
-            background: linear-gradient(135deg, #83a4d4, #b6fbff);
         }
 
-        #welcome-screen {
-            background: linear-gradient(45deg, #FF8C00, #FFA500);
+        #welcome {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 2em;
-            color: white;
-            z-index: 100;
-        }
-
-        #game-container {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            display: none;
-            animation: fadeIn 1s ease-out;
-            max-width: 800px;
-            width: 90%;
-        }
-
-        .resource-container {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .resource {
-            background: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            min-width: 150px;
-        }
-
-        .resource-title {
-            font-weight: bold;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .resource-value {
-            font-size: 1.2em;
-            color: #2c3e50;
-        }
-
-        .upgrades-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .upgrade-button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .upgrade-button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        .upgrade-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .upgrade-cost {
-            font-size: 0.8em;
-            opacity: 0.8;
-        }
-
-        .achievement {
-            background: #ffd700;
-            color: #000;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px;
-            animation: slideUp 0.5s ease-out;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
             z-index: 1000;
         }
 
-        #farm-button {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            font-size: 18px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        .game-container {
+            display: none;
+            max-width: 800px;
+            width: 100%;
         }
 
-        #farm-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
         }
 
-        .coin-animation {
-            position: absolute;
-            font-size: 20px;
-            animation: floatUp 1s ease-out forwards;
-            pointer-events: none;
-            color: #ffd700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        .left-buttons, .right-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
+        .center-button {
+            align-self: center;
         }
 
-        #level-indicator {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.9);
+        button {
             padding: 10px 20px;
-            border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 1.2em;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            min-width: 150px;
         }
 
-        .stats-container {
+        button:hover {
+            background: #45a049;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+
+        .modal button {
+            margin: 5px;
+            width: 100%;
+        }
+
+        .stats {
             margin-top: 20px;
             padding: 10px;
-            background: rgba(255,255,255,0.8);
-            border-radius: 8px;
+            background: #333;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        #coinDisplay {
+            font-size: 1.5em;
+            color: gold;
+        }
+
+        #battleArea {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #333;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #monsterHealth {
+            width: 100%;
+            height: 30px;
+            background: #555;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        #healthBar {
+            width: 100%;
+            height: 100%;
+            background: #ff4444;
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+
+        .battle-info {
+            margin: 10px 0;
+            font-size: 1.2em;
         }
     </style>
 </head>
 <body>
-    <div id="welcome-screen">
-        <div id="welcome-text"></div>
+    <div id="welcome">
+        Hoş Geldiniz!
     </div>
 
-    <div id="game-container">
-        <div id="level-indicator">Seviye: 1</div>
-        
-        <div class="resource-container">
-            <div class="resource">
-                <div class="resource-title">Coin</div>
-                <div id="coin-value" class="resource-value">0</div>
+    <div class="game-container">
+        <div class="stats">
+            <div id="coinDisplay">Coin: 0</div>
+            <div id="remainingRights">Kalan Hak: 3</div>
+            <div id="timer" style="display: none">Yeni haklar için kalan süre: <span id="timeLeft"></span></div>
+        </div>
+
+        <div class="button-container">
+            <div class="left-buttons">
+                <button onclick="showModal('weaponModal')">Silah</button>
+                <button onclick="showModal('ammoModal')">Mühimmat</button>
             </div>
-            <div class="resource">
-                <div class="resource-title">CPS (Saniyede Coin)</div>
-                <div id="cps-value" class="resource-value">0</div>
+            
+            <button class="center-button" onclick="updateCoins(100)">Coin</button>
+            
+            <div class="right-buttons">
+                <button onclick="showModal('monsterModal')">Canavar</button>
+                <button onclick="showRights()">Kalan Hak</button>
             </div>
         </div>
 
-        <button id="farm-button">FARM</button>
-
-        <div class="upgrades-container">
-            <button class="upgrade-button" id="click-upgrade">
-                Tıklama Güçlendirmesi
-                <span class="upgrade-cost">Maliyet: 10 coin</span>
-            </button>
-            <button class="upgrade-button" id="auto-upgrade">
-                Otomatik Toplama
-                <span class="upgrade-cost">Maliyet: 50 coin</span>
-            </button>
-            <button class="upgrade-button" id="multiplier-upgrade">
-                Çarpan Artışı
-                <span class="upgrade-cost">Maliyet: 100 coin</span>
-            </button>
+        <div id="battleArea">
+            <div class="battle-info">
+                <div>Seçili Silah: <span id="currentWeapon">Yok</span></div>
+                <div>Canavar Tipi: <span id="monsterType">Yok</span></div>
+                <div>Canavar Canı: <span id="currentHealth">0</span> / <span id="maxHealth">0</span></div>
+            </div>
+            <div id="monsterHealth">
+                <div id="healthBar"></div>
+            </div>
+            <button onclick="shoot()" id="shootButton">Ateş Et!</button>
         </div>
 
-        <div class="stats-container">
-            <h3>İstatistikler</h3>
-            <p>Toplam Tıklama: <span id="total-clicks">0</span></p>
-            <p>Toplam Kazanılan: <span id="total-earned">0</span></p>
+        <div id="weaponModal" class="modal">
+            <button onclick="selectWeapon('Ağır Makineli', 50)">Ağır Makineli</button>
+            <button onclick="selectWeapon('Pompalı', 5)">Pompalı</button>
+            <button onclick="selectWeapon('Tabanca', 2)">Tabanca</button>
+            <button onclick="selectWeapon('Tüfek', 20)">Tüfek</button>
+            <button onclick="closeModal('weaponModal')">Kapat</button>
+        </div>
+
+        <div id="ammoModal" class="modal">
+            <button onclick="selectAmmo('Tabanca Mermisi')">Tabanca Mermisi</button>
+            <button onclick="selectAmmo('Tüfek Mermisi')">Tüfek Mermisi</button>
+            <button onclick="selectAmmo('Ağır Silah Mermisi')">Ağır Silah Mermisi</button>
+            <button onclick="closeModal('ammoModal')">Kapat</button>
+        </div>
+
+        <div id="monsterModal" class="modal">
+            <button onclick="startFight('Kolay', 3000)">Kolay (Can: 3000)</button>
+            <button onclick="startFight('Kolay-Orta', 9000)">Kolay-Orta (Can: 9000)</button>
+            <button onclick="startFight('Orta', 27000)">Orta (Can: 27000)</button>
+            <button onclick="startFight('Zor', 81000)">Zor (Can: 81000)</button>
+            <button onclick="closeModal('monsterModal')">Kapat</button>
         </div>
     </div>
 
     <script>
-        let gameState = {
-            coins: 0,
-            clickPower: 1,
-            autoCollectPower: 0,
-            multiplier: 1,
-            level: 1,
-            totalClicks: 0,
-            totalEarned: 0,
-            upgrades: {
-                click: { level: 1, cost: 10 },
-                auto: { level: 0, cost: 50 },
-                multiplier: { level: 1, cost: 100 }
-            }
-        };
+        let coins = 0;
+        let rights = 3;
+        let cooldownActive = false;
+        let selectedWeapon = null;
+        let selectedAmmo = null;
+        let weaponDamage = 0;
+        let currentMonsterHealth = 0;
+        let maxMonsterHealth = 0;
+        let currentMonsterType = null;
+        let activeBattle = false;
 
-        // Welcome screen animation
-        const welcomeText = "Hoşgeldiniz!";
-        const welcomeContainer = document.getElementById('welcome-text');
-        
-        welcomeText.split('').forEach((letter, index) => {
-            const span = document.createElement('span');
-            span.textContent = letter;
-            span.className = 'welcome-letter';
-            span.style.animationDelay = `${index * 0.1}s`;
-            welcomeContainer.appendChild(span);
-        });
-
+        // Hoş geldin ekranını 3 saniye sonra kaldır
         setTimeout(() => {
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
+            document.getElementById('welcome').style.display = 'none';
+            document.querySelector('.game-container').style.display = 'block';
         }, 3000);
 
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
-            document.getElementById('cps-value').textContent = 
-                (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
-            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
-            document.getElementById('total-clicks').textContent = gameState.totalClicks;
-            document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function selectWeapon(weapon, damage) {
+            selectedWeapon = weapon;
+            weaponDamage = damage;
+            document.getElementById('currentWeapon').textContent = weapon;
+            alert(`${weapon} seçildi! Her atışta ${damage} hasar verecek!`);
+            closeModal('weaponModal');
+        }
+
+        function selectAmmo(ammo) {
+            selectedAmmo = ammo;
+            alert(`${ammo} seçildi!`);
+            closeModal('ammoModal');
+        }
+
+        function updateCoins(amount) {
+            coins += amount;
+            document.getElementById('coinDisplay').textContent = `Coin: ${coins}`;
+        }
+
+        function showRights() {
+            alert(`Kalan hak: ${rights}`);
+        }
+
+        function startCooldown() {
+            cooldownActive = true;
+            rights = 0;
+            document.getElementById('remainingRights').textContent = `Kalan Hak: ${rights}`;
+            document.getElementById('timer').style.display = 'block';
             
-            // Update upgrade buttons
-            updateUpgradeButton('click-upgrade', gameState.upgrades.click.cost);
-            updateUpgradeButton('auto-upgrade', gameState.upgrades.auto.cost);
-            updateUpgradeButton('multiplier-upgrade', gameState.upgrades.multiplier.cost);
+            let timeLeft = 3600; // 1 saat
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timeLeft').textContent = 
+                    `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    cooldownActive = false;
+                    rights = 3;
+                    document.getElementById('remainingRights').textContent = `Kalan Hak: ${rights}`;
+                    document.getElementById('timer').style.display = 'none';
+                }
+            }, 1000);
         }
 
-        function updateUpgradeButton(id, cost) {
-            const button = document.getElementById(id);
-            button.disabled = gameState.coins < cost;
-            button.querySelector('.upgrade-cost').textContent = `Maliyet: ${cost} coin`;
-        }
-
-        function createFloatingText(x, y, amount) {
-            const text = document.createElement('div');
-            text.className = 'coin-animation';
-            text.textContent = `+${amount}`;
-            text.style.left = `${x}px`;
-            text.style.top = `${y}px`;
-            document.body.appendChild(text);
-            setTimeout(() => text.remove(), 1000);
-        }
-
-        function showAchievement(message) {
-            const achievement = document.createElement('div');
-            achievement.className = 'achievement';
-            achievement.textContent = message;
-            document.body.appendChild(achievement);
-            setTimeout(() => achievement.remove(), 3000);
-        }
-
-        function checkAchievements() {
-            if (gameState.totalClicks === 100) {
-                showAchievement('Başarım: 100 Tıklama!');
+        function startFight(difficulty, health) {
+            if (cooldownActive) {
+                alert('Yeni haklar için bekleme süresinin dolmasını bekleyin!');
+                return;
             }
-            if (gameState.totalEarned >= 1000 && gameState.level === 1) {
-                gameState.level++;
-                showAchievement('Seviye Atladın: Seviye 2!');
+
+            if (rights <= 0) {
+                startCooldown();
+                alert('Günlük hakkınız bitti! 1 saat sonra tekrar deneyin.');
+                return;
             }
+
+            if (!selectedWeapon || !selectedAmmo) {
+                alert('Lütfen önce silah ve mühimmat seçin!');
+                return;
+            }
+
+            currentMonsterType = difficulty;
+            currentMonsterHealth = health;
+            maxMonsterHealth = health;
+            document.getElementById('monsterType').textContent = difficulty;
+            document.getElementById('currentHealth').textContent = health;
+            document.getElementById('maxHealth').textContent = health;
+            document.getElementById('healthBar').style.width = '100%';
+            document.getElementById('battleArea').style.display = 'block';
+            activeBattle = true;
+            closeModal('monsterModal');
+
+            updateHealthBar();
         }
 
-        // Click handler
-        document.getElementById('farm-button').addEventListener('click', (e) => {
-            const earnedCoins = gameState.clickPower * gameState.multiplier;
-            gameState.coins += earnedCoins;
-            gameState.totalEarned += earnedCoins;
-            gameState.totalClicks++;
+        function shoot() {
+            if (!activeBattle) {
+                alert('Lütfen önce bir canavar seçin!');
+                return;
+            }
+
+            currentMonsterHealth -= weaponDamage;
+            if (currentMonsterHealth < 0) currentMonsterHealth = 0;
             
-            createFloatingText(e.clientX, e.clientY, earnedCoins);
-            checkAchievements();
-            updateDisplay();
-        });
+            document.getElementById('currentHealth').textContent = currentMonsterHealth;
+            updateHealthBar();
 
-        // Upgrade handlers
-        document.getElementById('click-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.click.cost) {
-                gameState.coins -= gameState.upgrades.click.cost;
-                gameState.clickPower *= 1.5;
-                gameState.upgrades.click.level++;
-                gameState.upgrades.click.cost *= 2;
-                updateDisplay();
+            if (currentMonsterHealth <= 0) {
+                const reward = Math.floor(maxMonsterHealth / 100);
+                updateCoins(reward);
+                alert(`Tebrikler! Canavarı yendiniz!\nKazanılan coin: ${reward}`);
+                endBattle();
+                rights--;
+                document.getElementById('remainingRights').textContent = `Kalan Hak: ${rights}`;
+                if (rights <= 0) {
+                    startCooldown();
+                }
             }
-        });
+        }
 
-        document.getElementById('auto-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.auto.cost) {
-                gameState.coins -= gameState.upgrades.auto.cost;
-                gameState.autoCollectPower += 1;
-                gameState.upgrades.auto.level++;
-                gameState.upgrades.auto.cost *= 2;
-                updateDisplay();
-            }
-        });
+        function updateHealthBar() {
+            const percentage = (currentMonsterHealth / maxMonsterHealth) * 100;
+            document.getElementById('healthBar').style.width = percentage + '%';
+        }
 
-        document.getElementById('multiplier-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.multiplier.cost) {
-                gameState.coins -= gameState.upgrades.multiplier.cost;
-                gameState.multiplier *= 1.2;
-                gameState.upgrades.multiplier.level++;
-                gameState.upgrades.multiplier.cost *= 3;
-                updateDisplay();
-            }
-        });
-
-        // Auto-collect timer
-        setInterval(() => {
-            const autoEarned = gameState.autoCollectPower * gameState.multiplier;
-            if (autoEarned > 0) {
-                gameState.coins += autoEarned;
-                gameState.totalEarned += autoEarned;
-                updateDisplay();
-            }
-        }, 1000);
-
-        // Initial display update
-        updateDisplay();
-
-        // Save game state periodically
-        setInterval(() => {
-            localStorage.setItem('farmGameSave', JSON.stringify(gameState));
-        }, 30000);
-
-        // Load saved game state
-        const savedGame = localStorage.getItem('farmGameSave');
-        if (savedGame) {
-            gameState = JSON.parse(savedGame);
-            updateDisplay();
+        function endBattle() {
+            activeBattle = false;
+            document.getElementById('battleArea').style.display = 'none';
+            currentMonsterHealth = 0;
+            maxMonsterHealth = 0;
+            currentMonsterType = null;
         }
     </script>
 </body>
