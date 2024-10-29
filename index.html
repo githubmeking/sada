@@ -46,6 +46,13 @@
             font-size: 2em;
             color: white;
             z-index: 100;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+
+        #welcome-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         #game-container {
@@ -56,6 +63,7 @@
             max-width: 800px;
             width: 90%;
             animation: fadeIn 1s ease-out;
+            display: none;
         }
 
         .resource-container {
@@ -182,10 +190,20 @@
             background: rgba(255,255,255,0.8);
             border-radius: 8px;
         }
+
+        #language-selector {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            z-index: 101;
+        }
     </style>
 </head>
 <body>
-    <div id="language-selector" style="position: fixed; top: 10px; right: 10px;">
+    <div id="language-selector">
         <label for="language">Dil Seçimi:</label>
         <select id="language">
             <option value="tr">Türkçe</option>
