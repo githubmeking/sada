@@ -203,7 +203,8 @@
     </style>
 </head>
 <body>
-    <div id="language-selector">
+    <!-- Dil Seçici -->
+    <div id="language-selector" style="position: fixed; top: 10px; right: 10px;">
         <label for="language">Dil Seçimi:</label>
         <select id="language">
             <option value="tr">Türkçe</option>
@@ -211,13 +212,16 @@
         </select>
     </div>
 
+    <!-- Karşılama Ekranı -->
     <div id="welcome-screen">
         <div id="welcome-text"></div>
     </div>
 
-    <div id="game-container">
+    <!-- Oyun Konteyneri -->
+    <div id="game-container" style="display: none;">
         <div id="level-indicator">Seviye: 1</div>
         
+        <!-- Kaynaklar Konteyneri -->
         <div class="resource-container">
             <div class="resource">
                 <div class="resource-title" data-key="coin">Coin</div>
@@ -229,8 +233,10 @@
             </div>
         </div>
 
+        <!-- FARM Butonu -->
         <button id="farm-button" data-key="farm">FARM</button>
 
+        <!-- Yükseltmeler Konteyneri -->
         <div class="upgrades-container">
             <button class="upgrade-button" id="click-upgrade" data-key="clickUpgrade">
                 Tıklama Güçlendirmesi
@@ -246,6 +252,7 @@
             </button>
         </div>
 
+        <!-- İstatistikler -->
         <div class="stats-container">
             <h3 data-key="statsTitle">İstatistikler</h3>
             <p data-key="totalClicks">Toplam Tıklama: <span id="total-clicks">0</span></p>
@@ -253,7 +260,9 @@
         </div>
     </div>
 
+    <!-- JavaScript -->
     <script>
+        // Çoklu dil desteği metinleri
         const translations = {
             tr: {
                 welcome: "Hayal Ettiklerin Kadar Gerçeksin.",
@@ -285,6 +294,26 @@
             }
         };
 
+        // Dil güncelleme fonksiyonu
+        function updateLanguage(lang) {
+            document.getElementById('welcome-text').textContent = translations[lang].welcome;
+            document.getElementById('level-indicator').textContent = `${translations[lang].level}: ${gameState.level}`;
+            document.querySelectorAll('[data-key]').forEach(el => {
+                el.textContent = translations[lang][el.dataset.key];
+            });
+        }
+
+        // Karşılama ekranı animasyonu ve kapanışı
+        function showGameScreen() {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const gameContainer = document.getElementById('game-container');
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                gameContainer.style.display = 'block';
+            }, 3000); // 3 saniye sonra karşılama ekranını gizle ve oyunu göster
+        }
+
+        // Oyun durumu
         let gameState = {
             coins: 0,
             clickPower: 1,
@@ -300,12 +329,12 @@
             }
         };
 
+        // Oyun sınıfı
         class Game {
             constructor() {
                 this.updateDisplay();
                 this.loadGameState();
                 this.setupEventListeners();
-                this.startAutoCollect();
             }
 
             updateDisplay() {
@@ -314,18 +343,12 @@
                     (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
                 document.getElementById('level-indicator').textContent = 
                     `${translations[document.getElementById('language').value].level}: ${gameState.level}`;
-                
                 document.getElementById('total-clicks').textContent = gameState.totalClicks;
                 document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
-
-                this.updateUpgradeButtons();
             }
 
             setupEventListeners() {
-                document.getElementById('farm-button').addEventListener('click', () => {
-                    this.farmCoins();
-                    this.createFloatingCoin();
-                });
+                document.getElementById('farm-button').addEventListener('click', (e) => this.farmCoins(e));
                 document.getElementById('click-upgrade').addEventListener('click', () => this.buyUpgrade('click'));
                 document.getElementById('auto-upgrade').addEventListener('click', () => this.buyUpgrade('auto'));
                 document.getElementById('multiplier-upgrade').addEventListener('click', () => this.buyUpgrade('multiplier'));
@@ -335,122 +358,30 @@
                 });
             }
 
-            farmCoins() {
+            farmCoins(event) {
                 const earnedCoins = gameState.clickPower * gameState.multiplier;
                 gameState.coins += earnedCoins;
                 gameState.totalEarned += earnedCoins;
                 gameState.totalClicks++;
                 this.updateDisplay();
-                this.checkAchievements();
-            }
-
-            startAutoCollect() {
-                setInterval(() => {
-                    if (gameState.autoCollectPower > 0) {
-                        const autoEarned = gameState.autoCollectPower * gameState.multiplier;
-                        gameState.coins += autoEarned;
-                        gameState.totalEarned += autoEarned;
-                        this.updateDisplay();
-                    }
-                }, 1000);
-            }
-
-            createFloatingCoin() {
-                const farmButton = document.getElementById('farm-button');
-                const coin = document.createElement('div');
-                coin.className = 'coin-animation';
-                coin.textContent = `+${Math.floor(gameState.clickPower * gameState.multiplier)}`;
-                coin.style.left = `${farmButton.offsetLeft + farmButton.offsetWidth / 2}px`;
-                coin.style.top = `${farmButton.offsetTop}px`;
-                document.body.appendChild(coin);
-                setTimeout(() => coin.remove(), 1000);
             }
 
             buyUpgrade(type) {
                 const upgrade = gameState.upgrades[type];
                 if (gameState.coins >= upgrade.cost) {
                     gameState.coins -= upgrade.cost;
-                    upgrade.level++;
-                    
-                    switch(type) {
-                        case 'click':
-                            gameState.clickPower *= 1.5;
-                            break;
-                        case 'auto':
-                            gameState.autoCollectPower++;
-                            break;
-                        case 'multiplier':
-                            gameState.multiplier *= 1.2;
-                            break;
-                    }
-                    
+                    if (type === 'click') gameState.clickPower *= 1.5;
+                    if (type === 'auto') gameState.autoCollectPower++;
+                    if (type === 'multiplier') gameState.multiplier *= 1.2;
                     upgrade.cost *= type === 'multiplier' ? 3 : 2;
                     this.updateDisplay();
-                    this.checkLevelUp();
                 }
-            }
-
-            updateUpgradeButtons() {
-                const types = ['click', 'auto', 'multiplier'];
-                types.forEach(type => {
-                    const button = document.getElementById(`${type}-upgrade`);
-                    const upgrade = gameState.upgrades[type];
-                    button.disabled = gameState.coins < upgrade.cost;
-                    const costSpan = button.querySelector('.upgrade-cost');
-                    costSpan.textContent = `${translations[document.getElementById('language').value].cost}: ${Math.floor(upgrade.cost)} coin`;
-                });
-            }
-
-            checkLevelUp() {
-                const totalUpgrades = Object.values(gameState.upgrades)
-                    .reduce((sum, upgrade) => sum + upgrade.level, 0);
-                const newLevel = Math.floor(totalUpgrades / 3) + 1;
-                
-                if (newLevel > gameState.level) {
-                    gameState.level = newLevel;
-                    this.showAchievement(`Level Up! ${gameState.level}`);
-                }
-            }
-
-            checkAchievements() {
-                const milestones = {
-                    clicks: [100, 500, 1000, 5000],
-                    earnings: [1000, 10000, 100000, 1000000]
-                };
-
-                milestones.clicks.forEach(milestone => {
-                    if (gameState.totalClicks >= milestone && !gameState[`achievement_clicks_${milestone}`]) {
-                        gameState[`achievement_clicks_${milestone}`] = true;
-                        this.showAchievement(`${milestone} Clicks!`);
-                    }
-                });
-
-                milestones.earnings.forEach(milestone => {
-                    if (gameState.totalEarned >= milestone && !gameState[`achievement_earned_${milestone}`]) {
-                        gameState[`achievement_earned_${milestone}`] = true;
-                        this.showAchievement(`${milestone} Coins Earned!`);
-                    }
-                });
-            }
-
-            showAchievement(text) {
-                const achievement = document.createElement('div');
-                achievement.className = 'achievement';
-                achievement.textContent = text;
-                document.body.appendChild(achievement);
-                setTimeout(() => achievement.remove(), 3000);
             }
 
             loadGameState() {
                 const savedGame = localStorage.getItem('farmGameSave');
                 if (savedGame) {
-                    const loadedState = JSON.parse(savedGame);
-                    gameState = {
-                        ...gameState,
-                        ...loadedState,
-                        totalClicks: loadedState.totalClicks || 0,
-                        totalEarned: loadedState.totalEarned || 0
-                    };
+                    gameState = JSON.parse(savedGame);
                     this.updateDisplay();
                 }
             }
@@ -460,51 +391,16 @@
             }
         }
 
-        function updateLanguage(lang) {
-            document.getElementById('welcome-text').textContent = translations[lang].welcome;
-            document.getElementById('level-indicator').textContent = `${translations[lang].level}: ${gameState.level}`;
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const key = el.dataset.key;
-                if (translations[lang][key]) {
-                    if (key === 'totalClicks' || key === 'totalEarned') {
-                        const value = el.querySelector('span').textContent;
-                        el.textContent = `${translations[lang][key]}: `;
-                        el.appendChild(document.createElement('span')).textContent = value;
-                    } else {
-                        el.textContent = translations[lang][key];
-                    }
-                }
-            });
-        }
-
-        function showGameScreen() {
-            const welcomeScreen = document.getElementById('welcome-screen');
-            const gameContainer = document.getElementById('game-container');
-            
-            // Hoşgeldin ekranını 3 saniye sonra gizle
-            setTimeout(() => {
-                welcomeScreen.style.opacity = '0';
-                welcomeScreen.addEventListener('transitionend', () => {
-                    welcomeScreen.style.display = 'none';
-                });
-                
-                // Oyun container'ını göster
-                gameContainer.style.display = 'block';
-                setTimeout(() => {
-                    gameContainer.style.opacity = '1';
-                }, 100);
-            }, 3000);
-        }
-
         // Oyunu başlat
-        document.addEventListener('DOMContentLoaded', () => {
-            const game = new Game();
-            updateLanguage(document.getElementById('language').value);
-            showGameScreen(); // Sayfa yüklendiğinde welcome screen'i göster
-        });
+        const game = new Game();
+        updateLanguage(document.getElementById('language').value);
+
+        // Karşılama ekranını gizleyip oyun ekranını göster
+        showGameScreen();
 
         // Her 30 saniyede bir oyun kaydı
         setInterval(() => game.saveGameState(), 30000);
     </script>
 </body>
+
 </html>
