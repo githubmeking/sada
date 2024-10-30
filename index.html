@@ -6,23 +6,12 @@
     <title>Gelişmiş Farm Oyunu</title>
     <style>
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.3); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes welcomeLetter {
-            0% { opacity: 0; transform: translateY(50px); }
+            0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
         }
 
@@ -39,7 +28,7 @@
         }
 
         #welcome-screen {
-            background: black;
+            background: rgba(0, 0, 0, 0.9);
             position: fixed;
             top: 0;
             left: 0;
@@ -114,25 +103,11 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
         }
 
         .upgrade-button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
-        }
-
-        .upgrade-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .upgrade-cost {
-            font-size: 0.8em;
-            opacity: 0.8;
         }
 
         #farm-button {
@@ -145,28 +120,15 @@
             cursor: pointer;
             transition: all 0.3s;
             margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .coin-animation {
             position: fixed;
             pointer-events: none;
-            animation: slideUp 1s ease-out forwards;
+            animation: fadeIn 1s ease-out forwards;
             color: gold;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .achievement {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            animation: fadeIn 0.3s ease-out;
         }
 
         #level-progress {
@@ -184,12 +146,12 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+
         .referral-container {
             background: #f0f8ff;
             padding: 15px;
             border-radius: 10px;
             margin: 20px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .referral-link {
@@ -199,34 +161,6 @@
             border-radius: 5px;
             margin: 10px 0;
             word-break: break-all;
-        }
-
-        .copy-button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 5px;
-        }
-
-        .copy-button:hover {
-            background: #45a049;
-        }
-
-        .referral-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .referral-stat-item {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
         }
     </style>
 </head>
@@ -270,31 +204,15 @@
             <h3>İstatistikler</h3>
             <p>Toplam Tıklama: <span id="total-clicks">0</span></p>
             <p>Toplam Kazanılan: <span id="total-earned">0</span></p>
-            <p>Mevcut Seviye: <span id="current-level">1</span></p>
             <p>Sıradaki Seviyeye Kalan: <span id="coins-to-next-level">1000</span> coin</p>
             <div id="level-progress">
                 <div id="level-progress-bar"></div>
-                <div class="referral-container">
+            </div>
+            
+            <div class="referral-container">
                 <h4>Referans Sistemi</h4>
-                <div class="referral-link" id="referral-link">
-                    https://t.me/no1livebot?start=6840212721
-                </div>
-                <button class="copy-button" onclick="copyReferralLink()">Referans Linkini Kopyala</button>
-                
-                <div class="referral-stats">
-                    <div class="referral-stat-item">
-                        <div>Toplam Davet</div>
-                        <div id="total-referrals">0</div>
-                    </div>
-                    <div class="referral-stat-item">
-                        <div>Aktif Referanslar</div>
-                        <div id="active-referrals">0</div>
-                    </div>
-                    <div class="referral-stat-item">
-                        <div>Kazanılan Bonus</div>
-                        <div id="referral-bonus">0</div>
-                    </div>
-                </div>
+                <div class="referral-link" id="referral-link"></div>
+                <button onclick="copyReferralLink()" class="upgrade-button">Referans Linkini Kopyala</button>
             </div>
         </div>
     </div>
@@ -313,107 +231,75 @@
                 auto: { level: 0, cost: 50 },
                 multiplier: { level: 1, cost: 100 }
             },
-            levelThresholds: [0, 1000, 5000, 10000, 50000]
-            referrals: {
-                total: 0,
-                active: 0,
-                bonus: 0,
-                referralId: '6840212721', // Varsayılan referans ID'si
-                bonusMultiplier: 0.1 // Her referans için %10 bonus
-            }
+            levelThresholds: [0, 1000, 5000, 10000, 50000],
+            referralId: '6840212721'
         };
 
-        function getCoinsToNextLevel() {
-            const currentLevel = gameState.level;
-            if (currentLevel >= gameState.levelThresholds.length - 1) {
-                return 0;
-            }
-            const nextThreshold = gameState.levelThresholds[currentLevel];
-            return nextThreshold - gameState.totalEarned;
-        }
+        // Welcome screen animation
+        const welcomeText = "Hoş Geldiniz!";
+        const welcomeContainer = document.getElementById('welcome-text');
+        
+        welcomeText.split('').forEach((letter, index) => {
+            const span = document.createElement('span');
+            span.textContent = letter;
+            span.className = 'welcome-letter';
+            span.style.animationDelay = `${index * 0.1}s`;
+            welcomeContainer.appendChild(span);
+        });
 
-        function getLevelProgress() {
-            const currentLevel = gameState.level;
-            if (currentLevel >= gameState.levelThresholds.length - 1) {
-                return 100;
-            }
-            const currentThreshold = gameState.levelThresholds[currentLevel - 1];
-            const nextThreshold = gameState.levelThresholds[currentLevel];
-            const progress = ((gameState.totalEarned - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
-            return Math.min(Math.max(progress, 0), 100);
-        }
+        // Welcome screen'i 3 saniye sonra kaldır
+        setTimeout(() => {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+        }, 3000);
 
         function updateDisplay() {
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
             document.getElementById('cps-value').textContent = 
                 (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
             
+            // Update upgrade buttons
             const clickUpgrade = document.getElementById('click-upgrade');
             const autoUpgrade = document.getElementById('auto-upgrade');
             const multiplierUpgrade = document.getElementById('multiplier-upgrade');
 
-            clickUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
-            autoUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
-            multiplierUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.multiplier.cost} coin`;
-        
+            clickUpgrade.querySelector('.upgrade-cost').textContent = 
+                `Maliyet: ${gameState.upgrades.click.cost} coin`;
+            autoUpgrade.querySelector('.upgrade-cost').textContent = 
+                `Maliyet: ${gameState.upgrades.auto.cost} coin`;
+            multiplierUpgrade.querySelector('.upgrade-cost').textContent = 
+                `Maliyet: ${gameState.upgrades.multiplier.cost} coin`;
+
             clickUpgrade.disabled = gameState.coins < gameState.upgrades.click.cost;
             autoUpgrade.disabled = gameState.coins < gameState.upgrades.auto.cost;
             multiplierUpgrade.disabled = gameState.coins < gameState.upgrades.multiplier.cost;
-            document.getElementById('total-referrals').textContent = gameState.referrals.total;
-            document.getElementById('active-referrals').textContent = gameState.referrals.active;
-            document.getElementById('referral-bonus').textContent = gameState.referrals.bonus.toFixed(1);
-            document.getElementById('total-referrals').textContent = gameState.referrals.total;
-            document.getElementById('active-referrals').textContent = gameState.referrals.active;
-            document.getElementById('referral-bonus').textContent = gameState.referrals.bonus.toFixed(1);
-            
-            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
+
+            // Update stats
             document.getElementById('total-clicks').textContent = gameState.totalClicks;
             document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
-            document.getElementById('current-level').textContent = gameState.level;
+            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
+            
+            // Update referral link
             document.getElementById('referral-link').textContent = 
-                `https://t.me/no1livebot?start=${gameState.referrals.referralId}`;
-        
-            const coinsToNext = getCoinsToNextLevel();
-            document.getElementById('coins-to-next-level').textContent = Math.ceil(coinsToNext);
+                `https://t.me/no1livebot?start=${gameState.referralId}`;
+
+            // Update level progress
+            const currentLevel = gameState.level;
+            const currentThreshold = gameState.levelThresholds[currentLevel - 1];
+            const nextThreshold = gameState.levelThresholds[currentLevel];
+            const progress = ((gameState.totalEarned - currentThreshold) / 
+                (nextThreshold - currentThreshold)) * 100;
             
-            const progress = getLevelProgress();
-            document.getElementById('level-progress-bar').style.width = `${progress}%`;
-            
+            document.getElementById('level-progress-bar').style.width = `${Math.min(progress, 100)}%`;
+            document.getElementById('coins-to-next-level').textContent = 
+                Math.ceil(nextThreshold - gameState.totalEarned);
         }
+
         function copyReferralLink() {
             const referralLink = document.getElementById('referral-link').textContent;
-            navigator.clipboard.writeText(referralLink).then(() => {
-                alert('Referans linki kopyalandı!');
-            }).catch(err => {
-                console.error('Kopyalama hatası:', err);
-            });
-        }
-        function calculateReferralBonus(amount) {
-            return amount * gameState.referrals.bonusMultiplier * gameState.referrals.active;
-        }
-
-        // Farm butonuna tıklama olayını güncelliyoruz
-        document.getElementById('farm-button').addEventListener('click', (e) => {
-            const baseEarning = gameState.clickPower * gameState.multiplier;
-            const referralBonus = calculateReferralBonus(baseEarning);
-            const totalEarning = baseEarning + referralBonus;
-            
-            gameState.coins += totalEarning;
-            gameState.totalEarned += totalEarning;
-            gameState.referrals.bonus += referralBonus;
-            gameState.totalClicks++;
-            
-            createFloatingText(e.clientX, e.clientY, Math.floor(totalEarning));
-            checkAchievements();
-            updateDisplay();
-        });
-
-        function showAchievement(message) {
-            const achievement = document.createElement('div');
-            achievement.className = 'achievement';
-            achievement.textContent = message;
-            document.body.appendChild(achievement);
-            setTimeout(() => achievement.remove(), 3000);
+            navigator.clipboard.writeText(referralLink)
+                .then(() => alert('Referans linki kopyalandı!'))
+                .catch(err => console.error('Kopyalama hatası:', err));
         }
 
         function createFloatingText(x, y, amount) {
@@ -427,32 +313,22 @@
         }
 
         function checkLevelUp() {
-            while (gameState.level < gameState.levelThresholds.length - 1) {
-                const nextThreshold = gameState.levelThresholds[gameState.level];
-                if (gameState.totalEarned >= nextThreshold) {
-                    gameState.level++;
-                    showAchievement(`Seviye Atladın: Seviye ${gameState.level}!`);
-                } else {
-                    break;
-                }
+            while (gameState.level < gameState.levelThresholds.length &&
+                   gameState.totalEarned >= gameState.levelThresholds[gameState.level]) {
+                gameState.level++;
+                alert(`Tebrikler! Seviye ${gameState.level}'e ulaştınız!`);
             }
         }
 
-        function checkAchievements() {
-            if (gameState.totalClicks === 100) {
-                showAchievement('Başarım: 100 Tıklama!');
-            }
-            checkLevelUp();
-        }
-
+        // Event Listeners
         document.getElementById('farm-button').addEventListener('click', (e) => {
             const earnedCoins = gameState.clickPower * gameState.multiplier;
             gameState.coins += earnedCoins;
             gameState.totalEarned += earnedCoins;
             gameState.totalClicks++;
             
-            createFloatingText(e.clientX, e.clientY, Math.floor(earnedCoins));
-            checkAchievements();
+            createFloatingText(e.clientX, e.clientY, earnedCoins);
+            checkLevelUp();
             updateDisplay();
         });
 
@@ -460,8 +336,7 @@
             if (gameState.coins >= gameState.upgrades.click.cost) {
                 gameState.coins -= gameState.upgrades.click.cost;
                 gameState.clickPower *= 1.5;
-                gameState.upgrades.click.level++;
-                gameState.upgrades.click.cost = Math.floor(gameState.upgrades.click.cost * 2);
+                gameState.upgrades.click.cost = Math.floor(gameState.upgrades.click.cost * 1.5);
                 updateDisplay();
             }
         });
@@ -470,8 +345,7 @@
             if (gameState.coins >= gameState.upgrades.auto.cost) {
                 gameState.coins -= gameState.upgrades.auto.cost;
                 gameState.autoCollectPower += 1;
-                gameState.upgrades.auto.level++;
-                gameState.upgrades.auto.cost = Math.floor(gameState.upgrades.auto.cost * 2);
+                gameState.upgrades.auto.cost = Math.floor(gameState.upgrades.auto.cost * 1.5);
                 updateDisplay();
             }
         });
@@ -480,71 +354,40 @@
             if (gameState.coins >= gameState.upgrades.multiplier.cost) {
                 gameState.coins -= gameState.upgrades.multiplier.cost;
                 gameState.multiplier *= 1.2;
-                gameState.upgrades.multiplier.level++;
-                gameState.upgrades.multiplier.cost = Math.floor(gameState.upgrades.multiplier.cost * 3);
+                gameState.upgrades.multiplier.cost = Math.floor(gameState.upgrades.multiplier.cost * 2);
                 updateDisplay();
             }
         });
 
+        // Auto collect timer
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
-                const baseEarning = gameState.autoCollectPower * gameState.multiplier;
-                const referralBonus = calculateReferralBonus(baseEarning);
-                const totalEarning = baseEarning + referralBonus;
-                
-                gameState.coins += totalEarning;
-                gameState.totalEarned += totalEarning;
-                gameState.referrals.bonus += referralBonus;
-                
+                const earnedCoins = gameState.autoCollectPower * gameState.multiplier;
+                gameState.coins += earnedCoins;
+                gameState.totalEarned += earnedCoins;
                 checkLevelUp();
                 updateDisplay();
             }
         }, 1000);
 
-        setInterval(() => {
-            if (gameState.autoCollectPower > 0) {
-                const autoEarned = gameState.autoCollectPower * gameState.multiplier;
-                gameState.coins += autoEarned;
-                gameState.totalEarned += autoEarned;
-                checkLevelUp();
-                updateDisplay();
-            }
-        }, 1000);
-
-        // Welcome screen animation ve geçiş
-        const welcomeText = "Hayal ettiklerin kadar gerçeksin!";
-        const welcomeContainer = document.getElementById('welcome-text');
-        
-        welcomeText.split('').forEach((letter, index) => {
-            const span = document.createElement('span');
-            span.textContent = letter;
-            span.className = 'welcome-letter';
-            span.style.animationDelay = `${index * 0.2}s`;
-            welcomeContainer.appendChild(span);
-        });
-
-        setTimeout(() => {
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
-        }, 10000);
-
-        // Load saved game state
+        // Load saved game
         const savedGame = localStorage.getItem('farmGameSave');
         if (savedGame) {
             try {
                 const parsed = JSON.parse(savedGame);
                 gameState = {...gameState, ...parsed};
+                updateDisplay();
             } catch (e) {
                 console.error('Save game yüklenirken hata oluştu:', e);
             }
         }
 
-        // Save game state periodically
+        // Auto save
         setInterval(() => {
             localStorage.setItem('farmGameSave', JSON.stringify(gameState));
         }, 30000);
 
-        // İlk görüntü güncellemesi
+        // Initial display update
         updateDisplay();
     </script>
 </body>
