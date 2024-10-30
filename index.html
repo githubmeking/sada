@@ -68,11 +68,18 @@
         }
 
         .resource {
-            background: white;
             padding: 10px 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             min-width: 150px;
+        }
+
+        #coin-resource {
+            background: #FFD700;
+        }
+
+        #cps-resource {
+            background: #DDA0DD;
         }
 
         .resource-title {
@@ -94,7 +101,7 @@
         }
 
         .upgrade-button {
-            background-color: #4CAF50;
+            background-color: #000000;
             border: none;
             color: white;
             padding: 10px;
@@ -108,7 +115,7 @@
         }
 
         .upgrade-button:disabled {
-            background-color: #cccccc;
+            background-color: #666666;
             cursor: not-allowed;
         }
 
@@ -136,7 +143,7 @@
         }
 
         #farm-button {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
+            background: linear-gradient(45deg, #800080, #4B0082);
             border: none;
             color: white;
             padding: 15px 32px;
@@ -183,6 +190,22 @@
             background: rgba(255,255,255,0.8);
             border-radius: 8px;
         }
+
+        #level-progress {
+            margin-top: 10px;
+            width: 100%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #level-progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -194,11 +217,11 @@
         <div id="level-indicator">Seviye: 1</div>
         
         <div class="resource-container">
-            <div class="resource">
+            <div class="resource" id="coin-resource">
                 <div class="resource-title">Coin</div>
                 <div id="coin-value" class="resource-value">0</div>
             </div>
-            <div class="resource">
+            <div class="resource" id="cps-resource">
                 <div class="resource-title">CPS (Saniyede Coin)</div>
                 <div id="cps-value" class="resource-value">0</div>
             </div>
@@ -225,6 +248,11 @@
             <h3>İstatistikler</h3>
             <p>Toplam Tıklama: <span id="total-clicks">0</span></p>
             <p>Toplam Kazanılan: <span id="total-earned">0</span></p>
+            <p>Mevcut Seviye: <span id="current-level">1</span></p>
+            <p>Sıradaki Seviyeye Kalan: <span id="coins-to-next-level">1000</span> coin</p>
+            <div id="level-progress">
+                <div id="level-progress-bar"></div>
+            </div>
         </div>
     </div>
 
@@ -241,8 +269,21 @@
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
                 multiplier: { level: 1, cost: 100 }
-            }
+            },
+            levelThresholds: [0, 1000, 5000, 10000, 50000] // Her seviye için gerekli coin miktarı
         };
+
+        function getLevelProgress() {
+            const currentThreshold = gameState.levelThresholds[gameState.level - 1];
+            const nextThreshold = gameState.levelThresholds[gameState.level];
+            const progress = (gameState.totalEarned - currentThreshold) / (nextThreshold - currentThreshold) * 100;
+            return Math.min(Math.max(progress, 0), 100);
+        }
+
+        function getCoinsToNextLevel() {
+            const nextThreshold = gameState.levelThresholds[gameState.level];
+            return Math.max(0, nextThreshold - gameState.totalEarned);
+        }
 
         // Welcome screen animation
         const welcomeText = "Hayal ettiklerin kadar gerçeksin.!";
@@ -268,6 +309,12 @@
             document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
             document.getElementById('total-clicks').textContent = gameState.totalClicks;
             document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
+            document.getElementById('current-level').textContent = gameState.level;
+            document.getElementById('coins-to-next-level').textContent = Math.ceil(getCoinsToNextLevel());
+            
+            // Update progress bar
+            const progress = getLevelProgress();
+            document.getElementById('level-progress-bar').style.width = `${progress}%`;
             
             // Update upgrade buttons
             updateUpgradeButton('click-upgrade', gameState.upgrades.click.cost);
@@ -299,14 +346,21 @@
             setTimeout(() => achievement.remove(), 3000);
         }
 
+        function checkLevelUp() {
+            const nextThreshold = gameState.levelThresholds[gameState.level];
+            if (gameState.totalEarned >= nextThreshold) {
+                gameState.level++;
+                showAchievement(`Seviye Atladın: Seviye ${gameState.level}!`);
+                return true;
+            }
+            return false;
+        }
+
         function checkAchievements() {
             if (gameState.totalClicks === 100) {
                 showAchievement('Başarım: 100 Tıklama!');
             }
-            if (gameState.totalEarned >= 1000 && gameState.level === 1) {
-                gameState.level++;
-                showAchievement('Seviye Atladın: Seviye 2!');
-            }
+            checkLevelUp();
         }
 
         // Click handler
