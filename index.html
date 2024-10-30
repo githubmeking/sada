@@ -184,6 +184,50 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+        .referral-container {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .referral-link {
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+
+        .copy-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .copy-button:hover {
+            background: #45a049;
+        }
+
+        .referral-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .referral-stat-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -230,6 +274,27 @@
             <p>Sıradaki Seviyeye Kalan: <span id="coins-to-next-level">1000</span> coin</p>
             <div id="level-progress">
                 <div id="level-progress-bar"></div>
+                <div class="referral-container">
+                <h4>Referans Sistemi</h4>
+                <div class="referral-link" id="referral-link">
+                    https://t.me/no1livebot?start=6840212721
+                </div>
+                <button class="copy-button" onclick="copyReferralLink()">Referans Linkini Kopyala</button>
+                
+                <div class="referral-stats">
+                    <div class="referral-stat-item">
+                        <div>Toplam Davet</div>
+                        <div id="total-referrals">0</div>
+                    </div>
+                    <div class="referral-stat-item">
+                        <div>Aktif Referanslar</div>
+                        <div id="active-referrals">0</div>
+                    </div>
+                    <div class="referral-stat-item">
+                        <div>Kazanılan Bonus</div>
+                        <div id="referral-bonus">0</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -249,6 +314,13 @@
                 multiplier: { level: 1, cost: 100 }
             },
             levelThresholds: [0, 1000, 5000, 10000, 50000]
+            referrals: {
+                total: 0,
+                active: 0,
+                bonus: 0,
+                referralId: '6840212721', // Varsayılan referans ID'si
+                bonusMultiplier: 0.1 // Her referans için %10 bonus
+            }
         };
 
         function getCoinsToNextLevel() {
@@ -283,22 +355,58 @@
             clickUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
             autoUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
             multiplierUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.multiplier.cost} coin`;
-
+        
             clickUpgrade.disabled = gameState.coins < gameState.upgrades.click.cost;
             autoUpgrade.disabled = gameState.coins < gameState.upgrades.auto.cost;
             multiplierUpgrade.disabled = gameState.coins < gameState.upgrades.multiplier.cost;
-
+            document.getElementById('total-referrals').textContent = gameState.referrals.total;
+            document.getElementById('active-referrals').textContent = gameState.referrals.active;
+            document.getElementById('referral-bonus').textContent = gameState.referrals.bonus.toFixed(1);
+            document.getElementById('total-referrals').textContent = gameState.referrals.total;
+            document.getElementById('active-referrals').textContent = gameState.referrals.active;
+            document.getElementById('referral-bonus').textContent = gameState.referrals.bonus.toFixed(1);
+            
             document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
             document.getElementById('total-clicks').textContent = gameState.totalClicks;
             document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
             document.getElementById('current-level').textContent = gameState.level;
-            
+            document.getElementById('referral-link').textContent = 
+                `https://t.me/no1livebot?start=${gameState.referrals.referralId}`;
+        
             const coinsToNext = getCoinsToNextLevel();
             document.getElementById('coins-to-next-level').textContent = Math.ceil(coinsToNext);
             
             const progress = getLevelProgress();
             document.getElementById('level-progress-bar').style.width = `${progress}%`;
+            
         }
+        function copyReferralLink() {
+            const referralLink = document.getElementById('referral-link').textContent;
+            navigator.clipboard.writeText(referralLink).then(() => {
+                alert('Referans linki kopyalandı!');
+            }).catch(err => {
+                console.error('Kopyalama hatası:', err);
+            });
+        }
+        function calculateReferralBonus(amount) {
+            return amount * gameState.referrals.bonusMultiplier * gameState.referrals.active;
+        }
+
+        // Farm butonuna tıklama olayını güncelliyoruz
+        document.getElementById('farm-button').addEventListener('click', (e) => {
+            const baseEarning = gameState.clickPower * gameState.multiplier;
+            const referralBonus = calculateReferralBonus(baseEarning);
+            const totalEarning = baseEarning + referralBonus;
+            
+            gameState.coins += totalEarning;
+            gameState.totalEarned += totalEarning;
+            gameState.referrals.bonus += referralBonus;
+            gameState.totalClicks++;
+            
+            createFloatingText(e.clientX, e.clientY, Math.floor(totalEarning));
+            checkAchievements();
+            updateDisplay();
+        });
 
         function showAchievement(message) {
             const achievement = document.createElement('div');
@@ -380,9 +488,14 @@
 
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
-                const autoEarned = gameState.autoCollectPower * gameState.multiplier;
-                gameState.coins += autoEarned;
-                gameState.totalEarned += autoEarned;
+                const baseEarning = gameState.autoCollectPower * gameState.multiplier;
+                const referralBonus = calculateReferralBonus(baseEarning);
+                const totalEarning = baseEarning + referralBonus;
+                
+                gameState.coins += totalEarning;
+                gameState.totalEarned += totalEarning;
+                gameState.referrals.bonus += referralBonus;
+                
                 checkLevelUp();
                 updateDisplay();
             }
