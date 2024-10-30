@@ -14,7 +14,7 @@
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-        
+
         body {
             margin: 0;
             padding: 0;
@@ -152,7 +152,6 @@
             padding: 15px;
             border-radius: 10px;
             margin: 20px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .referral-link {
@@ -162,38 +161,6 @@
             border-radius: 5px;
             margin: 10px 0;
             word-break: break-all;
-
-            
-           .referral-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .referral-stat-box {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .referral-stat-label {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .referral-stat-value {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #4CAF50;
-        }
-
-        .referral-bonus {
-            color: #FFD700;
-            font-weight: bold;
-        }  
         }
     </style>
 </head>
@@ -205,7 +172,7 @@
     <div id="game-container">
         <div id="level-indicator">Seviye: 1</div>
         
-        <<div class="resource-container">
+        <div class="resource-container">
             <div class="resource" id="coin-resource">
                 <div class="resource-title">Coin</div>
                 <div id="coin-value" class="resource-value">0</div>
@@ -246,25 +213,6 @@
                 <h4>Referans Sistemi</h4>
                 <div class="referral-link" id="referral-link"></div>
                 <button onclick="copyReferralLink()" class="upgrade-button">Referans Linkini Kopyala</button>
-                
-                <div class="referral-stats">
-                    <div class="referral-stat-box">
-                        <div class="referral-stat-label">Toplam Davet</div>
-                        <div id="total-referrals" class="referral-stat-value">0</div>
-                    </div>
-                    <div class="referral-stat-box">
-                        <div class="referral-stat-label">Aktif Referanslar</div>
-                        <div id="active-referrals" class="referral-stat-value">0</div>
-                    </div>
-                    <div class="referral-stat-box">
-                        <div class="referral-stat-label">Referans Bonusu</div>
-                        <div id="referral-bonus" class="referral-stat-value">+0%</div>
-                    </div>
-                    <div class="referral-stat-box">
-                        <div class="referral-stat-label">Bonus Kazanç</div>
-                        <div id="total-referral-earnings" class="referral-stat-value">0</div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -284,19 +232,8 @@
                 multiplier: { level: 1, cost: 100 }
             },
             levelThresholds: [0, 1000, 5000, 10000, 50000],
-            referrals: {
-                id: '6840212721',
-                total: 0,
-                active: 0,
-                bonusPercentage: 5, // Her referans için %5 bonus
-                totalEarnings: 0
-            }
+            referralId: '6840212721'
         };
-
-        function calculateReferralBonus(baseAmount) {
-            const bonusMultiplier = (gameState.referrals.active * gameState.referrals.bonusPercentage) / 100;
-            return baseAmount * bonusMultiplier;
-        }
 
         // Welcome screen animation
         const welcomeText = "Hoş Geldiniz!";
@@ -342,16 +279,20 @@
             document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
             document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
             
-            // Referans sistemini güncelle
+            // Update referral link
             document.getElementById('referral-link').textContent = 
-                `https://t.me/no1livebot?start=${gameState.referrals.id}`;
-            document.getElementById('total-referrals').textContent = gameState.referrals.total;
-            document.getElementById('active-referrals').textContent = gameState.referrals.active;
-            document.getElementById('referral-bonus').textContent = 
-                `+${gameState.referrals.active * gameState.referrals.bonusPercentage}%`;
-            document.getElementById('total-referral-earnings').textContent = 
-                Math.floor(gameState.referrals.totalEarnings);
+                `https://t.me/no1livebot?start=${gameState.referralId}`;
 
+            // Update level progress
+            const currentLevel = gameState.level;
+            const currentThreshold = gameState.levelThresholds[currentLevel - 1];
+            const nextThreshold = gameState.levelThresholds[currentLevel];
+            const progress = ((gameState.totalEarned - currentThreshold) / 
+                (nextThreshold - currentThreshold)) * 100;
+            
+            document.getElementById('level-progress-bar').style.width = `${Math.min(progress, 100)}%`;
+            document.getElementById('coins-to-next-level').textContent = 
+                Math.ceil(nextThreshold - gameState.totalEarned);
         }
 
         function copyReferralLink() {
@@ -380,17 +321,13 @@
         }
 
         // Event Listeners
-        cument.getElementById('farm-button').addEventListener('click', (e) => {
-            const baseEarning = gameState.clickPower * gameState.multiplier;
-            const referralBonus = calculateReferralBonus(baseEarning);
-            const totalEarning = baseEarning + referralBonus;
-            
-            gameState.coins += totalEarning;
-            gameState.totalEarned += totalEarning;
-            gameState.referrals.totalEarnings += referralBonus;
+        document.getElementById('farm-button').addEventListener('click', (e) => {
+            const earnedCoins = gameState.clickPower * gameState.multiplier;
+            gameState.coins += earnedCoins;
+            gameState.totalEarned += earnedCoins;
             gameState.totalClicks++;
             
-            createFloatingText(e.clientX, e.clientY, totalEarning);
+            createFloatingText(e.clientX, e.clientY, earnedCoins);
             checkLevelUp();
             updateDisplay();
         });
@@ -425,14 +362,9 @@
         // Auto collect timer
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
-                const baseEarning = gameState.autoCollectPower * gameState.multiplier;
-                const referralBonus = calculateReferralBonus(baseEarning);
-                const totalEarning = baseEarning + referralBonus;
-                
-                gameState.coins += totalEarning;
-                gameState.totalEarned += totalEarning;
-                gameState.referrals.totalEarnings += referralBonus;
-                
+                const earnedCoins = gameState.autoCollectPower * gameState.multiplier;
+                gameState.coins += earnedCoins;
+                gameState.totalEarned += earnedCoins;
                 checkLevelUp();
                 updateDisplay();
             }
