@@ -406,14 +406,14 @@
             const span = document.createElement('span');
             span.textContent = letter;
             span.className = 'welcome-letter';
-            span.style.animationDelay = `${index * 0.3}s`;
+            span.style.animationDelay = `${index * 0.2}s`;
             welcomeContainer.appendChild(span);
         });
 
         setTimeout(() => {
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('game-container').style.display = 'block';
-        }, 10000);
+        }, 20000);
 
         // Load saved game state
         const savedGame = localStorage.getItem('farmGameSave');
