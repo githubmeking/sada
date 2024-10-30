@@ -289,12 +289,24 @@
 
         // Karşılama ekranı animasyonu ve kapanışı
         function showGameScreen() {
-            const welcomeScreen = document.getElementById('welcome-screen');
-            const gameContainer = document.getElementById('game-container');
-            setTimeout(() => {
-                welcomeScreen.style.display = 'none';
-                gameContainer.style.display = 'block';
-            }, 3000); // 3 saniye sonra karşılama ekranını gizle ve oyunu göster
+            const welcomeText = document.getElementById('welcome-text');
+            const message = translations[document.getElementById('language').value].welcome;
+            let i = 0;
+
+            function typeWriter() {
+                if (i < message.length) {
+                    welcomeText.innerHTML += message.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 100); // Karakterler arasında 100ms gecikme
+                } else {
+                    // Mesaj tamamlandığında oyun ekranına geç
+                    setTimeout(() => {
+                        document.getElementById('welcome-screen').style.display = 'none';
+                        document.getElementById('game-container').style.display = 'block';
+                    }, 1500); // 1.5 saniye bekle, sonra oyun ekranını göster
+                }
+            }
+            typeWriter();
         }
 
         // Oyun durumu
@@ -397,6 +409,7 @@
         setInterval(() => game.saveGameState(), 30000);
     </script>
 </body>
+
 
 
 </html>
