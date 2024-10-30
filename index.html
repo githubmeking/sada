@@ -211,12 +211,12 @@
             levelThresholds: [0, 1000, 5000, 10000, 50000]
         };
 
-        function updateDisplay() {
+       function updateDisplay() {
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
             document.getElementById('cps-value').textContent = 
                 (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
             
-            // Update upgrade buttons and costs
+            // Yükseltme butonlarını güncelle
             const clickUpgrade = document.getElementById('click-upgrade');
             const autoUpgrade = document.getElementById('auto-upgrade');
             const multiplierUpgrade = document.getElementById('multiplier-upgrade');
@@ -236,17 +236,28 @@
             document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
             document.getElementById('current-level').textContent = gameState.level;
             
-            const nextLevelCoins = getCoinsToNextLevel();
-            document.getElementById('coins-to-next-level').textContent = Math.ceil(nextLevelCoins);
+            const coinsToNext = getCoinsToNextLevel();
+            document.getElementById('coins-to-next-level').textContent = Math.ceil(coinsToNext);
             
-            // Update progress bar
+            // İlerleme çubuğunu güncelle
             const progress = getLevelProgress();
             document.getElementById('level-progress-bar').style.width = `${progress}%`;
         }
 
         function getCoinsToNextLevel() {
-            const nextThreshold = gameState.levelThresholds[gameState.level];
-            return Math.max(0, nextThreshold - gameState.totalEarned);
+            const currentLevel = gameState.level;
+            if (currentLevel >= gameState.levelThresholds.length - 1) {
+                return 0; // Son seviyeye ulaşıldıysa
+            }
+            function getLevelProgress() {
+            const currentLevel = gameState.level;
+            if (currentLevel >= gameState.levelThresholds.length - 1) {
+                return 100; // Son seviyeye ulaşıldıysa
+            }
+            const currentThreshold = gameState.levelThresholds[currentLevel - 1];
+            const nextThreshold = gameState.levelThresholds[currentLevel];
+            const progress = ((gameState.totalEarned - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
+            return Math.min(Math.max(progress, 0), 100);
         }
 
         function getLevelProgress() {
@@ -327,11 +338,18 @@
         }
 
         function checkLevelUp() {
-            const nextThreshold = gameState.levelThresholds[gameState.level];
-            if (gameState.totalEarned >= nextThreshold) {
-                gameState.level++;
-                showAchievement(`Seviye Atladın: Seviye ${gameState.level}!`);
-                return true;
+            while (true) {
+                const currentLevel = gameState.level;
+                if (currentLevel >= gameState.levelThresholds.length - 1) {
+                    return false; // Son seviyeye ulaşıldıysa
+                }
+                const nextThreshold = gameState.levelThresholds[currentLevel];
+                if (gameState.totalEarned >= nextThreshold) {
+                    gameState.level++;
+                    showAchievement(`Seviye Atladın: Seviye ${gameState.level}!`);
+                } else {
+                    break;
+                }
             }
             return false;
         }
@@ -342,6 +360,7 @@
                 const autoEarned = gameState.autoCollectPower * gameState.multiplier;
                 gameState.coins += autoEarned;
                 gameState.totalEarned += autoEarned;
+                checkLevelUp();
                 updateDisplay();
             }
         }, 1000);
@@ -374,8 +393,9 @@
             localStorage.setItem('farmGameSave', JSON.stringify(gameState));
         }, 30000);
 
-        // Initial display update
+        // İlk görüntü güncellemesi
         updateDisplay();
+
     </script>
 </body>
 </html>
