@@ -76,6 +76,7 @@
 
         #coin-resource { background: #FFD700; }
         #cps-resource { background: #DDA0DD; }
+        #energy-resource { background: #87CEEB; }
 
         .resource-title {
             font-weight: bold;
@@ -120,6 +121,11 @@
             cursor: pointer;
             transition: all 0.3s;
             margin: 20px 0;
+        }
+
+        #farm-button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
         }
 
         .coin-animation {
@@ -181,6 +187,10 @@
                 <div class="resource-title">CPS (Saniyede Coin)</div>
                 <div id="cps-value" class="resource-value">0</div>
             </div>
+            <div class="resource" id="energy-resource">
+                <div class="resource-title">Enerji</div>
+                <div id="energy-value" class="resource-value">1000</div>
+            </div>
         </div>
 
         <button id="farm-button">FARM</button>
@@ -210,7 +220,7 @@
             </div>
             
             <div class="referral-container">
-                <h4>Davet Linki </h4>
+                <h4>Davet Linki</h4>
                 <div class="referral-link" id="referral-link"></div>
                 <button onclick="copyReferralLink()" class="upgrade-button">Davet Linkini Kopyala</button>
             </div>
@@ -226,14 +236,22 @@
             level: 1,
             totalClicks: 0,
             totalEarned: 0,
+            energy: 1000,
+            maxEnergy: 1000,
+            energyPerClick: 33.33,
+            energyRegenRate: 2,
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
                 multiplier: { level: 1, cost: 100 }
             },
-            levelThresholds: [0, 1000, 5000, 10000, 50000],
             referralId: '6840212721'
         };
+
+        // Level thresholds calculation function
+        function calculateLevelThreshold(level) {
+            return Math.floor(1000 * Math.pow(1.5, level - 1));
+        }
 
         // Welcome screen animation
         const welcomeText = "Hoş Geldiniz!";
@@ -247,7 +265,6 @@
             welcomeContainer.appendChild(span);
         });
 
-        // Welcome screen'i 3 saniye sonra kaldır
         setTimeout(() => {
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('game-container').style.display = 'block';
@@ -257,7 +274,12 @@
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
             document.getElementById('cps-value').textContent = 
                 (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
+            document.getElementById('energy-value').textContent = 
+                Math.floor(gameState.energy);
             
+            const farmButton = document.getElementById('farm-button');
+            farmButton.disabled = gameState.energy < gameState.energyPerClick;
+
             // Update upgrade buttons
             const clickUpgrade = document.getElementById('click-upgrade');
             const autoUpgrade = document.getElementById('auto-upgrade');
@@ -284,9 +306,8 @@
                 `https://t.me/no1livebot?start=${gameState.referralId}`;
 
             // Update level progress
-            const currentLevel = gameState.level;
-            const currentThreshold = gameState.levelThresholds[currentLevel - 1];
-            const nextThreshold = gameState.levelThresholds[currentLevel];
+            const currentThreshold = calculateLevelThreshold(gameState.level);
+            const nextThreshold = calculateLevelThreshold(gameState.level + 1);
             const progress = ((gameState.totalEarned - currentThreshold) / 
                 (nextThreshold - currentThreshold)) * 100;
             
@@ -313,8 +334,8 @@
         }
 
         function checkLevelUp() {
-            while (gameState.level < gameState.levelThresholds.length &&
-                   gameState.totalEarned >= gameState.levelThresholds[gameState.level]) {
+            const nextThreshold = calculateLevelThreshold(gameState.level + 1);
+            while (gameState.level < 99 && gameState.totalEarned >= nextThreshold) {
                 gameState.level++;
                 alert(`Tebrikler! Seviye ${gameState.level}'e ulaştınız!`);
             }
@@ -322,14 +343,17 @@
 
         // Event Listeners
         document.getElementById('farm-button').addEventListener('click', (e) => {
-            const earnedCoins = gameState.clickPower * gameState.multiplier;
-            gameState.coins += earnedCoins;
-            gameState.totalEarned += earnedCoins;
-            gameState.totalClicks++;
-            
-            createFloatingText(e.clientX, e.clientY, earnedCoins);
-            checkLevelUp();
-            updateDisplay();
+            if (gameState.energy >= gameState.energyPerClick) {
+                const earnedCoins = gameState.clickPower * gameState.multiplier;
+                gameState.coins += earnedCoins;
+                gameState.totalEarned += earnedCoins;
+                gameState.totalClicks++;
+                gameState.energy = Math.max(0, gameState.energy - gameState.energyPerClick);
+                
+                createFloatingText(e.clientX, e.clientY, earnedCoins);
+                checkLevelUp();
+                updateDisplay();
+            }
         });
 
         document.getElementById('click-upgrade').addEventListener('click', () => {
@@ -359,36 +383,43 @@
             }
         });
 
-        // Auto collect timer
-        setInterval(() => {
-            if (gameState.autoCollectPower > 0) {
-                const earnedCoins = gameState.autoCollectPower * gameState.multiplier;
-                gameState.coins += earnedCoins;
-                gameState.totalEarned += earnedCoins;
-                checkLevelUp();
-                updateDisplay();
-            }
-        }, 1000);
-
-        // Load saved game
-        const savedGame = localStorage.getItem('farmGameSave');
-        if (savedGame) {
-            try {
-                const parsed = JSON.parse(savedGame);
-                gameState = {...gameState, ...parsed};
-                updateDisplay();
-            } catch (e) {
-                console.error('Save game yüklenirken hata oluştu:', e);
-            }
+        // Energy regeneration and auto collect timer
+       setInterval(() => {
+        // Energy regeneration
+        if (gameState.energy < gameState.maxEnergy) {
+            gameState.energy = Math.min(gameState.maxEnergy, 
+                gameState.energy + gameState.energyRegenRate);
         }
 
-        // Auto save
-        setInterval(() => {
-            localStorage.setItem('farmGameSave', JSON.stringify(gameState));
-        }, 30000);
+        // Auto collection
+        if (gameState.autoCollectPower > 0) {
+            const earnedCoins = gameState.autoCollectPower * gameState.multiplier;
+            gameState.coins += earnedCoins;
+            gameState.totalEarned += earnedCoins;
+            checkLevelUp();
+            updateDisplay();
+        }
+    }, 1000);
 
-        // Initial display update
-        updateDisplay();
-    </script>
+    // Load saved game
+    const savedGame = localStorage.getItem('farmGameSave');
+    if (savedGame) {
+        try {
+            const parsed = JSON.parse(savedGame);
+            gameState = {...gameState, ...parsed};
+            updateDisplay();
+        } catch (e) {
+            console.error('Save game yüklenirken hata oluştu:', e);
+        }
+    }
+
+    // Auto save
+    setInterval(() => {
+        localStorage.setItem('farmGameSave', JSON.stringify(gameState));
+    }, 30000);
+
+    // Initial display update
+    updateDisplay();
+</script>
 </body>
 </html>
