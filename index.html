@@ -273,7 +273,7 @@
         function updateDisplay() {
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
             document.getElementById('cps-value').textContent = 
-            (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
+                (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
             document.getElementById('energy-value').textContent = 
                 Math.floor(gameState.energy);
             
@@ -309,7 +309,7 @@
             const currentThreshold = calculateLevelThreshold(gameState.level);
             const nextThreshold = calculateLevelThreshold(gameState.level + 1);
             const progress = ((gameState.totalEarned - currentThreshold) / 
-                (nextThreshold - currentThreshold)) * 100;;
+                (nextThreshold - currentThreshold)) * 100;
             
             document.getElementById('level-progress-bar').style.width = `${Math.min(progress, 100)}%`;
             document.getElementById('coins-to-next-level').textContent = 
@@ -336,16 +336,8 @@
         function checkLevelUp() {
             const nextThreshold = calculateLevelThreshold(gameState.level + 1);
             while (gameState.level < 99 && gameState.totalEarned >= nextThreshold) {
-            gameState.level++;
-            alert(`Tebrikler! Seviye ${gameState.level}'e ulaştınız!`);
-            if (gameState.level === 99) {
-            document.getElementById('level-indicator').textContent = 'Maksimum Seviye';
-            document.getElementById('coins-to-next-level').parentElement.style.display = 'none';
-            document.getElementById('level-progress').style.display = 'none';
-        } else {
-            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
-            document.getElementById('coins-to-next-level').parentElement.style.display = 'block';
-            document.getElementById('level-progress').style.display = 'block';
+                gameState.level++;
+                alert(`Tebrikler! Seviye ${gameState.level}'e ulaştınız!`);
             }
         }
 
@@ -392,7 +384,15 @@
         });
 
         // Energy regeneration and auto collect timer
-       setInterval(() => {
+        <!DOCTYPE html>
+<html lang="tr">
+<!-- Previous head and style sections remain exactly the same -->
+
+<script>
+    // Previous code remains exactly the same until the setInterval function
+
+    // Energy regeneration and auto collect timer
+    setInterval(() => {
         // Energy regeneration
         if (gameState.energy < gameState.maxEnergy) {
             gameState.energy = Math.min(gameState.maxEnergy, 
