@@ -384,23 +384,15 @@
         });
 
         // Energy regeneration and auto collect timer
-        <!DOCTYPE html>
-<html lang="tr">
-<!-- Previous head and style sections remain exactly the same -->
+        setInterval(() => {
+            // Energy regeneration
+            if (gameState.energy < gameState.maxEnergy) {
+                gameState.energy = Math.min(gameState.maxEnergy, 
+                    gameState.energy + gameState.energyRegenRate);
+            }
 
-<script>
-    // Previous code remains exactly the same until the setInterval function
-
-    // Energy regeneration and auto collect timer
-    setInterval(() => {
-        // Energy regeneration
-        if (gameState.energy < gameState.maxEnergy) {
-            gameState.energy = Math.min(gameState.maxEnergy, 
-                gameState.energy + gameState.energyRegenRate);
-        }
-
-        // Auto collection
-        if (gameState.autoCollectPower > 0) {
+            // Auto collection
+            if (gameState.autoCollectPower > 0) {
             const earnedCoins = gameState.autoCollectPower * gameState.multiplier;
             gameState.coins += earnedCoins;
             gameState.totalEarned += earnedCoins;
