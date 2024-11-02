@@ -9,23 +9,10 @@
             from { opacity: 0; transform: scale(0.3); }
             to { opacity: 1; transform: scale(1); }
         }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
         @keyframes slideUp {
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-
-        @keyframes welcomeLetter {
-            0% { opacity: 0; transform: translateY(50px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
         body {
             margin: 0;
             padding: 0;
@@ -37,76 +24,44 @@
             text-align: center;
             background: linear-gradient(135deg, #83a4d4, #b6fbff);
         }
-
-        #welcome-screen {
-            background: black;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            color: white;
-            z-index: 100;
-        }
-
-        .welcome-letter {
-            display: inline-block;
-            animation: welcomeLetter 0.5s ease-out forwards;
-            opacity: 0;
-        }
-
         #game-container {
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            display: none;
-            animation: fadeIn 1s ease-out;
             max-width: 800px;
             width: 90%;
         }
-
         .resource-container {
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px;
-            flex-wrap: wrap;
             gap: 10px;
         }
-
         .resource {
             padding: 10px 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             min-width: 150px;
         }
-
         #coin-resource { background: #FFD700; }
         #cps-resource { background: #DDA0DD; }
         #energy-resource { background: #87CEFA; }
-
         .resource-title {
             font-weight: bold;
             color: #666;
             margin-bottom: 5px;
         }
-
         .resource-value {
             font-size: 1.2em;
             color: #2c3e50;
         }
-
         .upgrades-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin: 20px 0;
         }
-
         .upgrade-button {
             background-color: #4CAF50;
             border: none;
@@ -122,22 +77,14 @@
             min-height: 80px;
             justify-content: center;
         }
-
         .upgrade-button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
-
-        .upgrade-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
         .upgrade-cost {
             font-size: 0.8em;
             opacity: 0.8;
         }
-
         #farm-button {
             background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
             border: none;
@@ -150,53 +97,24 @@
             margin: 20px 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-
-        #energy-upgrade {
-            background: linear-gradient(45deg, #4B0082, #800080);
-        }
-
-        #energy-upgrade:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-
-        .coin-animation {
-            position: fixed;
-            pointer-events: none;
-            animation: slideUp 1s ease-out forwards;
-            color: gold;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .achievement {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        #level-progress {
+        .progress-bar-container {
             width: 100%;
-            height: 20px;
-            background: #eee;
+            background-color: #e0e0e0;
             border-radius: 10px;
             overflow: hidden;
             margin-top: 10px;
+            height: 20px;
+            position: relative;
         }
-
-        #level-progress-bar {
+        .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #45a049);
             width: 0%;
-            transition: width 0.3s ease;
+            background-color: #4CAF50;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            transition: width 0.1s linear;
         }
-
         .max-level {
             color: red;
             font-weight: bold;
@@ -206,13 +124,8 @@
     </style>
 </head>
 <body>
-    <div id="welcome-screen">
-        <div id="welcome-text"></div>
-    </div>
-
     <div id="game-container">
         <div id="level-indicator">Seviye: 1</div>
-        
         <div class="resource-container">
             <div class="resource" id="coin-resource">
                 <div class="resource-title">Coin</div>
@@ -229,6 +142,9 @@
         </div>
 
         <button id="farm-button">FARM</button>
+        <div class="progress-bar-container">
+            <div id="progress-bar" class="progress-bar">0%</div>
+        </div>
 
         <div class="upgrades-container">
             <button class="upgrade-button" id="click-upgrade">
@@ -239,28 +155,12 @@
                 CPS Arttırma
                 <span class="upgrade-cost">Maliyet: 50 coin</span>
             </button>
-            <button class="upgrade-button" id="multiplier-upgrade">
-                Çarpan Artışı
-                <span class="upgrade-cost">Maliyet: 100 coin</span>
-            </button>
             <button class="upgrade-button" id="energy-upgrade">
                 Enerji Yükseltme
                 <span class="upgrade-cost">Maliyet: 1000 coin</span>
             </button>
         </div>
-
         <div id="max-energy-text" class="max-level">Max seviyeye ulaşıldı!</div>
-
-        <div class="stats-container">
-            <h3>İstatistikler</h3>
-            <p>Toplam Tıklama: <span id="total-clicks">0</span></p>
-            <p>Toplam Kazanılan: <span id="total-earned">0</span></p>
-            <p>Mevcut Seviye: <span id="current-level">1</span></p>
-            <p>Sıradaki Seviyeye Kalan: <span id="coins-to-next-level">2000</span> coin</p>
-            <div id="level-progress">
-                <div id="level-progress-bar"></div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -268,149 +168,59 @@
             coins: 0,
             clickPower: 1,
             autoCollectPower: 0,
-            multiplier: 1,
             level: 1,
             energy: 1000,
-            maxEnergy: 1000, // Yeni eklenen maksimum enerji değişkeni
-            totalClicks: 0,
-            totalEarned: 0,
+            maxEnergy: 1000,
             energyUpgradeCost: 1000,
             maxEnergyReached: false,
             upgrades: {
                 click: { level: 1, cost: 10 },
-                auto: { level: 0, cost: 50 },
-                multiplier: { level: 1, cost: 100 }
+                auto: { level: 0, cost: 50 }
             }
         };
-
-        // Generate level thresholds for 99 levels
-        gameState.levelThresholds = [0];
-        for(let i = 1; i <= 99; i++) {
-            gameState.levelThresholds[i] = Math.floor(2000 * Math.pow(2, i - 1));
-        }
-
-        function getCoinsToNextLevel() {
-            const currentLevel = gameState.level;
-            if (currentLevel >= gameState.levelThresholds.length - 1) {
-                return 0;
-            }
-            const nextThreshold = gameState.levelThresholds[currentLevel];
-            return Math.max(0, nextThreshold - gameState.totalEarned);
-        }
-
-        function getLevelProgress() {
-            const currentLevel = gameState.level;
-            if (currentLevel >= gameState.levelThresholds.length - 1) {
-                return 100;
-            }
-            const currentThreshold = gameState.levelThresholds[currentLevel - 1];
-            const nextThreshold = gameState.levelThresholds[currentLevel];
-            const progress = ((gameState.totalEarned - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
-            return Math.min(Math.max(progress, 0), 100);
-        }
 
         function updateDisplay() {
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
             document.getElementById('cps-value').textContent = 
-                (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
+                (gameState.autoCollectPower).toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy);
 
             const clickUpgrade = document.getElementById('click-upgrade');
             const autoUpgrade = document.getElementById('auto-upgrade');
-            const multiplierUpgrade = document.getElementById('multiplier-upgrade');
             const energyUpgrade = document.getElementById('energy-upgrade');
 
             clickUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
             autoUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
-            multiplierUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.multiplier.cost} coin`;
             energyUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.energyUpgradeCost} coin`;
 
             clickUpgrade.disabled = gameState.coins < gameState.upgrades.click.cost;
             autoUpgrade.disabled = gameState.coins < gameState.upgrades.auto.cost;
-            multiplierUpgrade.disabled = gameState.coins < gameState.upgrades.multiplier.cost;
             energyUpgrade.disabled = gameState.coins < gameState.energyUpgradeCost || gameState.maxEnergyReached;
             
             document.getElementById('max-energy-text').style.display = gameState.maxEnergyReached ? 'block' : 'none';
 
-            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
-            document.getElementById('total-clicks').textContent = gameState.totalClicks;
-            document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
-            document.getElementById('current-level').textContent = gameState.level;
-            
-            const coinsToNext = getCoinsToNextLevel();
-            document.getElementById('coins-to-next-level').textContent = Math.ceil(coinsToNext);
-            
-            const progress = getLevelProgress();
-            document.getElementById('level-progress-bar').style.width = `${progress}%`;
-
             document.getElementById('farm-button').disabled = gameState.energy < 33;
         }
 
-        function showAchievement(message) {
-            const achievement = document.createElement('div');
-            achievement.className = 'achievement';
-            achievement.textContent = message;
-            document.body.appendChild(achievement);
-            setTimeout(() => achievement.remove(), 3000);
-        }
-
-        function createFloatingText(x, y, amount) {
-            const text = document.createElement('div');
-            text.className = 'coin-animation';
-            text.textContent = `+${Math.floor(amount)}`;
-            text.style.left = `${x}px`;
-            text.style.top = `${y}px`;
-            document.body.appendChild(text);
-            setTimeout(() => text.remove(), 1000);
-        }
-
-        function checkLevelUp() {
-            while (gameState.level < gameState.levelThresholds.length - 1) {
-                const nextThreshold = gameState.levelThresholds[gameState.level];
-                if (gameState.totalEarned >= nextThreshold) {
-                    gameState.level++;
-                    showAchievement(`Seviye Atladın: Seviye ${gameState.level}!`);
-                } else {
-                    break;
-                }
-            }
-        }
-
-        function checkAchievements() {
-            if (gameState.totalClicks === 100) {
-                showAchievement('Başarım: 100 Tıklama!');
-            }
-            checkLevelUp();
-        }
-
-        document.getElementById('farm-button').addEventListener('click', (e) => {
+        document.getElementById('farm-button').addEventListener('click', () => {
             if (gameState.energy >= 33) {
-                const earnedCoins = gameState.clickPower * gameState.multiplier;
-                gameState.coins += earnedCoins;
-                gameState.totalEarned += earnedCoins;
-                gameState.totalClicks++;
+                gameState.coins += gameState.clickPower;
                 gameState.energy -= 33;
-
-                createFloatingText(e.clientX, e.clientY, Math.floor(earnedCoins));
-                checkAchievements();
                 updateDisplay();
             }
         });
 
-        document.getElementById('energy-upgrade').addEventListener('click', (e) => {
+        document.getElementById('energy-upgrade').addEventListener('click', () => {
             if (gameState.coins >= gameState.energyUpgradeCost && !gameState.maxEnergyReached) {
                 gameState.coins -= gameState.energyUpgradeCost;
-                gameState.maxEnergy += 500; // Maksimum enerji limitini artır
-                gameState.energy = gameState.maxEnergy; // Enerjiyi yeni maksimum değere ayarla
+                gameState.maxEnergy += 200;
+                gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + 200);
                 
                 if (gameState.maxEnergy >= 10000) {
                     gameState.maxEnergy = 10000;
                     gameState.energy = 10000;
                     gameState.maxEnergyReached = true;
-                    showAchievement('Maksimum enerji seviyesine ulaştınız!');
                 }
-
-                createFloatingText(e.clientX, e.clientY, '+500 Energy');
                 gameState.energyUpgradeCost *= 2;
                 updateDisplay();
             }
@@ -436,71 +246,43 @@
             }
         });
 
-        document.getElementById('multiplier-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.multiplier.cost) {
-                gameState.coins -= gameState.upgrades.multiplier.cost;
-                gameState.multiplier *= 1.2;
-                gameState.upgrades.multiplier.level++;
-                gameState.upgrades.multiplier.cost = Math.floor(gameState.upgrades.multiplier.cost * 3);
-                updateDisplay();
-            }
-        });
-
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
-                const autoEarned = gameState.autoCollectPower * gameState.multiplier;
-                gameState.coins += autoEarned;
-                gameState.totalEarned += autoEarned;
-                checkLevelUp();
+                gameState.coins += gameState.autoCollectPower;
                 updateDisplay();
             }
         }, 1000);
 
         setInterval(() => {
-            if (gameState.energy < gameState.maxEnergy) { // maxEnergy'ye göre kontrol
+            if (gameState.energy < gameState.maxEnergy) {
                 gameState.energy = Math.min(gameState.energy + 2, gameState.maxEnergy);
                 updateDisplay();
             }
         }, 1000);
-
-        // Welcome screen animation ve geçiş
-        const welcomeText = "Hayal ettiklerin kadar gerçeksin!";
-        const welcomeContainer = document.getElementById('welcome-text');
         
-        welcomeText.split('').forEach((letter, index) => {
-            const span = document.createElement('span');
-            span.textContent = letter;
-            span.className = 'welcome-letter';
-            span.style.animationDelay = `${index * 0.2}s`;
-            welcomeContainer.appendChild(span);
-        });
-
-        setTimeout(() => {
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
-        }, 10000);
-
-        // Load saved game state
-        const savedGame = localStorage.getItem('farmGameSave');
-        if (savedGame) {
-            try {
-                const parsed = JSON.parse(savedGame);
-                gameState = {...gameState, ...parsed};
-                if (gameState.energy >= 10000) {
-                    gameState.maxEnergyReached = true;
-                }
-            } catch (e) {
-                console.error('Save game yüklenirken hata oluştu:', e);
-            }
+        // Progres çubuğunu güncelle
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            let width = (gameState.energy / gameState.maxEnergy) * 100;
+            progressBar.style.width = width + '%';
+            progressBar.textContent = Math.floor(width) + '%';
         }
 
-        // Save game state periodically
-        setInterval(() => {
-            localStorage.setItem('farmGameSave', JSON.stringify(gameState));
-        }, 30000);
+        setInterval(updateProgressBar, 500);
 
-        // İlk görüntü güncellemesi
-        updateDisplay();
+        // Save/load game state
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('gameState', JSON.stringify(gameState));
+        });
+
+        window.addEventListener('load', () => {
+            const savedState = localStorage.getItem('gameState');
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+                updateDisplay();
+                updateProgressBar();
+            }
+        });
     </script>
 </body>
 </html>
