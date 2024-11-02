@@ -218,13 +218,14 @@
             const savedState = localStorage.getItem("gameState");
             if (savedState) {
                 gameState = JSON.parse(savedState);
+                updateDisplay();
             }
         }
 
         // Sayfa yüklenirken oyunu yükle
         window.addEventListener("load", () => {
             loadGame();
-            updateDisplay();
+            updateUpgradeButtons(); // Yüklemeden sonra buton durumlarını güncelle
         });
 
         // Çıkarken oyunu kaydet
