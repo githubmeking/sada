@@ -290,10 +290,7 @@
                         break;
                     case 'energy':
                         gameState.maxEnergy += 500; // Maksimum enerjiyi 500 artır
-                        gameState.energy += 500; // Mevcut enerjiyi 500 artır
-                        if (gameState.energy > gameState.maxEnergy) {
-                            gameState.energy = gameState.maxEnergy; // Enerjinin max değeri aşmamasını sağla
-                        }
+                        gameState.energy = Math.min(gameState.energy + 500, gameState.maxEnergy); // Mevcut enerjiyi artır
                         break;
                 }
                 
