@@ -168,6 +168,14 @@
             margin: 10px 0;
             word-break: break-all;
         }
+
+        #stats-container {
+            display: none;
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -210,11 +218,12 @@
             </button>
         </div>
 
-        <div class="stats-container">
+        <button id="stats-button" class="upgrade-button">İstatistikleri Göster</button>
+        
+        <div id="stats-container">
             <h3>İstatistikler</h3>
             <p>Toplam Tıklama: <span id="total-clicks">0</span></p>
             <p>Toplam Kazanılan: <span id="total-earned">0</span></p>
-            <p id="referral-count">Davet ettiğiniz kullanıcı sayısı: 0</p>
             <p>Sıradaki Seviyeye Kalan: <span id="coins-to-next-level">1000</span> coin</p>
             <div id="level-progress">
                 <div id="level-progress-bar"></div>
@@ -230,8 +239,8 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const referrals = urlParams.get('referrals') || 0;  // Varsayılan olarak 0
-        
+        const referrals = urlParams.get('referrals') || 0;
+
         let gameState = {
             coins: 0,
             clickPower: 1,
@@ -249,16 +258,13 @@
                 auto: { level: 0, cost: 50 },
                 multiplier: { level: 1, cost: 100 }
             },
-            referralId: '6840212721',  // Bu sabit bir ID ise, kullanıcıya göre güncellenebilir
-            referrals: referrals  // URL'den gelen davet sayısını kaydediyoruz
+            referralId: '6840212721'
         };
 
-        // Level thresholds calculation function
         function calculateLevelThreshold(level) {
             return Math.floor(1000 * Math.pow(1.5, level - 1));
         }
 
-        // Welcome screen animation
         const welcomeText = "Hoş Geldiniz!";
         const welcomeContainer = document.getElementById('welcome-text');
         
@@ -281,12 +287,10 @@
                 (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
             document.getElementById('energy-value').textContent = 
                 Math.floor(gameState.energy);
-            document.getElementById('referral-count').textContent = `Davet ettiğiniz kullanıcı sayısı: ${gameState.referrals}`;    
-            
+
             const farmButton = document.getElementById('farm-button');
             farmButton.disabled = gameState.energy < gameState.energyPerClick;
 
-            // Update upgrade buttons
             const clickUpgrade = document.getElementById('click-upgrade');
             const autoUpgrade = document.getElementById('auto-upgrade');
             const multiplierUpgrade = document.getElementById('multiplier-upgrade');
@@ -302,16 +306,13 @@
             autoUpgrade.disabled = gameState.coins < gameState.upgrades.auto.cost;
             multiplierUpgrade.disabled = gameState.coins < gameState.upgrades.multiplier.cost;
 
-            // Update stats
             document.getElementById('total-clicks').textContent = gameState.totalClicks;
             document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
             document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
-            
-            // Update referral link
+
             document.getElementById('referral-link').textContent = 
                 `https://t.me/no1livebot?start=${gameState.referralId}`;
 
-            // Update level progress
             const currentThreshold = calculateLevelThreshold(gameState.level);
             const nextThreshold = calculateLevelThreshold(gameState.level + 1);
             const progress = ((gameState.totalEarned - currentThreshold) / 
@@ -329,16 +330,6 @@
                 .catch(err => console.error('Kopyalama hatası:', err));
         }
 
-        function createFloatingText(x, y, amount) {
-            const text = document.createElement('div');
-            text.className = 'coin-animation';
-            text.textContent = `+${Math.floor(amount)}`;
-            text.style.left = `${x}px`;
-            text.style.top = `${y}px`;
-            document.body.appendChild(text);
-            setTimeout(() => text.remove(), 1000);
-        }
-
         function checkLevelUp() {
             const nextThreshold = calculateLevelThreshold(gameState.level + 1);
             while (gameState.level < 99 && gameState.totalEarned >= nextThreshold) {
@@ -347,7 +338,6 @@
             }
         }
 
-        // Event Listeners
         document.getElementById('farm-button').addEventListener('click', (e) => {
             if (gameState.energy >= gameState.energyPerClick) {
                 const earnedCoins = gameState.clickPower * gameState.multiplier;
@@ -355,8 +345,6 @@
                 gameState.totalEarned += earnedCoins;
                 gameState.totalClicks++;
                 gameState.energy = Math.max(0, gameState.energy - gameState.energyPerClick);
-                
-                createFloatingText(e.clientX, e.clientY, earnedCoins);
                 checkLevelUp();
                 updateDisplay();
             }
@@ -389,43 +377,42 @@
             }
         });
 
-        // Energy regeneration and auto collect timer
         setInterval(() => {
-            // Energy regeneration
             if (gameState.energy < gameState.maxEnergy) {
                 gameState.energy = Math.min(gameState.maxEnergy, 
                     gameState.energy + gameState.energyRegenRate);
             }
 
-            // Auto collection
             if (gameState.autoCollectPower > 0) {
-            const earnedCoins = gameState.autoCollectPower * gameState.multiplier;
-            gameState.coins += earnedCoins;
-            gameState.totalEarned += earnedCoins;
-            checkLevelUp();
-            updateDisplay();
+                const earnedCoins = gameState.autoCollectPower * gameState.multiplier;
+                gameState.coins += earnedCoins;
+                gameState.totalEarned += earnedCoins;
+                checkLevelUp();
+                updateDisplay();
+            }
+        }, 1000);
+
+        const savedGame = localStorage.getItem('farmGameSave');
+        if (savedGame) {
+            try {
+                const parsed = JSON.parse(savedGame);
+                gameState = {...gameState, ...parsed};
+                updateDisplay();
+            } catch (e) {
+                console.error('Save game yüklenirken hata oluştu:', e);
+            }
         }
-    }, 1000);
 
-    // Load saved game
-    const savedGame = localStorage.getItem('farmGameSave');
-    if (savedGame) {
-        try {
-            const parsed = JSON.parse(savedGame);
-            gameState = {...gameState, ...parsed};
-            updateDisplay();
-        } catch (e) {
-            console.error('Save game yüklenirken hata oluştu:', e);
-        }
-    }
+        setInterval(() => {
+            localStorage.setItem('farmGameSave', JSON.stringify(gameState));
+        }, 30000);
 
-    // Auto save
-    setInterval(() => {
-        localStorage.setItem('farmGameSave', JSON.stringify(gameState));
-    }, 30000);
+        document.getElementById('stats-button').addEventListener('click', () => {
+            const statsContainer = document.getElementById('stats-container');
+            statsContainer.style.display = statsContainer.style.display === 'none' ? 'block' : 'none';
+        });
 
-    // Initial display update
-    updateDisplay();
-</script>
+        updateDisplay();
+    </script>
 </body>
 </html>
