@@ -36,6 +36,7 @@
             min-height: 100vh;
             text-align: center;
             background: linear-gradient(135deg, #83a4d4, #b6fbff);
+            overflow: hidden;
         }
 
         #welcome-screen {
@@ -48,9 +49,22 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2em;
+            font-size: 3em;
             color: white;
             z-index: 100;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        #flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: 0;
+            z-index: 200;
+            animation: lightningFlash 0.3s ease-out;
         }
 
         .welcome-letter {
@@ -191,7 +205,10 @@
     <div id="welcome-screen">
         <div id="welcome-text"></div>
     </div>
-
+    <div id="flash"></div>
+    <div id="welcome-screen">
+        <div id="welcome-text">theBestYou</div>
+    </div>
     <div id="game-container">
         <div id="level-indicator">Seviye: 1</div>
         
@@ -419,10 +436,21 @@
             welcomeContainer.appendChild(span);
         });
 
+        function showLightningEffect() {
+            const flash = document.getElementById('flash');
+            flash.style.animation = "lightningFlash 0.3s ease-out";
+            setTimeout(() => {
+                flash.style.animation = "";
+            }, 300);
+        }
+        
         setTimeout(() => {
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
-        }, 10000);
+            showLightningEffect();
+            setTimeout(() => {
+                document.getElementById('welcome-screen').style.display = 'none';
+                document.getElementById('game-container').style.display = 'block';
+            }, 300); // Şimşek etkisi bittikten sonra göster
+        }, 1000);
 
         // Load saved game state
         const savedGame = localStorage.getItem('farmGameSave');
