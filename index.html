@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Karakterleri</title>
+    <title>Anime Karakter Galerisi</title>
     <style>
         /* Genel Stiller */
         body {
@@ -27,36 +27,41 @@
             text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
         }
 
-        /* Anime Resmi */
-        .anime-image {
-            width: 80%;
-            max-width: 300px;
+        /* Galeri */
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .gallery img {
+            width: 200px;
+            height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             transition: transform 0.3s;
         }
 
-        .anime-image:hover {
+        .gallery img:hover {
             transform: scale(1.05);
-        }
-
-        /* Alt Bilgi */
-        footer {
-            margin-top: 20px;
-            color: #ffcc00;
-            font-size: 1em;
-            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <!-- Başlık -->
-    <h1>Favori Anime Karakterin</h1>
+    <h1>Anime Karakter Galerisi</h1>
 
-    <!-- Anime Resmi -->
-    <img src="https://via.placeholder.com/300x450.png?text=Anime+Character" alt="Anime Character" class="anime-image">
-
-    <!-- Alt Bilgi -->
-    <footer>Anime Galerisi © 2024</footer>
+    <!-- Galeri -->
+    <div class="gallery">
+        <img src="path/to/blue_character.png" alt="Mavi Saçlı Karakter">
+        <img src="path/to/red_character.png" alt="Kırmızı Saçlı Karakter">
+        <img src="path/to/orange_character.png" alt="Turuncu Saçlı Karakter">
+        <img src="path/to/blue_orange_characters.png" alt="Mavi ve Turuncu Saçlı Karakterler">
+        <img src="path/to/blue_red_characters.png" alt="Mavi ve Kırmızı Saçlı Karakterler">
+        <img src="path/to/red_orange_characters.png" alt="Kırmızı ve Turuncu Saçlı Karakterler">
+        <img src="path/to/all_three_characters.png" alt="Üç Karakter Birlikte">
+    </div>
 </body>
 </html>
