@@ -115,6 +115,11 @@
             margin: 10px auto;
         }
 
+        #farm-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
         .upgrades-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -135,11 +140,17 @@
             border: none;
             font-size: 1em;
             font-weight: bold;
+            position: relative;
+            overflow: hidden;
         }
         .upgrade-button.active {
             background-color: #4CAF50;
             color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .upgrade-button.active:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
         }
         .upgrade-button.inactive {
             background-color: #f5f5f5;
@@ -151,6 +162,19 @@
             font-size: 0.9em;
             opacity: 0.9;
             font-weight: normal;
+        }
+
+        /* Debug paneli */
+        #debug-panel {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: none;
         }
     </style>
 </head>
@@ -182,20 +206,23 @@
         <button id="farm-button">FARM</button>
 
         <div class="upgrades-container">
-            <button class="upgrade-button inactive" id="click-upgrade">
+            <button class="upgrade-button" id="click-upgrade">
                 Tıklama Güçlendirmesi
                 <span class="upgrade-cost" id="click-cost">Maliyet: 10 coin</span>
             </button>
-            <button class="upgrade-button inactive" id="auto-upgrade">
+            <button class="upgrade-button" id="auto-upgrade">
                 CPS Arttırma
                 <span class="upgrade-cost" id="auto-cost">Maliyet: 50 coin</span>
             </button>
-            <button class="upgrade-button inactive" id="energy-upgrade">
+            <button class="upgrade-button" id="energy-upgrade">
                 Enerji Yükseltme
                 <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
             </button>
         </div>
     </div>
+
+    <!-- Debug panel -->
+    <div id="debug-panel"></div>
 
     <script>
         document.getElementById("boost-button").addEventListener("click", function() {
@@ -204,7 +231,7 @@
         });
 
         let gameState = {
-            coins: 1200,
+            coins: 2840,  // Test için başlangıç coini
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
@@ -223,8 +250,8 @@
             const savedState = localStorage.getItem("gameState");
             if (savedState) {
                 gameState = JSON.parse(savedState);
-                updateDisplay();
             }
+            updateDisplay();
         }
 
         window.addEventListener("load", loadGame);
@@ -243,17 +270,14 @@
         }
 
         function updateUpgradeButtons() {
-            const checkUpgrade = (buttonId, cost) => {
-                const button = document.getElementById(buttonId);
-                const canAfford = gameState.coins >= cost;
-                button.classList.toggle('active', canAfford);
-                button.classList.toggle('inactive', !canAfford);
+            ['click', 'auto', 'energy'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = Number(gameState.coins) >= Number(cost);
+                
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
                 button.disabled = !canAfford;
-            };
-
-            checkUpgrade('click-upgrade', gameState.upgrades.click.cost);
-            checkUpgrade('auto-upgrade', gameState.upgrades.auto.cost);
-            checkUpgrade('energy-upgrade', gameState.upgrades.energy.cost);
+            });
         }
 
         function handleFarmClick() {
@@ -268,9 +292,9 @@
         document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
 
         function handleUpgrade(type, powerIncrease = 1.5) {
-            const upgrade = gameState.upgrades[type];
-            if (gameState.coins >= upgrade.cost) {
-                gameState.coins -= upgrade.cost;
+            const cost = Number(gameState.upgrades[type].cost);
+            if (Number(gameState.coins) >= cost) {
+                gameState.coins -= cost;
                 
                 switch(type) {
                     case 'click':
@@ -284,16 +308,32 @@
                         break;
                 }
                 
-                upgrade.cost *= 2;
-                upgrade.level++;
+                gameState.upgrades[type].cost = Math.floor(cost * 2);
+                gameState.upgrades[type].level++;
                 updateDisplay();
             }
         }
 
-        document.getElementById('click-upgrade').addEventListener('click', () => handleUpgrade('click'));
-        document.getElementById('auto-upgrade').addEventListener('click', () => handleUpgrade('auto'));
-        document.getElementById('energy-upgrade').addEventListener('click', () => handleUpgrade('energy'));
+        // Güçlendirme butonları için event listener'lar
+        document.getElementById('click-upgrade').addEventListener('click', () => {
+            if (Number(gameState.coins) >= Number(gameState.upgrades.click.cost)) {
+                handleUpgrade('click');
+            }
+        });
 
+        document.getElementById('auto-upgrade').addEventListener('click', () => {
+            if (Number(gameState.coins) >= Number(gameState.upgrades.auto.cost)) {
+                handleUpgrade('auto');
+            }
+        });
+
+        document.getElementById('energy-upgrade').addEventListener('click', () => {
+            if (Number(gameState.coins) >= Number(gameState.upgrades.energy.cost)) {
+                handleUpgrade('energy');
+            }
+        });
+
+        // Otomatik coin kazanımı
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
                 gameState.coins += gameState.autoCollectPower;
@@ -301,6 +341,7 @@
             }
         }, 1000);
 
+        // Enerji yenilenmesi
         setInterval(() => {
             if (gameState.energy < 1000) {
                 gameState.energy = Math.min(gameState.energy + 2, 1000);
