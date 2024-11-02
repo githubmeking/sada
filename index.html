@@ -123,16 +123,6 @@
             margin-top: 5px;
             display: none;
         }
-
-        /* Mobil cihazlar için daha küçük ekran uyumu */
-        @media (max-width: 600px) {
-            .resource-value {
-                font-size: 1em;
-            }
-            #farm-button {
-                font-size: 16px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -215,13 +205,17 @@
             document.getElementById('farm-button').disabled = gameState.energy < 33;
         }
 
-        document.getElementById('farm-button').addEventListener('click', () => {
+        function handleFarmClick() {
             if (gameState.energy >= 33) {
                 gameState.coins += gameState.clickPower;
                 gameState.energy -= 33;
                 updateDisplay();
             }
-        });
+        }
+
+        // Mobil uyumluluk için click ve touchstart olayları eklendi
+        document.getElementById('farm-button').addEventListener('click', handleFarmClick);
+        document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
 
         document.getElementById('energy-upgrade').addEventListener('click', () => {
             if (gameState.coins >= gameState.energyUpgradeCost && !gameState.maxEnergyReached) {
