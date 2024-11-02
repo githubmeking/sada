@@ -197,7 +197,7 @@
 
         // Oyun durumları
         let gameState = {
-            coins: 0,
+            coins: 1200, // Başlangıç coini 1200 olarak ayarlandı
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
@@ -207,6 +207,28 @@
                 energy: { level: 1, cost: 1000 }
             }
         };
+
+        // Oyun verilerini kaydet
+        function saveGame() {
+            localStorage.setItem("gameState", JSON.stringify(gameState));
+        }
+
+        // Oyun verilerini yükle
+        function loadGame() {
+            const savedState = localStorage.getItem("gameState");
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+            }
+        }
+
+        // Sayfa yüklenirken oyunu yükle
+        window.addEventListener("load", () => {
+            loadGame();
+            updateDisplay();
+        });
+
+        // Çıkarken oyunu kaydet
+        window.addEventListener("beforeunload", saveGame);
 
         function updateDisplay() {
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
