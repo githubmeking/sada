@@ -102,7 +102,7 @@
 
         .upgrades-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin: 20px 0;
         }
@@ -111,7 +111,7 @@
             background-color: #4CAF50;
             border: none;
             color: white;
-            padding: 10px;
+            padding: 15px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
@@ -119,6 +119,8 @@
             flex-direction: column;
             align-items: center;
             gap: 5px;
+            min-height: 80px;
+            justify-content: center;
         }
 
         .upgrade-button:disabled {
@@ -136,7 +138,7 @@
             opacity: 0.8;
         }
 
-        #farm-button, #energy-upgrade {
+        #farm-button {
             background: linear-gradient(45deg, #800080, #4B0082);
             border: none;
             color: white;
@@ -227,8 +229,6 @@
         </div>
 
         <button id="farm-button">FARM</button>
-        <button id="energy-upgrade">ENERGY</button>
-        <div id="max-energy-text" class="max-level">Max seviyeye ulaşıldı!</div>
 
         <div class="upgrades-container">
             <button class="upgrade-button" id="click-upgrade">
@@ -243,14 +243,20 @@
                 Çarpan Artışı
                 <span class="upgrade-cost">Maliyet: 100 coin</span>
             </button>
+            <button class="upgrade-button" id="energy-upgrade">
+                Enerji Yükseltme
+                <span class="upgrade-cost">Maliyet: 1000 coin</span>
+            </button>
         </div>
+
+        <div id="max-energy-text" class="max-level">Max seviyeye ulaşıldı!</div>
 
         <div class="stats-container">
             <h3>İstatistikler</h3>
             <p>Toplam Tıklama: <span id="total-clicks">0</span></p>
             <p>Toplam Kazanılan: <span id="total-earned">0</span></p>
             <p>Mevcut Seviye: <span id="current-level">1</span></p>
-            <p>Sıradaki Seviyeye Kalan: <span id="coins-to-next-level">1000</span> coin</p>
+            <p>Sıradaki Seviyeye Kalan: <span id="coins-to-next-level">2000</span> coin</p>
             <div id="level-progress">
                 <div id="level-progress-bar"></div>
             </div>
@@ -273,9 +279,14 @@
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
                 multiplier: { level: 1, cost: 100 }
-            },
-            levelThresholds: [0, 1000, 5000, 10000, 50000]
+            }
         };
+
+        // Generate level thresholds for 99 levels
+        gameState.levelThresholds = [0];
+        for(let i = 1; i <= 99; i++) {
+            gameState.levelThresholds[i] = 2000 * Math.pow(2, i - 1);
+        }
 
         function getCoinsToNextLevel() {
             const currentLevel = gameState.level;
@@ -311,13 +322,13 @@
             clickUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
             autoUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
             multiplierUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.multiplier.cost} coin`;
+            energyUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.energyUpgradeCost} coin`;
 
             clickUpgrade.disabled = gameState.coins < gameState.upgrades.click.cost;
             autoUpgrade.disabled = gameState.coins < gameState.upgrades.auto.cost;
             multiplierUpgrade.disabled = gameState.coins < gameState.upgrades.multiplier.cost;
-            
-            // Energy upgrade button update
             energyUpgrade.disabled = gameState.coins < gameState.energyUpgradeCost || gameState.maxEnergyReached;
+            
             document.getElementById('max-energy-text').style.display = gameState.maxEnergyReached ? 'block' : 'none';
 
             document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
@@ -385,7 +396,6 @@
             }
         });
 
-        // New Energy Upgrade Button Event Listener
         document.getElementById('energy-upgrade').addEventListener('click', (e) => {
             if (gameState.coins >= gameState.energyUpgradeCost && !gameState.maxEnergyReached) {
                 gameState.coins -= gameState.energyUpgradeCost;
