@@ -287,15 +287,15 @@
             const autoUpgrade = document.getElementById('auto-upgrade');
             const multiplierUpgrade = document.getElementById('multiplier-upgrade');
 
-            clickUpgrade.querySelector('.upgrade-cost').textContent = Maliyet: ${gameState.upgrades.click.cost} coin;
-            autoUpgrade.querySelector('.upgrade-cost').textContent = Maliyet: ${gameState.upgrades.auto.cost} coin;
-            multiplierUpgrade.querySelector('.upgrade-cost').textContent = Maliyet: ${gameState.upgrades.multiplier.cost} coin;
+            clickUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
+            autoUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
+            multiplierUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.multiplier.cost} coin`;
 
             clickUpgrade.disabled = gameState.coins < gameState.upgrades.click.cost;
             autoUpgrade.disabled = gameState.coins < gameState.upgrades.auto.cost;
             multiplierUpgrade.disabled = gameState.coins < gameState.upgrades.multiplier.cost;
 
-            document.getElementById('level-indicator').textContent = Seviye: ${gameState.level};
+            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
             document.getElementById('total-clicks').textContent = gameState.totalClicks;
             document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
             document.getElementById('current-level').textContent = gameState.level;
@@ -304,7 +304,7 @@
             document.getElementById('coins-to-next-level').textContent = Math.ceil(coinsToNext);
             
             const progress = getLevelProgress();
-            document.getElementById('level-progress-bar').style.width = ${progress}%;
+            document.getElementById('level-progress-bar').style.width = `${progress}%`;
 
             document.getElementById('farm-button').disabled = gameState.energy < 33;
         }
@@ -320,9 +320,9 @@
         function createFloatingText(x, y, amount) {
             const text = document.createElement('div');
             text.className = 'coin-animation';
-            text.textContent = +${Math.floor(amount)};
-            text.style.left = ${x}px;
-            text.style.top = ${y}px;
+            text.textContent = `+${Math.floor(amount)}`;
+            text.style.left = `${x}px`;
+            text.style.top = `${y}px`;
             document.body.appendChild(text);
             setTimeout(() => text.remove(), 1000);
         }
@@ -332,7 +332,7 @@
                 const nextThreshold = gameState.levelThresholds[gameState.level];
                 if (gameState.totalEarned >= nextThreshold) {
                     gameState.level++;
-                    showAchievement(Seviye Atladın: Seviye ${gameState.level}!);
+                    showAchievement(`Seviye Atladın: Seviye ${gameState.level}!`);
                 } else {
                     break;
                 }
@@ -415,7 +415,7 @@
             const span = document.createElement('span');
             span.textContent = letter;
             span.className = 'welcome-letter';
-            span.style.animationDelay = ${index * 0.2}s;
+            span.style.animationDelay = `${index * 0.2}s`;
             welcomeContainer.appendChild(span);
         });
 
