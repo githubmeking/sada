@@ -113,9 +113,6 @@
             margin: 20px 0;
         }
         .upgrade-button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
             padding: 15px;
             border-radius: 8px;
             cursor: pointer;
@@ -126,10 +123,19 @@
             gap: 5px;
             min-height: 80px;
             justify-content: center;
+            border: none;
+            font-size: 1em;
+            font-weight: bold;
         }
-        .upgrade-button:disabled {
-            background-color: #cccccc;
+        .upgrade-button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .upgrade-button.inactive {
+            background-color: white;
+            color: #aaa;
             cursor: not-allowed;
+            border: 2px solid #ddd;
         }
         .upgrade-cost {
             font-size: 0.8em;
@@ -167,15 +173,15 @@
         <button id="farm-button">FARM</button>
 
         <div class="upgrades-container">
-            <button class="upgrade-button" id="click-upgrade">
+            <button class="upgrade-button inactive" id="click-upgrade">
                 Tıklama Güçlendirmesi
                 <span class="upgrade-cost">Maliyet: 10 coin</span>
             </button>
-            <button class="upgrade-button" id="auto-upgrade">
+            <button class="upgrade-button inactive" id="auto-upgrade">
                 CPS Arttırma
                 <span class="upgrade-cost">Maliyet: 50 coin</span>
             </button>
-            <button class="upgrade-button" id="energy-upgrade">
+            <button class="upgrade-button inactive" id="energy-upgrade">
                 Enerji Yükseltme
                 <span class="upgrade-cost">Maliyet: 1000 coin</span>
             </button>
@@ -207,9 +213,26 @@
             document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy);
 
-            document.getElementById('click-upgrade').querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
-            document.getElementById('auto-upgrade').querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
-            document.getElementById('energy-upgrade').querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost} coin`;
+            updateUpgradeButtons();
+        }
+
+        function updateUpgradeButtons() {
+            updateButtonState('click-upgrade', gameState.coins >= gameState.upgrades.click.cost);
+            updateButtonState('auto-upgrade', gameState.coins >= gameState.upgrades.auto.cost);
+            updateButtonState('energy-upgrade', gameState.coins >= gameState.upgrades.energy.cost);
+        }
+
+        function updateButtonState(buttonId, isActive) {
+            const button = document.getElementById(buttonId);
+            if (isActive) {
+                button.classList.add('active');
+                button.classList.remove('inactive');
+                button.disabled = false;
+            } else {
+                button.classList.add('inactive');
+                button.classList.remove('active');
+                button.disabled = true;
+            }
         }
 
         // Farm butonunu işleme
