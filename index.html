@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gelişmiş Farm Oyunu</title>
     <style>
-        /* Genel Stil */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -22,7 +21,6 @@
             padding: 10px;
         }
 
-        /* Ana Ekran Stil */
         #boost-container {
             display: flex;
             justify-content: center;
@@ -53,9 +51,8 @@
             background-color: #6f22b0;
         }
 
-        /* Oyun Ekranı Stil */
         #game-container {
-            display: none; /* Başlangıçta gizli */
+            display: none;
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
@@ -78,17 +75,29 @@
             min-width: 120px;
             flex: 1;
         }
-        #coin-resource { background: #FFD700; }
-        #cps-resource { background: #DDA0DD; }
-        #energy-resource { background: #87CEFA; }
+        #coin-resource { 
+            background: #FFD700; 
+            border: 2px solid #DAA520;
+        }
+        #cps-resource { 
+            background: #DDA0DD;
+            border: 2px solid #BA55D3;
+        }
+        #energy-resource { 
+            background: #87CEFA;
+            border: 2px solid #4169E1;
+        }
         .resource-title {
             font-weight: bold;
-            color: #666;
+            color: #444;
             margin-bottom: 5px;
+            font-size: 1.1em;
         }
         .resource-value {
-            font-size: 1.2em;
+            font-size: 1.4em;
             color: #2c3e50;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         #farm-button {
             background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
@@ -108,7 +117,7 @@
 
         .upgrades-container {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* İki sütun mobil ve masaüstü uyumu için */
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin: 20px 0;
         }
@@ -130,28 +139,28 @@
         .upgrade-button.active {
             background-color: #4CAF50;
             color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .upgrade-button.inactive {
-            background-color: white;
+            background-color: #f5f5f5;
             color: #aaa;
             cursor: not-allowed;
             border: 2px solid #ddd;
         }
         .upgrade-cost {
-            font-size: 0.8em;
-            opacity: 0.8;
+            font-size: 0.9em;
+            opacity: 0.9;
+            font-weight: normal;
         }
     </style>
 </head>
 <body>
-    <!-- Boost Ekranı -->
     <div id="boost-container">
         <h1>Hoş Geldiniz!</h1>
         <p>Oynamak için Boost butonuna tıklayın!</p>
         <button id="boost-button">Boost</button>
     </div>
 
-    <!-- Oyun Ekranı -->
     <div id="game-container">
         <div id="level-indicator">Seviye: 1</div>
         
@@ -189,15 +198,13 @@
     </div>
 
     <script>
-        // Boost Butonuna Tıklanınca Oyun Ekranını Göster
         document.getElementById("boost-button").addEventListener("click", function() {
             document.getElementById("boost-container").style.display = "none";
             document.getElementById("game-container").style.display = "block";
         });
 
-        // Oyun durumları
         let gameState = {
-            coins: 1200, // Başlangıç coini 1200 olarak ayarlandı
+            coins: 1200,
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
@@ -208,12 +215,10 @@
             }
         };
 
-        // Oyun verilerini kaydet
         function saveGame() {
             localStorage.setItem("gameState", JSON.stringify(gameState));
         }
 
-        // Oyun verilerini yükle
         function loadGame() {
             const savedState = localStorage.getItem("gameState");
             if (savedState) {
@@ -222,47 +227,35 @@
             }
         }
 
-        // Sayfa yüklenirken oyunu yükle
-        window.addEventListener("load", () => {
-            loadGame();
-            updateUpgradeButtons(); // Yüklemeden sonra buton durumlarını güncelle
-        });
-
-        // Çıkarken oyunu kaydet
+        window.addEventListener("load", loadGame);
         window.addEventListener("beforeunload", saveGame);
 
         function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
             document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
 
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
-            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost} coin`;
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
 
             updateUpgradeButtons();
         }
 
         function updateUpgradeButtons() {
-            updateButtonState('click-upgrade', gameState.coins >= gameState.upgrades.click.cost);
-            updateButtonState('auto-upgrade', gameState.coins >= gameState.upgrades.auto.cost);
-            updateButtonState('energy-upgrade', gameState.coins >= gameState.upgrades.energy.cost);
+            const checkUpgrade = (buttonId, cost) => {
+                const button = document.getElementById(buttonId);
+                const canAfford = gameState.coins >= cost;
+                button.classList.toggle('active', canAfford);
+                button.classList.toggle('inactive', !canAfford);
+                button.disabled = !canAfford;
+            };
+
+            checkUpgrade('click-upgrade', gameState.upgrades.click.cost);
+            checkUpgrade('auto-upgrade', gameState.upgrades.auto.cost);
+            checkUpgrade('energy-upgrade', gameState.upgrades.energy.cost);
         }
 
-        function updateButtonState(buttonId, isActive) {
-            const button = document.getElementById(buttonId);
-            if (isActive) {
-                button.classList.add('active');
-                button.classList.remove('inactive');
-                button.disabled = false;
-            } else {
-                button.classList.add('inactive');
-                button.classList.remove('active');
-                button.disabled = true;
-            }
-        }
-
-        // Farm butonunu işleme
         function handleFarmClick() {
             if (gameState.energy >= 33) {
                 gameState.coins += gameState.clickPower;
@@ -274,35 +267,33 @@
         document.getElementById('farm-button').addEventListener('click', handleFarmClick);
         document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
 
-        // Güçlendirme butonları
-        document.getElementById('click-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.click.cost) {
-                gameState.coins -= gameState.upgrades.click.cost;
-                gameState.clickPower *= 1.5;
-                gameState.upgrades.click.cost *= 2; // Maliyeti iki katına çıkar
+        function handleUpgrade(type, powerIncrease = 1.5) {
+            const upgrade = gameState.upgrades[type];
+            if (gameState.coins >= upgrade.cost) {
+                gameState.coins -= upgrade.cost;
+                
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower *= powerIncrease;
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                }
+                
+                upgrade.cost *= 2;
+                upgrade.level++;
                 updateDisplay();
             }
-        });
+        }
 
-        document.getElementById('auto-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.auto.cost) {
-                gameState.coins -= gameState.upgrades.auto.cost;
-                gameState.autoCollectPower += 1;
-                gameState.upgrades.auto.cost *= 2; // Maliyeti iki katına çıkar
-                updateDisplay();
-            }
-        });
+        document.getElementById('click-upgrade').addEventListener('click', () => handleUpgrade('click'));
+        document.getElementById('auto-upgrade').addEventListener('click', () => handleUpgrade('auto'));
+        document.getElementById('energy-upgrade').addEventListener('click', () => handleUpgrade('energy'));
 
-        document.getElementById('energy-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.energy.cost) {
-                gameState.coins -= gameState.upgrades.energy.cost;
-                gameState.energy += 200;
-                gameState.upgrades.energy.cost *= 2; // Maliyeti iki katına çıkar
-                updateDisplay();
-            }
-        });
-
-        // Otomatik coin kazanımı ve enerji yenilenmesi
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
                 gameState.coins += gameState.autoCollectPower;
@@ -316,6 +307,9 @@
                 updateDisplay();
             }
         }, 1000);
+
+        // İlk yükleme için display'i güncelle
+        updateDisplay();
     </script>
 </body>
 </html>
