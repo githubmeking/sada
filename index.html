@@ -163,6 +163,19 @@
             opacity: 0.9;
             font-weight: normal;
         }
+
+        /* Debug paneli */
+        #debug-panel {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -208,6 +221,9 @@
         </div>
     </div>
 
+    <!-- Debug panel -->
+    <div id="debug-panel"></div>
+
     <script>
         document.getElementById("boost-button").addEventListener("click", function() {
             document.getElementById("boost-container").style.display = "none";
@@ -215,11 +231,10 @@
         });
 
         let gameState = {
-            coins: 2840,
+            coins: 2840,  // Test için başlangıç coini
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
-            maxEnergy: 1000, // Başlangıç maksimum enerji
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
@@ -289,8 +304,7 @@
                         gameState.autoCollectPower += 1;
                         break;
                     case 'energy':
-                        gameState.maxEnergy += 500; // Maksimum enerjiyi 500 artır
-                        gameState.energy = Math.min(gameState.energy + 500, gameState.maxEnergy); // Mevcut enerjiyi artır
+                        gameState.energy += 200;
                         break;
                 }
                 
@@ -300,18 +314,26 @@
             }
         }
 
+        // Güçlendirme butonları için event listener'lar
         document.getElementById('click-upgrade').addEventListener('click', () => {
-            handleUpgrade('click');
+            if (Number(gameState.coins) >= Number(gameState.upgrades.click.cost)) {
+                handleUpgrade('click');
+            }
         });
 
         document.getElementById('auto-upgrade').addEventListener('click', () => {
-            handleUpgrade('auto');
+            if (Number(gameState.coins) >= Number(gameState.upgrades.auto.cost)) {
+                handleUpgrade('auto');
+            }
         });
 
         document.getElementById('energy-upgrade').addEventListener('click', () => {
-            handleUpgrade('energy');
+            if (Number(gameState.coins) >= Number(gameState.upgrades.energy.cost)) {
+                handleUpgrade('energy');
+            }
         });
 
+        // Otomatik coin kazanımı
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
                 gameState.coins += gameState.autoCollectPower;
@@ -319,13 +341,15 @@
             }
         }, 1000);
 
+        // Enerji yenilenmesi
         setInterval(() => {
-            if (gameState.energy < gameState.maxEnergy) {
-                gameState.energy = Math.min(gameState.energy + 5, gameState.maxEnergy);
+            if (gameState.energy < 1000) {
+                gameState.energy = Math.min(gameState.energy + 2, 1000);
                 updateDisplay();
             }
         }, 1000);
 
+        // İlk yükleme için display'i güncelle
         updateDisplay();
     </script>
 </body>
