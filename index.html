@@ -9,19 +9,23 @@
             from { opacity: 0; transform: scale(0.3); }
             to { opacity: 1; transform: scale(1); }
         }
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
+
         @keyframes slideUp {
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
         @keyframes welcomeLetter {
             0% { opacity: 0; transform: translateY(50px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+
         body {
             margin: 0;
             padding: 0;
@@ -33,6 +37,7 @@
             text-align: center;
             background: linear-gradient(135deg, #83a4d4, #b6fbff);
         }
+
         #welcome-screen {
             background: black;
             position: fixed;
@@ -47,11 +52,13 @@
             color: white;
             z-index: 100;
         }
+
         .welcome-letter {
             display: inline-block;
             animation: welcomeLetter 0.5s ease-out forwards;
             opacity: 0;
         }
+
         #game-container {
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
@@ -62,6 +69,7 @@
             max-width: 800px;
             width: 90%;
         }
+
         .resource-container {
             display: flex;
             justify-content: space-around;
@@ -69,30 +77,36 @@
             flex-wrap: wrap;
             gap: 10px;
         }
+
         .resource {
             padding: 10px 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             min-width: 150px;
         }
+
         #coin-resource { background: #FFD700; }
         #cps-resource { background: #DDA0DD; }
         #energy-resource { background: #87CEFA; }
+
         .resource-title {
             font-weight: bold;
             color: #666;
             margin-bottom: 5px;
         }
+
         .resource-value {
             font-size: 1.2em;
             color: #2c3e50;
         }
+
         .upgrades-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin: 20px 0;
         }
+
         .upgrade-button {
             background-color: #4CAF50;
             border: none;
@@ -106,18 +120,22 @@
             align-items: center;
             gap: 5px;
         }
+
         .upgrade-button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
+
         .upgrade-button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
+
         .upgrade-cost {
             font-size: 0.8em;
             opacity: 0.8;
         }
+
         #farm-button {
             background: linear-gradient(45deg, #800080, #4B0082);
             border: none;
@@ -130,6 +148,7 @@
             margin: 20px 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+
         .coin-animation {
             position: fixed;
             pointer-events: none;
@@ -138,6 +157,7 @@
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
+
         .achievement {
             position: fixed;
             top: 20px;
@@ -149,6 +169,7 @@
             border-radius: 5px;
             animation: fadeIn 0.3s ease-out;
         }
+
         #level-progress {
             width: 100%;
             height: 20px;
@@ -157,27 +178,23 @@
             overflow: hidden;
             margin-top: 10px;
         }
+
         #level-progress-bar {
             height: 100%;
             background: linear-gradient(90deg, #4CAF50, #45a049);
             width: 0%;
             transition: width 0.3s ease;
         }
-        .stats-container, .leaderboard, .daily-task-container, .achievement-container {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
     </style>
 </head>
 <body>
     <div id="welcome-screen">
-        <div id="welcome-text">Hayal ettiklerin kadar gerçeksin!</div>
+        <div id="welcome-text"></div>
     </div>
+
     <div id="game-container">
         <div id="level-indicator">Seviye: 1</div>
+        
         <div class="resource-container">
             <div class="resource" id="coin-resource">
                 <div class="resource-title">Coin</div>
@@ -192,7 +209,9 @@
                 <div id="energy-value" class="resource-value">1000</div>
             </div>
         </div>
+
         <button id="farm-button">FARM</button>
+
         <div class="upgrades-container">
             <button class="upgrade-button" id="click-upgrade">
                 Tıklama Güçlendirmesi
@@ -207,6 +226,7 @@
                 <span class="upgrade-cost">Maliyet: 100 coin</span>
             </button>
         </div>
+
         <div class="stats-container">
             <h3>İstatistikler</h3>
             <p>Toplam Tıklama: <span id="total-clicks">0</span></p>
@@ -217,20 +237,8 @@
                 <div id="level-progress-bar"></div>
             </div>
         </div>
-        <div class="leaderboard">
-            <h3>Liderlik Tablosu</h3>
-            <p id="leaderboard-content">Henüz veri yok</p>
-        </div>
-        <div class="daily-task-container">
-            <h3>Günlük Görev</h3>
-            <p id="daily-task-text">100 coin kazan!</p>
-            <p id="daily-task-status">Durum: Devam Ediyor</p>
-        </div>
-        <div class="achievement-container">
-            <h3>Başarımlar</h3>
-            <div id="achievement-content">Henüz başarı yok</div>
-        </div>
     </div>
+
     <script>
         let gameState = {
             coins: 0,
@@ -246,41 +254,98 @@
                 auto: { level: 0, cost: 50 },
                 multiplier: { level: 1, cost: 100 }
             },
-            levelThresholds: [0, 1000, 5000, 10000, 50000],
-            leaderboard: [],
-            achievements: [],
-            dailyTask: {
-                goal: 100,
-                progress: 0,
-                completed: false
-            }
+            levelThresholds: [0, 1000, 5000, 10000, 50000]
         };
+
+        function getCoinsToNextLevel() {
+            const currentLevel = gameState.level;
+            if (currentLevel >= gameState.levelThresholds.length - 1) {
+                return 0;
+            }
+            const nextThreshold = gameState.levelThresholds[currentLevel];
+            return nextThreshold - gameState.totalEarned;
+        }
+
+        function getLevelProgress() {
+            const currentLevel = gameState.level;
+            if (currentLevel >= gameState.levelThresholds.length - 1) {
+                return 100;
+            }
+            const currentThreshold = gameState.levelThresholds[currentLevel - 1];
+            const nextThreshold = gameState.levelThresholds[currentLevel];
+            const progress = ((gameState.totalEarned - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
+            return Math.min(Math.max(progress, 0), 100);
+        }
+
         function updateDisplay() {
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
-            document.getElementById('cps-value').textContent = (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
+            document.getElementById('cps-value').textContent = 
+                (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy);
+
+            const clickUpgrade = document.getElementById('click-upgrade');
+            const autoUpgrade = document.getElementById('auto-upgrade');
+            const multiplierUpgrade = document.getElementById('multiplier-upgrade');
+
+            clickUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
+            autoUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
+            multiplierUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.multiplier.cost} coin`;
+
+            clickUpgrade.disabled = gameState.coins < gameState.upgrades.click.cost;
+            autoUpgrade.disabled = gameState.coins < gameState.upgrades.auto.cost;
+            multiplierUpgrade.disabled = gameState.coins < gameState.upgrades.multiplier.cost;
+
+            document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
             document.getElementById('total-clicks').textContent = gameState.totalClicks;
-            document.getElementById('total-earned').textContent = gameState.totalEarned;
+            document.getElementById('total-earned').textContent = Math.floor(gameState.totalEarned);
             document.getElementById('current-level').textContent = gameState.level;
-            document.getElementById('daily-task-status').textContent = gameState.dailyTask.completed ? 'Durum: Tamamlandı' : 'Durum: Devam Ediyor';
-            document.getElementById('achievement-content').innerHTML = gameState.achievements.join('<br>');
-            document.getElementById('leaderboard-content').innerHTML = gameState.leaderboard.length ? gameState.leaderboard.map(player => `${player.name}: ${player.score} coin`).join('<br>') : 'Henüz veri yok';
+            
+            const coinsToNext = getCoinsToNextLevel();
+            document.getElementById('coins-to-next-level').textContent = Math.ceil(coinsToNext);
+            
+            const progress = getLevelProgress();
+            document.getElementById('level-progress-bar').style.width = `${progress}%`;
+
+            document.getElementById('farm-button').disabled = gameState.energy < 33;
         }
-        function checkDailyTask() {
-            if (!gameState.dailyTask.completed && gameState.totalEarned >= gameState.dailyTask.goal) {
-                gameState.dailyTask.completed = true;
-                showAchievement("Günlük Görev Tamamlandı!");
-            }
-        }
+
         function showAchievement(message) {
             const achievement = document.createElement('div');
             achievement.className = 'achievement';
             achievement.textContent = message;
             document.body.appendChild(achievement);
             setTimeout(() => achievement.remove(), 3000);
-            gameState.achievements.push(message);
-            document.getElementById('achievement-content').innerHTML = gameState.achievements.join('<br>');
         }
+
+        function createFloatingText(x, y, amount) {
+            const text = document.createElement('div');
+            text.className = 'coin-animation';
+            text.textContent = `+${Math.floor(amount)}`;
+            text.style.left = `${x}px`;
+            text.style.top = `${y}px`;
+            document.body.appendChild(text);
+            setTimeout(() => text.remove(), 1000);
+        }
+
+        function checkLevelUp() {
+            while (gameState.level < gameState.levelThresholds.length - 1) {
+                const nextThreshold = gameState.levelThresholds[gameState.level];
+                if (gameState.totalEarned >= nextThreshold) {
+                    gameState.level++;
+                    showAchievement(`Seviye Atladın: Seviye ${gameState.level}!`);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        function checkAchievements() {
+            if (gameState.totalClicks === 100) {
+                showAchievement('Başarım: 100 Tıklama!');
+            }
+            checkLevelUp();
+        }
+
         document.getElementById('farm-button').addEventListener('click', (e) => {
             if (gameState.energy >= 33) {
                 const earnedCoins = gameState.clickPower * gameState.multiplier;
@@ -288,21 +353,94 @@
                 gameState.totalEarned += earnedCoins;
                 gameState.totalClicks++;
                 gameState.energy -= 33;
-                checkDailyTask();
+
+                createFloatingText(e.clientX, e.clientY, Math.floor(earnedCoins));
+                checkAchievements();
                 updateDisplay();
             }
         });
+
+        document.getElementById('click-upgrade').addEventListener('click', () => {
+            if (gameState.coins >= gameState.upgrades.click.cost) {
+                gameState.coins -= gameState.upgrades.click.cost;
+                gameState.clickPower *= 1.5;
+                gameState.upgrades.click.level++;
+                gameState.upgrades.click.cost = Math.floor(gameState.upgrades.click.cost * 2);
+                updateDisplay();
+            }
+        });
+
+        document.getElementById('auto-upgrade').addEventListener('click', () => {
+            if (gameState.coins >= gameState.upgrades.auto.cost) {
+                gameState.coins -= gameState.upgrades.auto.cost;
+                gameState.autoCollectPower += 1;
+                gameState.upgrades.auto.level++;
+                gameState.upgrades.auto.cost = Math.floor(gameState.upgrades.auto.cost * 2);
+                updateDisplay();
+            }
+        });
+
+        document.getElementById('multiplier-upgrade').addEventListener('click', () => {
+            if (gameState.coins >= gameState.upgrades.multiplier.cost) {
+                gameState.coins -= gameState.upgrades.multiplier.cost;
+                gameState.multiplier *= 1.2;
+                gameState.upgrades.multiplier.level++;
+                gameState.upgrades.multiplier.cost = Math.floor(gameState.upgrades.multiplier.cost * 3);
+                updateDisplay();
+            }
+        });
+
         setInterval(() => {
-            if (gameState.energy < 1000) gameState.energy = Math.min(gameState.energy + 2, 1000);
-            updateDisplay();
+            if (gameState.autoCollectPower > 0) {
+                const autoEarned = gameState.autoCollectPower * gameState.multiplier;
+                gameState.coins += autoEarned;
+                gameState.totalEarned += autoEarned;
+                checkLevelUp();
+                updateDisplay();
+            }
         }, 1000);
+
+        setInterval(() => {
+            if (gameState.energy < 1000) {
+                gameState.energy = Math.min(gameState.energy + 2, 1000);
+                updateDisplay();
+            }
+        }, 1000);
+
+        // Welcome screen animation ve geçiş
+        const welcomeText = "Hayal ettiklerin kadar gerçeksin!";
+        const welcomeContainer = document.getElementById('welcome-text');
+        
+        welcomeText.split('').forEach((letter, index) => {
+            const span = document.createElement('span');
+            span.textContent = letter;
+            span.className = 'welcome-letter';
+            span.style.animationDelay = `${index * 0.2}s`;
+            welcomeContainer.appendChild(span);
+        });
+
+        setTimeout(() => {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+        }, 10000);
+
+        // Load saved game state
         const savedGame = localStorage.getItem('farmGameSave');
         if (savedGame) {
-            gameState = { ...gameState, ...JSON.parse(savedGame) };
+            try {
+                const parsed = JSON.parse(savedGame);
+                gameState = {...gameState, ...parsed};
+            } catch (e) {
+                console.error('Save game yüklenirken hata oluştu:', e);
+            }
         }
+
+        // Save game state periodically
         setInterval(() => {
             localStorage.setItem('farmGameSave', JSON.stringify(gameState));
         }, 30000);
+
+        // İlk görüntü güncellemesi
         updateDisplay();
     </script>
 </body>
