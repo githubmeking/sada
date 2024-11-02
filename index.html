@@ -5,17 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gelişmiş Farm Oyunu</title>
     <style>
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.3); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        body {
+        /* Genel Stil */
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+        body {
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -23,18 +19,20 @@
             min-height: 100vh;
             text-align: center;
             background: linear-gradient(135deg, #83a4d4, #b6fbff);
+            padding: 10px;
         }
         #game-container {
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 800px;
-            width: 90%;
+            width: 100%;
+            max-width: 500px; /* Masaüstü ekranlar için genişlik sınırlaması */
         }
         .resource-container {
             display: flex;
             justify-content: space-around;
+            flex-wrap: wrap;
             margin-bottom: 20px;
             gap: 10px;
         }
@@ -42,7 +40,8 @@
             padding: 10px 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            min-width: 150px;
+            min-width: 120px; /* Mobil uyumlu genişlik */
+            flex: 1; /* Esnek genişlik */
         }
         #coin-resource { background: #FFD700; }
         #cps-resource { background: #DDA0DD; }
@@ -58,7 +57,7 @@
         }
         .upgrades-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr; /* İki sütun mobil ve masaüstü uyumu için */
             gap: 15px;
             margin: 20px 0;
         }
@@ -96,6 +95,9 @@
             transition: all 0.3s;
             margin: 20px 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 100%; /* Buton genişliğini tam olarak ayarlamak için */
+            max-width: 300px;
+            margin: 10px auto;
         }
         .progress-bar-container {
             width: 100%;
@@ -121,11 +123,22 @@
             margin-top: 5px;
             display: none;
         }
+
+        /* Mobil cihazlar için daha küçük ekran uyumu */
+        @media (max-width: 600px) {
+            .resource-value {
+                font-size: 1em;
+            }
+            #farm-button {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
         <div id="level-indicator">Seviye: 1</div>
+        
         <div class="resource-container">
             <div class="resource" id="coin-resource">
                 <div class="resource-title">Coin</div>
@@ -260,7 +273,6 @@
             }
         }, 1000);
         
-        // Progres çubuğunu güncelle
         function updateProgressBar() {
             const progressBar = document.getElementById('progress-bar');
             let width = (gameState.energy / gameState.maxEnergy) * 100;
@@ -270,7 +282,6 @@
 
         setInterval(updateProgressBar, 500);
 
-        // Save/load game state
         window.addEventListener('beforeunload', () => {
             localStorage.setItem('gameState', JSON.stringify(gameState));
         });
