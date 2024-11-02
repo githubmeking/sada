@@ -21,14 +21,49 @@
             background: linear-gradient(135deg, #83a4d4, #b6fbff);
             padding: 10px;
         }
+
+        /* Ana Ekran Stil */
+        #boost-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        #boost-button {
+            background-color: #8a2be2;
+            color: white;
+            font-size: 1.5em;
+            padding: 15px 30px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+
+        #boost-button:hover {
+            background-color: #6f22b0;
+        }
+
+        /* Oyun Ekranı Stil */
         #game-container {
+            display: none; /* Başlangıçta gizli */
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
             width: 100%;
-            max-width: 500px; /* Masaüstü ekranlar için genişlik sınırlaması */
         }
+        
         .resource-container {
             display: flex;
             justify-content: space-around;
@@ -40,8 +75,8 @@
             padding: 10px 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            min-width: 120px; /* Mobil uyumlu genişlik */
-            flex: 1; /* Esnek genişlik */
+            min-width: 120px;
+            flex: 1;
         }
         #coin-resource { background: #FFD700; }
         #cps-resource { background: #DDA0DD; }
@@ -55,35 +90,6 @@
             font-size: 1.2em;
             color: #2c3e50;
         }
-        .upgrades-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* İki sütun mobil ve masaüstü uyumu için */
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .upgrade-button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            min-height: 80px;
-            justify-content: center;
-        }
-        .upgrade-button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        .upgrade-cost {
-            font-size: 0.8em;
-            opacity: 0.8;
-        }
         #farm-button {
             background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
             border: none;
@@ -95,37 +101,21 @@
             transition: all 0.3s;
             margin: 20px 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            width: 100%; /* Buton genişliğini tam olarak ayarlamak için */
+            width: 100%;
             max-width: 300px;
             margin: 10px auto;
-        }
-        .progress-bar-container {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 10px;
-            height: 20px;
-            position: relative;
-        }
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: #4CAF50;
-            text-align: center;
-            line-height: 20px;
-            color: white;
-            transition: width 0.1s linear;
-        }
-        .max-level {
-            color: red;
-            font-weight: bold;
-            margin-top: 5px;
-            display: none;
         }
     </style>
 </head>
 <body>
+    <!-- Boost Ekranı -->
+    <div id="boost-container">
+        <h1>Hoş Geldiniz!</h1>
+        <p>Oynamak için Boost butonuna tıklayın!</p>
+        <button id="boost-button">Boost</button>
+    </div>
+
+    <!-- Oyun Ekranı -->
     <div id="game-container">
         <div id="level-indicator">Seviye: 1</div>
         
@@ -145,66 +135,30 @@
         </div>
 
         <button id="farm-button">FARM</button>
-        <div class="progress-bar-container">
-            <div id="progress-bar" class="progress-bar">0%</div>
-        </div>
-
-        <div class="upgrades-container">
-            <button class="upgrade-button" id="click-upgrade">
-                Tıklama Güçlendirmesi
-                <span class="upgrade-cost">Maliyet: 10 coin</span>
-            </button>
-            <button class="upgrade-button" id="auto-upgrade">
-                CPS Arttırma
-                <span class="upgrade-cost">Maliyet: 50 coin</span>
-            </button>
-            <button class="upgrade-button" id="energy-upgrade">
-                Enerji Yükseltme
-                <span class="upgrade-cost">Maliyet: 1000 coin</span>
-            </button>
-        </div>
-        <div id="max-energy-text" class="max-level">Max seviyeye ulaşıldı!</div>
     </div>
 
     <script>
+        // Boost Butonuna Tıklanınca Oyun Ekranını Göster
+        document.getElementById("boost-button").addEventListener("click", function() {
+            document.getElementById("boost-container").style.display = "none";
+            document.getElementById("game-container").style.display = "block";
+        });
+
+        // Oyun durumları
         let gameState = {
             coins: 0,
             clickPower: 1,
             autoCollectPower: 0,
-            level: 1,
-            energy: 1000,
-            maxEnergy: 1000,
-            energyUpgradeCost: 1000,
-            maxEnergyReached: false,
-            upgrades: {
-                click: { level: 1, cost: 10 },
-                auto: { level: 0, cost: 50 }
-            }
+            energy: 1000
         };
 
         function updateDisplay() {
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
-            document.getElementById('cps-value').textContent = 
-                (gameState.autoCollectPower).toFixed(1);
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy);
-
-            const clickUpgrade = document.getElementById('click-upgrade');
-            const autoUpgrade = document.getElementById('auto-upgrade');
-            const energyUpgrade = document.getElementById('energy-upgrade');
-
-            clickUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
-            autoUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
-            energyUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.energyUpgradeCost} coin`;
-
-            clickUpgrade.disabled = gameState.coins < gameState.upgrades.click.cost;
-            autoUpgrade.disabled = gameState.coins < gameState.upgrades.auto.cost;
-            energyUpgrade.disabled = gameState.coins < gameState.energyUpgradeCost || gameState.maxEnergyReached;
-            
-            document.getElementById('max-energy-text').style.display = gameState.maxEnergyReached ? 'block' : 'none';
-
-            document.getElementById('farm-button').disabled = gameState.energy < 33;
         }
 
+        // Farm butonunu işleme
         function handleFarmClick() {
             if (gameState.energy >= 33) {
                 gameState.coins += gameState.clickPower;
@@ -213,46 +167,10 @@
             }
         }
 
-        // Mobil uyumluluk için click ve touchstart olayları eklendi
         document.getElementById('farm-button').addEventListener('click', handleFarmClick);
         document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
 
-        document.getElementById('energy-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.energyUpgradeCost && !gameState.maxEnergyReached) {
-                gameState.coins -= gameState.energyUpgradeCost;
-                gameState.maxEnergy += 200;
-                gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + 200);
-                
-                if (gameState.maxEnergy >= 10000) {
-                    gameState.maxEnergy = 10000;
-                    gameState.energy = 10000;
-                    gameState.maxEnergyReached = true;
-                }
-                gameState.energyUpgradeCost *= 2;
-                updateDisplay();
-            }
-        });
-
-        document.getElementById('click-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.click.cost) {
-                gameState.coins -= gameState.upgrades.click.cost;
-                gameState.clickPower *= 1.5;
-                gameState.upgrades.click.level++;
-                gameState.upgrades.click.cost = Math.floor(gameState.upgrades.click.cost * 2);
-                updateDisplay();
-            }
-        });
-
-        document.getElementById('auto-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.auto.cost) {
-                gameState.coins -= gameState.upgrades.auto.cost;
-                gameState.autoCollectPower += 1;
-                gameState.upgrades.auto.level++;
-                gameState.upgrades.auto.cost = Math.floor(gameState.upgrades.auto.cost * 2);
-                updateDisplay();
-            }
-        });
-
+        // Otomatik koleksiyon
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
                 gameState.coins += gameState.autoCollectPower;
@@ -261,33 +179,11 @@
         }, 1000);
 
         setInterval(() => {
-            if (gameState.energy < gameState.maxEnergy) {
-                gameState.energy = Math.min(gameState.energy + 2, gameState.maxEnergy);
+            if (gameState.energy < 1000) {
+                gameState.energy = Math.min(gameState.energy + 2, 1000);
                 updateDisplay();
             }
         }, 1000);
-        
-        function updateProgressBar() {
-            const progressBar = document.getElementById('progress-bar');
-            let width = (gameState.energy / gameState.maxEnergy) * 100;
-            progressBar.style.width = width + '%';
-            progressBar.textContent = Math.floor(width) + '%';
-        }
-
-        setInterval(updateProgressBar, 500);
-
-        window.addEventListener('beforeunload', () => {
-            localStorage.setItem('gameState', JSON.stringify(gameState));
-        });
-
-        window.addEventListener('load', () => {
-            const savedState = localStorage.getItem('gameState');
-            if (savedState) {
-                gameState = JSON.parse(savedState);
-                updateDisplay();
-                updateProgressBar();
-            }
-        });
     </script>
 </body>
 </html>
