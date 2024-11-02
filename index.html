@@ -1,67 +1,54 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime Karakter Galerisi</title>
+    <title>Anime Characters Gallery</title>
     <style>
-        /* Genel Stiller */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
-            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
             margin: 0;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
-            text-align: center;
+            padding: 20px;
         }
-
-        /* Başlık */
         h1 {
-            font-size: 2.5em;
-            color: #ffcc00;
-            margin-bottom: 20px;
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+            color: #333;
         }
-
-        /* Galeri */
         .gallery {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
             gap: 20px;
-            margin-top: 20px;
+            justify-content: center;
         }
-
         .gallery img {
-            width: 200px;
+            width: 300px;
             height: auto;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s;
         }
-
         .gallery img:hover {
             transform: scale(1.05);
         }
     </style>
 </head>
 <body>
-    <!-- Başlık -->
-    <h1>Anime Karakter Galerisi</h1>
 
-    <!-- Galeri -->
-    <div class="gallery">
-        <img src="path/to/blue_character.png" alt="Mavi Saçlı Karakter">
-        <img src="path/to/red_character.png" alt="Kırmızı Saçlı Karakter">
-        <img src="path/to/orange_character.png" alt="Turuncu Saçlı Karakter">
-        <img src="path/to/blue_orange_characters.png" alt="Mavi ve Turuncu Saçlı Karakterler">
-        <img src="path/to/blue_red_characters.png" alt="Mavi ve Kırmızı Saçlı Karakterler">
-        <img src="path/to/red_orange_characters.png" alt="Kırmızı ve Turuncu Saçlı Karakterler">
-        <img src="path/to/all_three_characters.png" alt="Üç Karakter Birlikte">
-    </div>
+<h1>Anime Characters Gallery</h1>
+
+<div class="gallery">
+    <img src="blue.webp" alt="Blue Character">
+    <img src="bluered.webp" alt="Blue and Red Characters">
+    <img src="redorang.webp" alt="Red and Orange Characters">
+    <img src="all.webp" alt="All Characters">
+    <img src="blueorang.webp" alt="Blue and Orange Characters">
+    <img src="orang.webp" alt="Orange Character">
+    <img src="red.webp" alt="Red Character">
+</div>
+
 </body>
 </html>
