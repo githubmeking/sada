@@ -87,6 +87,7 @@
 
         #coin-resource { background: #FFD700; }
         #cps-resource { background: #DDA0DD; }
+        #energy-resource { background: #87CEFA; }
 
         .resource-title {
             font-weight: bold;
@@ -203,6 +204,10 @@
                 <div class="resource-title">CPS (Saniyede Coin)</div>
                 <div id="cps-value" class="resource-value">0</div>
             </div>
+            <div class="resource" id="energy-resource">
+                <div class="resource-title">Enerji</div>
+                <div id="energy-value" class="resource-value">1000</div>
+            </div>
         </div>
 
         <button id="farm-button">FARM</button>
@@ -213,7 +218,7 @@
                 <span class="upgrade-cost">Maliyet: 10 coin</span>
             </button>
             <button class="upgrade-button" id="auto-upgrade">
-                Otomatik Toplama
+                CPS Arttırma
                 <span class="upgrade-cost">Maliyet: 50 coin</span>
             </button>
             <button class="upgrade-button" id="multiplier-upgrade">
@@ -241,6 +246,7 @@
             autoCollectPower: 0,
             multiplier: 1,
             level: 1,
+            energy: 1000,
             totalClicks: 0,
             totalEarned: 0,
             upgrades: {
@@ -275,7 +281,8 @@
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
             document.getElementById('cps-value').textContent = 
                 (gameState.autoCollectPower * gameState.multiplier).toFixed(1);
-            
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy);
+
             const clickUpgrade = document.getElementById('click-upgrade');
             const autoUpgrade = document.getElementById('auto-upgrade');
             const multiplierUpgrade = document.getElementById('multiplier-upgrade');
@@ -298,6 +305,8 @@
             
             const progress = getLevelProgress();
             document.getElementById('level-progress-bar').style.width = `${progress}%`;
+
+            document.getElementById('farm-button').disabled = gameState.energy < 33;
         }
 
         function showAchievement(message) {
@@ -338,14 +347,17 @@
         }
 
         document.getElementById('farm-button').addEventListener('click', (e) => {
-            const earnedCoins = gameState.clickPower * gameState.multiplier;
-            gameState.coins += earnedCoins;
-            gameState.totalEarned += earnedCoins;
-            gameState.totalClicks++;
-            
-            createFloatingText(e.clientX, e.clientY, Math.floor(earnedCoins));
-            checkAchievements();
-            updateDisplay();
+            if (gameState.energy >= 33) {
+                const earnedCoins = gameState.clickPower * gameState.multiplier;
+                gameState.coins += earnedCoins;
+                gameState.totalEarned += earnedCoins;
+                gameState.totalClicks++;
+                gameState.energy -= 33;
+
+                createFloatingText(e.clientX, e.clientY, Math.floor(earnedCoins));
+                checkAchievements();
+                updateDisplay();
+            }
         });
 
         document.getElementById('click-upgrade').addEventListener('click', () => {
@@ -389,11 +401,8 @@
         }, 1000);
 
         setInterval(() => {
-            if (gameState.autoCollectPower > 0) {
-                const autoEarned = gameState.autoCollectPower * gameState.multiplier;
-                gameState.coins += autoEarned;
-                gameState.totalEarned += autoEarned;
-                checkLevelUp();
+            if (gameState.energy < 1000) {
+                gameState.energy = Math.min(gameState.energy + 2, 1000);
                 updateDisplay();
             }
         }, 1000);
