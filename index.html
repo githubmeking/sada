@@ -139,7 +139,7 @@
         }
 
         #farm-button {
-            background: linear-gradient(45deg, #800080, #4B0082);
+            background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
             border: none;
             color: white;
             padding: 15px 32px;
@@ -271,6 +271,7 @@
             multiplier: 1,
             level: 1,
             energy: 1000,
+            maxEnergy: 1000, // Yeni eklenen maksimum enerji değişkeni
             totalClicks: 0,
             totalEarned: 0,
             energyUpgradeCost: 1000,
@@ -285,7 +286,7 @@
         // Generate level thresholds for 99 levels
         gameState.levelThresholds = [0];
         for(let i = 1; i <= 99; i++) {
-            gameState.levelThresholds[i] = 2000 * Math.pow(2, i - 1);
+            gameState.levelThresholds[i] = Math.floor(2000 * Math.pow(2, i - 1));
         }
 
         function getCoinsToNextLevel() {
@@ -294,7 +295,7 @@
                 return 0;
             }
             const nextThreshold = gameState.levelThresholds[currentLevel];
-            return nextThreshold - gameState.totalEarned;
+            return Math.max(0, nextThreshold - gameState.totalEarned);
         }
 
         function getLevelProgress() {
@@ -399,9 +400,11 @@
         document.getElementById('energy-upgrade').addEventListener('click', (e) => {
             if (gameState.coins >= gameState.energyUpgradeCost && !gameState.maxEnergyReached) {
                 gameState.coins -= gameState.energyUpgradeCost;
-                gameState.energy += 500;
+                gameState.maxEnergy += 500; // Maksimum enerji limitini artır
+                gameState.energy = gameState.maxEnergy; // Enerjiyi yeni maksimum değere ayarla
                 
-                if (gameState.energy >= 10000) {
+                if (gameState.maxEnergy >= 10000) {
+                    gameState.maxEnergy = 10000;
                     gameState.energy = 10000;
                     gameState.maxEnergyReached = true;
                     showAchievement('Maksimum enerji seviyesine ulaştınız!');
@@ -454,8 +457,8 @@
         }, 1000);
 
         setInterval(() => {
-            if (gameState.energy < 1000) {
-                gameState.energy = Math.min(gameState.energy + 2, 1000);
+            if (gameState.energy < gameState.maxEnergy) { // maxEnergy'ye göre kontrol
+                gameState.energy = Math.min(gameState.energy + 2, gameState.maxEnergy);
                 updateDisplay();
             }
         }, 1000);
