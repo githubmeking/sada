@@ -344,7 +344,7 @@
         // Enerji yenilenmesi
         setInterval(() => {
             if (gameState.energy < 1000) {
-                gameState.energy = Math.min(gameState.energy + 2, 1000);
+                gameState.energy = Math.min(gameState.energy + 5, 1000);
                 updateDisplay();
             }
         }, 1000);
