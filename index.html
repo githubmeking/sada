@@ -291,6 +291,9 @@
                     case 'energy':
                         gameState.maxEnergy += 500; // Maksimum enerjiyi 500 artır
                         gameState.energy += 500; // Mevcut enerjiyi 500 artır
+                        if (gameState.energy > gameState.maxEnergy) {
+                            gameState.energy = gameState.maxEnergy; // Enerjinin max değeri aşmamasını sağla
+                        }
                         break;
                 }
                 
@@ -301,21 +304,15 @@
         }
 
         document.getElementById('click-upgrade').addEventListener('click', () => {
-            if (Number(gameState.coins) >= Number(gameState.upgrades.click.cost)) {
-                handleUpgrade('click');
-            }
+            handleUpgrade('click');
         });
 
         document.getElementById('auto-upgrade').addEventListener('click', () => {
-            if (Number(gameState.coins) >= Number(gameState.upgrades.auto.cost)) {
-                handleUpgrade('auto');
-            }
+            handleUpgrade('auto');
         });
 
         document.getElementById('energy-upgrade').addEventListener('click', () => {
-            if (Number(gameState.coins) >= Number(gameState.upgrades.energy.cost)) {
-                handleUpgrade('energy');
-            }
+            handleUpgrade('energy');
         });
 
         setInterval(() => {
@@ -326,8 +323,8 @@
         }, 1000);
 
         setInterval(() => {
-            if (gameState.energy < gameState.maxEnergy) { // Maksimum enerjiye göre kontrol
-                gameState.energy = Math.min(gameState.energy + 2, gameState.maxEnergy);
+            if (gameState.energy < gameState.maxEnergy) {
+                gameState.energy = Math.min(gameState.energy + 5, gameState.maxEnergy);
                 updateDisplay();
             }
         }, 1000);
