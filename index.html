@@ -136,7 +136,7 @@
             opacity: 0.8;
         }
 
-        #farm-button {
+        #farm-button, #energy-upgrade {
             background: linear-gradient(45deg, #800080, #4B0082);
             border: none;
             color: white;
@@ -147,6 +147,15 @@
             transition: all 0.3s;
             margin: 20px 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #energy-upgrade {
+            background: linear-gradient(45deg, #4B0082, #800080);
+        }
+
+        #energy-upgrade:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
         }
 
         .coin-animation {
@@ -185,6 +194,13 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+
+        .max-level {
+            color: red;
+            font-weight: bold;
+            margin-top: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -211,6 +227,8 @@
         </div>
 
         <button id="farm-button">FARM</button>
+        <button id="energy-upgrade">ENERGY</button>
+        <div id="max-energy-text" class="max-level">Max seviyeye ulaşıldı!</div>
 
         <div class="upgrades-container">
             <button class="upgrade-button" id="click-upgrade">
@@ -249,6 +267,8 @@
             energy: 1000,
             totalClicks: 0,
             totalEarned: 0,
+            energyUpgradeCost: 1000,
+            maxEnergyReached: false,
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
@@ -286,6 +306,7 @@
             const clickUpgrade = document.getElementById('click-upgrade');
             const autoUpgrade = document.getElementById('auto-upgrade');
             const multiplierUpgrade = document.getElementById('multiplier-upgrade');
+            const energyUpgrade = document.getElementById('energy-upgrade');
 
             clickUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
             autoUpgrade.querySelector('.upgrade-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
@@ -294,6 +315,10 @@
             clickUpgrade.disabled = gameState.coins < gameState.upgrades.click.cost;
             autoUpgrade.disabled = gameState.coins < gameState.upgrades.auto.cost;
             multiplierUpgrade.disabled = gameState.coins < gameState.upgrades.multiplier.cost;
+            
+            // Energy upgrade button update
+            energyUpgrade.disabled = gameState.coins < gameState.energyUpgradeCost || gameState.maxEnergyReached;
+            document.getElementById('max-energy-text').style.display = gameState.maxEnergyReached ? 'block' : 'none';
 
             document.getElementById('level-indicator').textContent = `Seviye: ${gameState.level}`;
             document.getElementById('total-clicks').textContent = gameState.totalClicks;
@@ -356,6 +381,24 @@
 
                 createFloatingText(e.clientX, e.clientY, Math.floor(earnedCoins));
                 checkAchievements();
+                updateDisplay();
+            }
+        });
+
+        // New Energy Upgrade Button Event Listener
+        document.getElementById('energy-upgrade').addEventListener('click', (e) => {
+            if (gameState.coins >= gameState.energyUpgradeCost && !gameState.maxEnergyReached) {
+                gameState.coins -= gameState.energyUpgradeCost;
+                gameState.energy += 500;
+                
+                if (gameState.energy >= 10000) {
+                    gameState.energy = 10000;
+                    gameState.maxEnergyReached = true;
+                    showAchievement('Maksimum enerji seviyesine ulaştınız!');
+                }
+
+                createFloatingText(e.clientX, e.clientY, '+500 Energy');
+                gameState.energyUpgradeCost *= 2;
                 updateDisplay();
             }
         });
@@ -430,6 +473,9 @@
             try {
                 const parsed = JSON.parse(savedGame);
                 gameState = {...gameState, ...parsed};
+                if (gameState.energy >= 10000) {
+                    gameState.maxEnergyReached = true;
+                }
             } catch (e) {
                 console.error('Save game yüklenirken hata oluştu:', e);
             }
