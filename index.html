@@ -175,15 +175,15 @@
         <div class="upgrades-container">
             <button class="upgrade-button inactive" id="click-upgrade">
                 Tıklama Güçlendirmesi
-                <span class="upgrade-cost">Maliyet: 10 coin</span>
+                <span class="upgrade-cost" id="click-cost">Maliyet: 10 coin</span>
             </button>
             <button class="upgrade-button inactive" id="auto-upgrade">
                 CPS Arttırma
-                <span class="upgrade-cost">Maliyet: 50 coin</span>
+                <span class="upgrade-cost" id="auto-cost">Maliyet: 50 coin</span>
             </button>
             <button class="upgrade-button inactive" id="energy-upgrade">
                 Enerji Yükseltme
-                <span class="upgrade-cost">Maliyet: 1000 coin</span>
+                <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
             </button>
         </div>
     </div>
@@ -235,6 +235,10 @@
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins);
             document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy);
+
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost} coin`;
 
             updateUpgradeButtons();
         }
