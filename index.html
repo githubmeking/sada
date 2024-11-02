@@ -86,6 +86,18 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            margin: 5px 0;
+        }
+
+        .boost-item {
+            margin: 10px 0;
+        }
+
+        #stats {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -97,8 +109,13 @@
         <div class="progress-bar-container">
             <div id="progress-bar" class="progress-bar">0%</div>
         </div>
-        <button id="farm-button" class="button-primary">Toplanan Coin: <span id="collected-coin">0.0000001</span></button>
-        <p>Kalan Süre: <span id="remaining-time">2h</span></p>
+        <button id="farm-button" class="button-primary">Farm</button>
+        <p id="farm-status">Durum: Bekliyor</p>
+        <div id="stats">
+            <p>Toplanan Coin: <span id="collected-coin">0.0000001</span></p>
+            <p>Kalan Süre: <span id="remaining-time">2h</span></p>
+            <p>Toplam Coin: <span id="total-coins">100</span></p>
+        </div>
     </div>
 
     <!-- Görevler İçeriği -->
@@ -118,7 +135,19 @@
     <div id="boost" class="tab-content">
         <h2>Yükseltmeler</h2>
         <div class="boost-item">
-            <button id="cps-upgrade" class="button-primary">Saat ↓ - 100 coin</button>
+            <button id="time-upgrade" class="button-primary">Süre ↓ - 100 coin</button>
+        </div>
+        <div class="boost-item">
+            <button id="cps-upgrade" class="button-primary">CPS Arttırma - 10 coin</button>
+        </div>
+        <div class="boost-item">
+            <button id="click-upgrade" class="button-primary">Tıklama Güçlendirme - 10 coin</button>
+        </div>
+        <div class="boost-item">
+            <button id="energy-upgrade" class="button-primary">Enerji Arttırma - 10 coin</button>
+        </div>
+        <div class="boost-item">
+            <button id="multiplier-upgrade" class="button-primary">Çarpan Arttırma - 10 coin</button>
         </div>
     </div>
 
@@ -134,45 +163,54 @@
         let farmInterval;
         let coinIncrement = 3;
         let isFarming = false;
-        let userCoins = 100; // Başlangıç coini
+        let userCoins = 100;
         let totalFarmTime = 2 * 60 * 60 * 1000; // 2 saat
         let remainingFarmTime = totalFarmTime;
         const progressBar = document.getElementById('progress-bar');
 
+        function updateCoinsDisplay() {
+            document.getElementById('total-coins').textContent = userCoins.toFixed(7);
+            document.getElementById('collected-coin').textContent = collectedCoin.toFixed(7);
+        }
+
+        function formatTime(ms) {
+            const hours = Math.floor(ms / (60 * 60 * 1000));
+            const minutes = Math.floor((ms % (60 * 60 * 1000)) / (60 * 1000));
+            return `${hours}h ${minutes}m`;
+        }
+
         function startFarming() {
             if (isFarming) return;
-            document.getElementById('farm-button').textContent = "Toplanıyor...";
+            
+            document.getElementById('farm-status').textContent = "Toplanıyor...";
+            document.getElementById('farm-button').textContent = "Farming...";
             isFarming = true;
 
             farmInterval = setInterval(() => {
                 collectedCoin += coinIncrement * 0.0000001;
-                document.getElementById('collected-coin').textContent = collectedCoin.toFixed(7);
+                updateCoinsDisplay();
                 
-                remainingFarmTime -= 1000; // Her saniye 1 saniye eksilt
+                remainingFarmTime -= 1000;
                 const progress = 100 - ((remainingFarmTime / totalFarmTime) * 100);
                 progressBar.style.width = progress + "%";
                 progressBar.textContent = Math.floor(progress) + "%";
 
-                // Kalan süreyi saat ve dakika olarak göster
-                const remainingHours = Math.floor(remainingFarmTime / (60 * 60 * 1000));
-                const remainingMinutes = Math.floor((remainingFarmTime % (60 * 60 * 1000)) / (60 * 1000));
-                document.getElementById('remaining-time').textContent = `${remainingHours}h ${remainingMinutes}m`;
+                document.getElementById('remaining-time').textContent = formatTime(remainingFarmTime);
                 
                 if (remainingFarmTime <= 0) {
                     clearInterval(farmInterval);
                     isFarming = false;
-                    document.getElementById('farm-button').textContent = "Toplandı!";
-                    userCoins += collectedCoin; // Coinleri ekle
+                    document.getElementById('farm-status').textContent = "Toplandı!";
+                    document.getElementById('farm-button').textContent = "Farm";
+                    userCoins += collectedCoin;
                     collectedCoin = 0.0000001;
-                    document.getElementById('collected-coin').textContent = collectedCoin.toFixed(7);
-                    remainingFarmTime = totalFarmTime; // Süreyi sıfırla
+                    remainingFarmTime = totalFarmTime;
                     progressBar.style.width = "0%";
                     progressBar.textContent = "0%";
+                    updateCoinsDisplay();
                 }
             }, 1000);
         }
-
-        document.getElementById('farm-button').addEventListener('click', startFarming);
 
         function openTab(tabName) {
             const contents = document.getElementsByClassName("tab-content");
@@ -187,20 +225,84 @@
             document.getElementById("tab-" + tabName).classList.add("active");
         }
 
-        openTab('home');
+        // Yükseltme maliyetleri için yardımcı fonksiyon
+        function upgradeCost(baseCost, level) {
+            return Math.floor(baseCost * Math.pow(1.5, level - 1));
+        }
 
-        document.getElementById('cps-upgrade').addEventListener('click', function () {
+        let upgrades = {
+            cps: { cost: 10, level: 1 },
+            click: { cost: 10, level: 1 },
+            energy: { cost: 10, level: 1 },
+            multiplier: { cost: 10, level: 1 }
+        };
+
+        function applyUpgrade(type) {
+            const upgrade = upgrades[type];
+            if (userCoins >= upgrade.cost) {
+                userCoins -= upgrade.cost;
+                upgrade.level++;
+                upgrade.cost = upgradeCost(10, upgrade.level);
+
+                if (type === 'energy') coinIncrement++;
+                updateCoinsDisplay();
+                
+                // Yükseltme butonunun metnini güncelle
+                document.getElementById(`${type}-upgrade`).textContent = 
+                    `${type.charAt(0).toUpperCase() + type.slice(1)} Arttırma - ${upgrade.cost} coin`;
+            }
+        }
+
+        // Zaman yükseltmesi
+        document.getElementById('time-upgrade').addEventListener('click', function() {
             if (userCoins >= 100) {
                 userCoins -= 100;
-                totalFarmTime = Math.max(totalFarmTime - 2 * 60 * 1000, 0); // 2 dakika azalt
+                totalFarmTime = Math.max(totalFarmTime - 2 * 60 * 1000, 60 * 1000); // En az 1 dakika
                 remainingFarmTime = totalFarmTime;
-                progressBar.style.width = "0%";
-                progressBar.textContent = "0%";
+                updateCoinsDisplay();
             }
         });
 
-        // Günlük görev ve davet linki fonksiyonları yukarıdaki örnekteki gibi çalışır.
-        // Diğer kodlarda olduğu gibi burada da mevcut kullanıcı coini ve bonusları ayarlayabilirsiniz.
+        // Günlük bonus sistemi
+        let dailyBonusCooldown = 24 * 60 * 60 * 1000;
+        let dailyBonusLastClaim = Date.now() - dailyBonusCooldown;
+        
+        document.getElementById('daily-bonus-button').addEventListener('click', function() {
+            if (Date.now() - dailyBonusLastClaim >= dailyBonusCooldown) {
+                userCoins += 50;
+                dailyBonusLastClaim = Date.now();
+                document.getElementById('daily-bonus-status').textContent = 
+                    "Günlük giriş bonusu aldınız! 24 saat sonra tekrar tıklayın.";
+                updateCoinsDisplay();
+            } else {
+                const remainingTime = dailyBonusCooldown - (Date.now() - dailyBonusLastClaim);
+                document.getElementById('daily-bonus-status').textContent = 
+                    `Henüz süreniz dolmadı. ${formatTime(remainingTime)} sonra tekrar deneyin.`;
+            }
+        });
+
+        // Telegram grubu katılım bonusu
+        let hasJoined = false;
+        document.getElementById('join-link').addEventListener('click', function() {
+            if (!hasJoined) {
+                userCoins += 50;
+                hasJoined = true;
+                document.getElementById('join-link-status').textContent = 
+                    "Gruba katıldığınız için 50 coin kazandınız!";
+                updateCoinsDisplay();
+            }
+        });
+
+        // Yükseltme butonları için event listener'lar
+        document.getElementById('cps-upgrade').addEventListener('click', () => applyUpgrade('cps'));
+        document.getElementById('click-upgrade').addEventListener('click', () => applyUpgrade('click'));
+        document.getElementById('energy-upgrade').addEventListener('click', () => applyUpgrade('energy'));
+        document.getElementById('multiplier-upgrade').addEventListener('click', () => applyUpgrade('multiplier'));
+        document.getElementById('farm-button').addEventListener('click', startFarming);
+
+        // Başlangıç sekmesini aç
+        openTab('home');
+        updateCoinsDisplay();
     </script>
 </body>
 </html>
