@@ -275,7 +275,7 @@
             if (gameState.coins >= gameState.upgrades.click.cost) {
                 gameState.coins -= gameState.upgrades.click.cost;
                 gameState.clickPower *= 1.5;
-                gameState.upgrades.click.cost *= 2;
+                gameState.upgrades.click.cost *= 2; // Maliyeti iki katına çıkar
                 updateDisplay();
             }
         });
@@ -284,7 +284,7 @@
             if (gameState.coins >= gameState.upgrades.auto.cost) {
                 gameState.coins -= gameState.upgrades.auto.cost;
                 gameState.autoCollectPower += 1;
-                gameState.upgrades.auto.cost *= 2;
+                gameState.upgrades.auto.cost *= 2; // Maliyeti iki katına çıkar
                 updateDisplay();
             }
         });
@@ -293,7 +293,7 @@
             if (gameState.coins >= gameState.upgrades.energy.cost) {
                 gameState.coins -= gameState.upgrades.energy.cost;
                 gameState.energy += 200;
-                gameState.upgrades.energy.cost *= 2;
+                gameState.upgrades.energy.cost *= 2; // Maliyeti iki katına çıkar
                 updateDisplay();
             }
         });
