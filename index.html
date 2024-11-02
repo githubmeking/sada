@@ -63,19 +63,6 @@
             height: auto;
         }
 
-        .boost-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-
-        .boost-item img {
-            width: 50px;
-            height: 50px;
-            margin-right: 10px;
-        }
-
         .button-primary {
             padding: 10px 20px;
             color: white;
@@ -91,90 +78,142 @@
 
     <!-- Ana Sayfa İçeriği -->
     <div id="home" class="tab-content">
-        <h2>Ağaç</h2>
-        <img src="https://img.icons8.com/ios/100/000000/tree.png" alt="Tree">
-        <p>Toplam Puan: <span id="total-score">1.02</span></p>
-        <p>Sonraki Toplama: <span id="next-claim">00:11:10</span></p>
-        <button class="button-primary">Claim 0.080000</button>
+        <h2>Farm</h2>
+        <button id="farm-button" class="button-primary">Farm</button>
+        <p id="farm-status">Durum: Bekliyor</p>
+        <p>Toplanan Coin: <span id="collected-coin">0.0000001</span></p>
+        <p>Kalan Süre: <span id="remaining-time">2h</span></p>
     </div>
 
     <!-- Görevler İçeriği -->
     <div id="earn" class="tab-content">
-        <h2>Günlük Görevler</h2>
-        <p>Tip 1: Daha fazla görev tamamlayın = daha fazla ödül kazanın!</p>
-        <button class="button-primary">Login Bonus - Başla</button>
+        <h2>Görevler</h2>
+        <div>
+            <button id="daily-bonus-button" class="button-primary">Günlük Giriş İçin Tıkla</button>
+            <p id="daily-bonus-status">24 saat sonra tekrar tıklayın</p>
+        </div>
+        <div>
+            <a href="https://t.me/yks_kpss_pdf_kitap" target="_blank" class="button-primary" id="join-link">Gruba Katılmak İçin Tıkla</a>
+            <p id="join-link-status">Gruba katılarak 50 coin kazan!</p>
+        </div>
     </div>
 
     <!-- Yükseltmeler İçeriği -->
     <div id="boost" class="tab-content">
-        <h2>Yükseltme Eşyaları</h2>
+        <h2>Yükseltmeler</h2>
         <div class="boost-item">
-            <img src="https://img.icons8.com/ios/50/000000/box.png" alt="Storage">
-            <div>
-                <p><strong>Storage (Level 1)</strong></p>
-                <p>0.4 birim ile yükselt</p>
-            </div>
+            <button id="cps-upgrade" class="button-primary">CPS Arttırma - 10 coin</button>
         </div>
         <div class="boost-item">
-            <img src="https://img.icons8.com/ios/50/000000/tree.png" alt="Tree">
-            <div>
-                <p><strong>Tree (Level 1)</strong></p>
-                <p>0.4 birim ile yükselt</p>
-            </div>
+            <button id="click-upgrade" class="button-primary">Tıklama Güçlendirme - 10 coin</button>
         </div>
         <div class="boost-item">
-            <img src="https://img.icons8.com/ios/50/000000/water.png" alt="Holy Water">
-            <div>
-                <p><strong>Holy Water (Level 1)</strong></p>
-                <p>Görevi tamamlayarak yükselt</p>
-            </div>
+            <button id="energy-upgrade" class="button-primary">Enerji Arttırma - 10 coin</button>
         </div>
-    </div>
-
-    <!-- Arkadaş Davet İçeriği -->
-    <div id="friends" class="tab-content">
-        <h2>Arkadaş Davet Et!</h2>
-        <p>Arkadaşlarını davet ederek ödüller kazan!</p>
-        <button class="button-primary">Davet Linki Oluştur</button>
-        <p id="invite-link"></p>
+        <div class="boost-item">
+            <button id="multiplier-upgrade" class="button-primary">Çarpan Arttırma - 10 coin</button>
+        </div>
     </div>
 
     <!-- Sekme Menüsü -->
     <div class="tab-bar">
-        <button class="tab-button" onclick="openTab('home')" id="tab-home">Home</button>
-        <button class="tab-button" onclick="openTab('earn')" id="tab-earn">Earn</button>
+        <button class="tab-button" onclick="openTab('home')" id="tab-home">Ana</button>
+        <button class="tab-button" onclick="openTab('earn')" id="tab-earn">Görev</button>
         <button class="tab-button" onclick="openTab('boost')" id="tab-boost">Boost</button>
-        <button class="tab-button" onclick="openTab('friends')" id="tab-friends">Friends</button>
     </div>
 
     <script>
-        // Varsayılan sekme
-        openTab('home');
+        let collectedCoin = 0.0000001;
+        let farmInterval;
+        let coinIncrement = 3;
+        let isFarming = false;
+        let userCoins = 100; // Başlangıç coini
 
-        // Sekme açma fonksiyonu
+        function startFarming() {
+            if (isFarming) return;
+            document.getElementById('farm-status').textContent = "Toplanıyor...";
+            isFarming = true;
+
+            farmInterval = setInterval(() => {
+                collectedCoin += coinIncrement * 0.0000001;
+                document.getElementById('collected-coin').textContent = collectedCoin.toFixed(7);
+            }, 1000);
+
+            setTimeout(() => {
+                clearInterval(farmInterval);
+                isFarming = false;
+                document.getElementById('farm-status').textContent = "Toplandı! Coin: " + collectedCoin.toFixed(7);
+                userCoins += collectedCoin; // Coinleri ekle
+                collectedCoin = 0.0000001;
+                document.getElementById('collected-coin').textContent = collectedCoin.toFixed(7);
+            }, 2 * 60 * 60 * 1000); // 2 saat sonra toplama
+        }
+
+        document.getElementById('farm-button').addEventListener('click', startFarming);
+
         function openTab(tabName) {
-            // Tüm sekme içeriklerini gizle
             const contents = document.getElementsByClassName("tab-content");
             for (let i = 0; i < contents.length; i++) {
                 contents[i].style.display = "none";
             }
-
-            // Tüm sekme butonlarının aktif sınıfını kaldır
             const buttons = document.getElementsByClassName("tab-button");
             for (let i = 0; i < buttons.length; i++) {
                 buttons[i].classList.remove("active");
             }
-
-            // Seçilen sekmeyi göster ve butonu aktif yap
             document.getElementById(tabName).style.display = "block";
             document.getElementById("tab-" + tabName).classList.add("active");
         }
+        
+        openTab('home');
 
-        // Davet linki oluşturma işlevi
-        document.querySelector("#friends .button-primary").addEventListener("click", function() {
-            const link = "https://seedapp.com/invite?code=12345"; // Örnek davet linki
-            document.getElementById("invite-link").textContent = `Davet Linkiniz: ${link}`;
+        let dailyBonusCooldown = 24 * 60 * 60 * 1000;
+        let dailyBonusLastClaim = Date.now() - dailyBonusCooldown;
+        document.getElementById('daily-bonus-button').addEventListener('click', function () {
+            if (Date.now() - dailyBonusLastClaim >= dailyBonusCooldown) {
+                userCoins += 50;
+                dailyBonusLastClaim = Date.now();
+                document.getElementById('daily-bonus-status').textContent = "Günlük giriş bonusu aldınız! 24 saat sonra tekrar tıklayın.";
+            } else {
+                document.getElementById('daily-bonus-status').textContent = "Henüz süreniz dolmadı. Lütfen 24 saat sonra tekrar deneyin.";
+            }
         });
+
+        let hasJoined = false;
+        document.getElementById('join-link').addEventListener('click', function () {
+            if (!hasJoined) {
+                userCoins += 50;
+                hasJoined = true;
+                document.getElementById('join-link-status').textContent = "Gruba katıldığınız için 50 coin kazandınız!";
+            }
+        });
+
+        function upgradeCost(baseCost, level) {
+            return baseCost * Math.pow(2, level - 1);
+        }
+
+        let upgrades = {
+            cps: { cost: 10, level: 1 },
+            click: { cost: 10, level: 1 },
+            energy: { cost: 10, level: 1 },
+            multiplier: { cost: 10, level: 1 }
+        };
+
+        function applyUpgrade(type) {
+            const upgrade = upgrades[type];
+            if (userCoins >= upgrade.cost) {
+                userCoins -= upgrade.cost;
+                upgrade.level++;
+                upgrade.cost = upgradeCost(10, upgrade.level);
+
+                if (type === 'energy') coinIncrement++; // Enerji arttıkça artış miktarı artsın
+            }
+            document.getElementById(`${type}-upgrade`).textContent = `${type.charAt(0).toUpperCase() + type.slice(1)} Arttırma - ${upgrade.cost} coin`;
+        }
+
+        document.getElementById('cps-upgrade').addEventListener('click', () => applyUpgrade('cps'));
+        document.getElementById('click-upgrade').addEventListener('click', () => applyUpgrade('click'));
+        document.getElementById('energy-upgrade').addEventListener('click', () => applyUpgrade('energy'));
+        document.getElementById('multiplier-upgrade').addEventListener('click', () => applyUpgrade('multiplier'));
     </script>
 </body>
 </html>
