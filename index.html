@@ -21,7 +21,6 @@
             padding: 10px;
         }
 
-        /* Navigasyon çubuğu */
         #nav-container {
             display: flex;
             justify-content: space-around;
@@ -61,7 +60,6 @@
             margin-bottom: 5px;
         }
 
-        /* Ana konteynerler */
         #boost-container, #game-container, #earn-container, #home-container {
             display: none;
             background: rgba(255, 255, 255, 0.9);
@@ -73,7 +71,6 @@
             margin: 20px auto;
         }
 
-        /* Boost container özellikleri */
         #boost-container {
             display: flex;
             justify-content: center;
@@ -93,7 +90,6 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Kaynaklar */
         .resource-container {
             display: flex;
             justify-content: space-around;
@@ -120,8 +116,11 @@
             background: #87CEFA;
             border: 2px solid #4169E1;
         }
+        #xp-resource {
+            background: #90EE90;
+            border: 2px solid #32CD32;
+        }
 
-        /* Farm butonu */
         #farm-button {
             background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
             border: none;
@@ -138,7 +137,6 @@
             margin: 10px auto;
         }
 
-        /* Yükseltmeler */
         .upgrades-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -161,7 +159,6 @@
             font-weight: bold;
         }
 
-        /* Earn sayfası */
         .reward {
             background-color: #d0eaff;
             padding: 10px;
@@ -171,14 +168,12 @@
             font-weight: bold;
         }
 
-        /* Home sayfası */
         #cave-icon {
             font-size: 4em;
             color: goldenrod;
             margin-top: 20px;
         }
 
-        /* Butonlar */
         .claim-button, .start-button {
             background-color: #8a2be2;
             color: white;
@@ -197,7 +192,6 @@
     </style>
 </head>
 <body>
-    <!-- Navigasyon Çubuğu -->
     <div id="nav-container">
         <div class="nav-button" id="home-nav">
             <i>🏠</i>
@@ -217,16 +211,14 @@
         </div>
     </div>
 
-    <!-- Boost Container -->
     <div id="boost-container">
         <h1>Hoş Geldiniz!</h1>
         <p>Oynamak için Boost butonuna tıklayın!</p>
         <button id="boost-button">Boost</button>
     </div>
 
-    <!-- Game Container -->
     <div id="game-container">
-        <div id="level-indicator">Seviye: 1</div>
+        <div id="level-indicator">Seviye: <span id="level-text">1</span></div>
         
         <div class="resource-container">
             <div class="resource" id="coin-resource">
@@ -234,14 +226,20 @@
                 <div id="coin-value" class="resource-value">0</div>
             </div>
             <div class="resource" id="cps-resource">
-                <div class="resource-title">CPS (Saniyede Coin)</div>
+                <div class="resource-title">CPS</div>
                 <div id="cps-value" class="resource-value">0</div>
             </div>
             <div class="resource" id="energy-resource">
                 <div class="resource-title">Enerji</div>
                 <div id="energy-value" class="resource-value">1000</div>
             </div>
+            <div class="resource" id="xp-resource">
+                <div class="resource-title">XP</div>
+                <div id="xp-text" class="resource-value">0</div>
+            </div>
         </div>
+
+        <div>Maliyet Seviyesi: <span id="cost-level">0</span></div>
 
         <button id="farm-button">FARM</button>
 
@@ -261,7 +259,6 @@
         </div>
     </div>
 
-    <!-- Earn Container -->
     <div id="earn-container">
         <h2 style="color: #1f3f60;">Giriş Ödülü</h2>
         <button class="start-button" onclick="collectDailyReward()">5000 Coin Al</button>
@@ -274,7 +271,6 @@
         <div class="reward">Seviye 100 - 100000 Coin</div>
     </div>
 
-    <!-- Home Container -->
     <div id="home-container">
         <div id="cave-icon">🪨</div>
         <button class="claim-button" onclick="claimReward()">Claim</button>
@@ -293,7 +289,51 @@
             }
         };
 
-        // Navigation handlers
+        let playerXP = 0;
+        let playerLevel = 1;
+        let costLevel = 0;
+        let totalCoinsSpent = 0;
+
+        function addXP(amount) {
+            playerXP += amount;
+            updateXPDisplay();
+            checkLevelUp();
+        }
+
+        function checkLevelUp() {
+            const xpNeeded = playerLevel * 100;
+            if (playerXP >= xpNeeded) {
+                playerLevel++;
+                playerXP -= xpNeeded;
+                alert(`Tebrikler! ${playerLevel}. seviyeye ulaştınız!`);
+                checkLevelRewards();
+                updateXPDisplay();
+            }
+        }
+
+        function checkLevelRewards() {
+            const rewardLevels = {
+                10: 5000,
+                20: 10000,
+                30: 20000,
+                40: 35000,
+                50: 50000,
+                100: 100000
+            };
+
+            if (rewardLevels[playerLevel]) {
+                gameState.coins += rewardLevels[playerLevel];
+                alert(`Seviye ${playerLevel} ödülü: ${rewardLevels[playerLevel]} Coin kazandınız!`);
+                updateDisplay();
+            }
+        }
+
+        function updateXPDisplay() {
+            document.getElementById("xp-text").textContent = playerXP;
+            document.getElementById("level-text").textContent = playerLevel;
+            document.getElementById("cost-level").textContent = costLevel;
+        }
+
         document.getElementById("boost-nav").addEventListener("click", function() {
             hideAllContainers();
             document.getElementById("game-container").style.display = "block";
@@ -325,17 +365,29 @@
             });
         }
 
-        // Game mechanics
         function saveGame() {
-            localStorage.setItem("gameState", JSON.stringify(gameState));
+            const saveData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                costLevel: costLevel,
+                totalCoinsSpent: totalCoinsSpent
+            };
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
         }
 
         function loadGame() {
-            const savedState = localStorage.getItem("gameState");
-            if (savedState) {
-                gameState = JSON.parse(savedState);
+            const savedData = localStorage.getItem("gameSave");
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState = data.gameState;
+                playerXP = data.playerXP;
+                playerLevel = data.playerLevel;
+                costLevel = data.costLevel;
+                totalCoinsSpent = data.totalCoinsSpent;
             }
             updateDisplay();
+            updateXPDisplay();
         }
 
         function updateDisplay() {
@@ -351,66 +403,76 @@
         }
 
         function updateUpgradeButtons() {
-            ['click', 'auto', 'energy'].forEach(type => {
-                const button = document.getElementById(`${type}-upgrade`);
-                const cost = gameState.upgrades[type].cost;
-                const canAfford = gameState.coins >= cost;
-                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
-                button.disabled = !canAfford;
-            });
-        }
+    ['click', 'auto', 'energy'].forEach(type => {
+        const button = document.getElementById(`${type}-upgrade`);
+        const cost = gameState.upgrades[type].cost;
+        const canAfford = gameState.coins >= cost;
+        button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+        button.disabled = !canAfford;
+    });
+}
 
-        function handleFarmClick() {
-            if (gameState.energy >= 33) {
-                gameState.coins += gameState.clickPower;
-                gameState.energy -= 33;
-                updateDisplay();
-            }
-        }
+function handleFarmClick() {
+    if (gameState.energy >= 33) {
+        gameState.coins += gameState.clickPower;
+        gameState.energy -= 33;
+        addXP(10); // Her farm tıklamasında 10 XP ekle
+        updateDisplay();
+    }
+}
 
-        function handleUpgrade(type, powerIncrease = 1.5) {
-            const cost = gameState.upgrades[type].cost;
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                
-                switch(type) {
-                    case 'click':
-                        gameState.clickPower *= powerIncrease;
-                        break;
-                    case 'auto':
-                        gameState.autoCollectPower += 1;
-                        break;
-                    case 'energy':
-                        gameState.energy += 200;
-                        break;
-                }
-                
-                gameState.upgrades[type].cost = Math.floor(cost * 2);
-                gameState.upgrades[type].level++;
-                updateDisplay();
-            }
+function handleUpgrade(type, powerIncrease = 1.5) {
+    const cost = gameState.upgrades[type].cost;
+    if (gameState.coins >= cost) {
+        gameState.coins -= cost;
+        totalCoinsSpent += cost;
+        
+        // Maliyet seviyesini güncelle
+        const newCostLevel = Math.floor(totalCoinsSpent / 1000);
+        if (newCostLevel > costLevel) {
+            costLevel = newCostLevel;
+            addXP(100); // Her maliyet seviyesi artışında 100 XP ekle
+            alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
         }
-
-        // Daily rewards and claim functions
-        function collectDailyReward() {
-            const lastCollected = localStorage.getItem('lastCollected') || 0;
-            const now = Date.now();
-            const oneDay = 24 * 60 * 60 * 1000;
-            
-            if (now - lastCollected >= oneDay) {
-                gameState.coins += 5000;
-                localStorage.setItem('lastCollected', now);
-                alert("5000 Coin kazandınız!");
-                updateDisplay();
-            } else {
-                alert("Giriş ödülünüzü zaten aldınız. 24 saat sonra tekrar deneyin.");
-            }
+        
+        switch(type) {
+            case 'click':
+                gameState.clickPower *= powerIncrease;
+                break;
+            case 'auto':
+                gameState.autoCollectPower += 1;
+                break;
+            case 'energy':
+                gameState.energy += 200;
+                break;
         }
+        
+        gameState.upgrades[type].cost = Math.floor(cost * 2);
+        gameState.upgrades[type].level++;
+        updateDisplay();
+    }
+}
 
-        function claimReward() {
+function collectDailyReward() {
+    const lastCollected = localStorage.getItem('lastCollected') || 0;
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    
+    if (now - lastCollected >= oneDay) {
+        gameState.coins += 5000;
+        localStorage.setItem('lastCollected', now);
+        alert("5000 Coin kazandınız!");
+        updateDisplay();
+    } else {
+        alert("Giriş ödülünüzü zaten aldınız. 24 saat sonra tekrar deneyin.");
+    }
+}
+
+function claimReward() {
     const rewards = [200, 500, 1000, 5000, 10000];
     const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
     gameState.coins += randomReward;
+    addXP(50); // Claim ödülü için XP ekle
     alert(`${randomReward} Coin kazandınız!`);
     updateDisplay();
 }
@@ -453,12 +515,18 @@ setInterval(() => {
     }
 }, 1000);
 
+// Otomatik XP kazanımı
+setInterval(() => {
+    addXP(1); // Her saniye 1 XP kazanılır
+}, 1000);
+
 // Oyunu yükle
 window.addEventListener("load", loadGame);
 window.addEventListener("beforeunload", saveGame);
 
 // İlk yükleme için display'i güncelle
 updateDisplay();
+updateXPDisplay();
 
 // Başlangıçta Boost container'ı göster
 document.getElementById("boost-container").style.display = "flex";
