@@ -13,12 +13,52 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
             text-align: center;
             background: linear-gradient(135deg, #83a4d4, #b6fbff);
             padding: 10px;
+        }
+
+        /* Navigasyon çubuğu */
+        #nav-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 600px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            font-size: 0.9em;
+            color: #333;
+            text-decoration: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 80px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+        }
+
+        .nav-button:hover {
+            background-color: #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button i {
+            font-size: 1.5em;
+            margin-bottom: 5px;
         }
 
         #boost-container {
@@ -35,21 +75,21 @@
         }
 
         #boost-button {
-            background-color: #f0f0f0; /* Daha açık bir arka plan rengi */
-            color: #333; /* Yazı rengini yumuşatmak için koyu gri */
+            background-color: #f0f0f0;
+            color: #333;
             font-size: 1.3em;
             padding: 12px 24px;
             border-radius: 10px;
-            border: 1px solid #ccc; /* Hafif bir kenar çizgisi */
+            border: 1px solid #ccc;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Daha yumuşak gölge */
-    }
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
         #boost-button:hover {
-            background-color: #e0e0e0; /* Hover durumunda hafif renk değişimi */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Hover gölgesini yumuşatma */
-    }
+            background-color: #e0e0e0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
 
         #game-container {
             display: none;
@@ -164,7 +204,6 @@
             font-weight: normal;
         }
 
-        /* Debug paneli */
         #debug-panel {
             position: fixed;
             bottom: 10px;
@@ -179,6 +218,26 @@
     </style>
 </head>
 <body>
+    <!-- Navigasyon Çubuğu -->
+    <div id="nav-container">
+        <div class="nav-button" id="home-nav">
+            <i>🏠</i>
+            <span>Home</span>
+        </div>
+        <div class="nav-button" id="earn-nav">
+            <i>📋</i>
+            <span>Earn</span>
+        </div>
+        <div class="nav-button" id="boost-nav">
+            <i>🚀</i>
+            <span>Boost</span>
+        </div>
+        <div class="nav-button" id="friends-nav">
+            <i>👥</i>
+            <span>Friends</span>
+        </div>
+    </div>
+
     <div id="boost-container">
         <h1>Hoş Geldiniz!</h1>
         <p>Oynamak için Boost butonuna tıklayın!</p>
@@ -221,17 +280,34 @@
         </div>
     </div>
 
-    <!-- Debug panel -->
     <div id="debug-panel"></div>
 
     <script>
+        // Boost butonu ve navigasyon butonları için event listener'lar
         document.getElementById("boost-button").addEventListener("click", function() {
             document.getElementById("boost-container").style.display = "none";
             document.getElementById("game-container").style.display = "block";
         });
 
+        document.getElementById("boost-nav").addEventListener("click", function() {
+            document.getElementById("boost-container").style.display = "none";
+            document.getElementById("game-container").style.display = "block";
+        });
+
+        document.getElementById("home-nav").addEventListener("click", function() {
+            alert("Home'a hoş geldiniz!");
+        });
+
+        document.getElementById("earn-nav").addEventListener("click", function() {
+            alert("Earn sayfasına yönlendiriliyorsunuz!");
+        });
+
+        document.getElementById("friends-nav").addEventListener("click", function() {
+            alert("Arkadaşlar sayfasına yönlendiriliyorsunuz!");
+        });
+
         let gameState = {
-            coins: 2840,  // Test için başlangıç coini
+            coins: 2840,
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
@@ -314,7 +390,6 @@
             }
         }
 
-        // Güçlendirme butonları için event listener'lar
         document.getElementById('click-upgrade').addEventListener('click', () => {
             if (Number(gameState.coins) >= Number(gameState.upgrades.click.cost)) {
                 handleUpgrade('click');
@@ -328,29 +403,29 @@
         });
 
         document.getElementById('energy-upgrade').addEventListener('click', () => {
-            if (Number(gameState.coins) >= Number(gameState.upgrades.energy.cost)) {
-                handleUpgrade('energy');
-            }
-        });
+    if (Number(gameState.coins) >= Number(gameState.upgrades.energy.cost)) {
+        handleUpgrade('energy');
+    }
+});
 
-        // Otomatik coin kazanımı
-        setInterval(() => {
-            if (gameState.autoCollectPower > 0) {
-                gameState.coins += gameState.autoCollectPower;
-                updateDisplay();
-            }
-        }, 1000);
-
-        // Enerji yenilenmesi
-        setInterval(() => {
-            if (gameState.energy < 1000) {
-                gameState.energy = Math.min(gameState.energy + 5, 1000);
-                updateDisplay();
-            }
-        }, 1000);
-
-        // İlk yükleme için display'i güncelle
+// Otomatik coin kazanımı
+setInterval(() => {
+    if (gameState.autoCollectPower > 0) {
+        gameState.coins += gameState.autoCollectPower;
         updateDisplay();
-    </script>
+    }
+}, 1000);
+
+// Enerji yenilenmesi
+setInterval(() => {
+    if (gameState.energy < 1000) {
+        gameState.energy = Math.min(gameState.energy + 5, 1000);
+        updateDisplay();
+    }
+}, 1000);
+
+// İlk yükleme için display'i güncelle
+updateDisplay();
+        </script>
 </body>
 </html>
