@@ -282,7 +282,6 @@
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
-            maxEnergy: 1000, // Maksimum enerji değerini takip etmek için
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
@@ -306,7 +305,7 @@
             if (playerXP >= xpNeeded) {
                 playerLevel++;
                 playerXP -= xpNeeded;
-                alert(`Tebrikler! ${playerLevel}. seviyeye ulaştınız!`);
+                alert(Tebrikler! ${playerLevel}. seviyeye ulaştınız!);
                 checkLevelRewards();
                 updateXPDisplay();
             }
@@ -324,7 +323,7 @@
 
             if (rewardLevels[playerLevel]) {
                 gameState.coins += rewardLevels[playerLevel];
-                alert(`Seviye ${playerLevel} ödülü: ${rewardLevels[playerLevel]} Coin kazandınız!`);
+                alert(Seviye ${playerLevel} ödülü: ${rewardLevels[playerLevel]} Coin kazandınız!);
                 updateDisplay();
             }
         }
@@ -395,23 +394,20 @@
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
             document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-            document.getElementById('energy-resource').textContent = `Max Enerji: ${gameState.maxEnergy}`; // Maksimum enerji göstergesi
-        
-            // Enerji yükseltme maliyetinin güncellenmesi
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            if (gameState.maxEnergy < 10000) { // Maksimum enerjiye ulaşılmamışsa maliyet gösterilsin
-                document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-            }
+
+            document.getElementById('click-cost').textContent = Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin;
+            document.getElementById('auto-cost').textContent = Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin;
+            document.getElementById('energy-cost').textContent = Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin;
+
             updateUpgradeButtons();
         }
 
         function updateUpgradeButtons() {
     ['click', 'auto', 'energy'].forEach(type => {
-        const button = document.getElementById(`${type}-upgrade`);
+        const button = document.getElementById(${type}-upgrade);
         const cost = gameState.upgrades[type].cost;
         const canAfford = gameState.coins >= cost;
-        button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+        button.className = upgrade-button ${canAfford ? 'active' : 'inactive'};
         button.disabled = !canAfford;
     });
 }
@@ -436,7 +432,7 @@ function handleUpgrade(type, powerIncrease = 1.5) {
         if (newCostLevel > costLevel) {
             costLevel = newCostLevel;
             addXP(100); // Her maliyet seviyesi artışında 100 XP ekle
-            alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
+            alert(Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.);
         }
         
         switch(type) {
@@ -447,14 +443,7 @@ function handleUpgrade(type, powerIncrease = 1.5) {
                 gameState.autoCollectPower += 1;
                 break;
             case 'energy':
-                if (gameState.maxEnergy < 10000) { // Maksimum enerji 10.000'den küçükse artır
-                    gameState.maxEnergy += 500;
-                    alert(`Maksimum enerji değeri ${gameState.maxEnergy} oldu!`);
-                }
-                if (gameState.maxEnergy >= 10000) { // Maksimum enerji sınırına ulaşıldıysa
-                    document.getElementById('energy-upgrade').textContent = "MAX";
-                    document.getElementById('energy-upgrade').disabled = true; // Butonu devre dışı bırak
-                }
+                gameState.energy += 200;
                 break;
         }
         
@@ -484,7 +473,7 @@ function claimReward() {
     const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
     gameState.coins += randomReward;
     addXP(50); // Claim ödülü için XP ekle
-    alert(`${randomReward} Coin kazandınız!`);
+    alert(${randomReward} Coin kazandınız!);
     updateDisplay();
 }
 
@@ -520,8 +509,8 @@ setInterval(() => {
 
 // Enerji yenilenmesi
 setInterval(() => {
-    if (gameState.energy < gameState.maxEnergy) {
-        gameState.energy = Math.min(gameState.energy + 5, gameState.maxEnergy); // Maksimum enerjiye kadar yenile
+    if (gameState.energy < 1000) {
+        gameState.energy = Math.min(gameState.energy + 5, 1000);
         updateDisplay();
     }
 }, 1000);
