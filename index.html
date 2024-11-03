@@ -305,7 +305,7 @@
             if (playerXP >= xpNeeded) {
                 playerLevel++;
                 playerXP -= xpNeeded;
-                alert(Tebrikler! ${playerLevel}. seviyeye ulaştınız!);
+                alert(`Tebrikler! ${playerLevel}. seviyeye ulaştınız!`);
                 checkLevelRewards();
                 updateXPDisplay();
             }
@@ -323,7 +323,7 @@
 
             if (rewardLevels[playerLevel]) {
                 gameState.coins += rewardLevels[playerLevel];
-                alert(Seviye ${playerLevel} ödülü: ${rewardLevels[playerLevel]} Coin kazandınız!);
+                alert(`Seviye ${playerLevel} ödülü: ${rewardLevels[playerLevel]} Coin kazandınız!`);
                 updateDisplay();
             }
         }
@@ -395,19 +395,19 @@
             document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
 
-            document.getElementById('click-cost').textContent = Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin;
-            document.getElementById('auto-cost').textContent = Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin;
-            document.getElementById('energy-cost').textContent = Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin;
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
 
             updateUpgradeButtons();
         }
 
         function updateUpgradeButtons() {
     ['click', 'auto', 'energy'].forEach(type => {
-        const button = document.getElementById(${type}-upgrade);
+        const button = document.getElementById(`${type}-upgrade`);
         const cost = gameState.upgrades[type].cost;
         const canAfford = gameState.coins >= cost;
-        button.className = upgrade-button ${canAfford ? 'active' : 'inactive'};
+        button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
         button.disabled = !canAfford;
     });
 }
@@ -432,7 +432,7 @@ function handleUpgrade(type, powerIncrease = 1.5) {
         if (newCostLevel > costLevel) {
             costLevel = newCostLevel;
             addXP(100); // Her maliyet seviyesi artışında 100 XP ekle
-            alert(Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.);
+            alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
         }
         
         switch(type) {
@@ -473,7 +473,7 @@ function claimReward() {
     const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
     gameState.coins += randomReward;
     addXP(50); // Claim ödülü için XP ekle
-    alert(${randomReward} Coin kazandınız!);
+    alert(`${randomReward} Coin kazandınız!`);
     updateDisplay();
 }
 
@@ -530,6 +530,3 @@ updateXPDisplay();
 
 // Başlangıçta Boost container'ı göster
 document.getElementById("boost-container").style.display = "flex";
-        </script>
-</body>
-</html>
