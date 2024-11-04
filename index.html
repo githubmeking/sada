@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>No1Game - Gelişmiş Farm Oyunu</title>
+    <!-- Pacifico Fontunu Ekleyin -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -477,6 +479,7 @@
         <h2>Oyuncu İstatistikleri</h2>
         <div id="home-stats">
             <div class="stat">Toplam Coin: <span id="home-coins">0</span></div>
+            <div class="stat">Seviye: <span id="home-level">1</span></div>
             <div class="stat">XP: <span id="home-xp">0</span> / <span id="home-xp-needed">100</span></div>
             <div class="stat">Enerji: <span id="home-energy">1000</span></div>
         </div>
@@ -498,6 +501,12 @@
         <div id="daily-tip">
             Günlük İpucu: Daha fazla enerji kazanmak için enerji yükseltmelerini tercih edin!
         </div>
+    </div>
+
+    <!-- Friends Container -->
+    <div id="friends-container">
+        <h2>Arkadaşlar</h2>
+        <p>Henüz arkadaş eklemediniz.</p>
     </div>
 
     <!-- Navigasyon Çubuğu -->
@@ -667,7 +676,8 @@
         // XP Display Güncelleme Fonksiyonu
         function updateXPDisplay() {
             document.getElementById("xp-text").textContent = playerXP;
-            document.getElementById("level-text").textContent = playerLevel;
+            // "level-text" yerine "home-level" kullanılıyor
+            document.getElementById("home-level").textContent = playerLevel;
             document.getElementById("cost-level").textContent = costLevel;
 
             // Home İstatistiklerini Güncelle
@@ -962,14 +972,17 @@
         });
 
         document.getElementById("friends-nav").addEventListener("click", function() {
-            alert("Arkadaşlar sayfasına yönlendiriliyorsunuz!");
+            hideAllContainers();
+            document.getElementById("friends-container").style.display = "block";
         });
 
-        document.getElementById("boost-button").addEventListener("click", function() {
-            hideAllContainers();
-            document.getElementById("boost-container").style.display = "block";
-            resetBoost();
-        });
+        // "boost-button" Event Listener'ını Kaldırın (HTML'de yok)
+        // Eğer bir boost-button varsa, aşağıdaki kodu kullanın
+        // document.getElementById("boost-button").addEventListener("click", function() {
+        //     hideAllContainers();
+        //     document.getElementById("boost-container").style.display = "block";
+        //     resetBoost();
+        // });
 
         document.getElementById('farm-button').addEventListener('click', handleFarmClick);
         document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
