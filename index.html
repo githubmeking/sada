@@ -416,8 +416,6 @@
             </div>
         </div>
 
-        <div>Maliyet Seviyesi: <span id="cost-level">0</span></div>
-
         <button id="farm-button">FARM</button>
 
         <div class="upgrades-container">
@@ -548,7 +546,6 @@
 
         let playerXP = 0;
         let playerLevel = 1;
-        let costLevel = 0;
         let totalCoinsSpent = 0;
         let lastCollected = parseInt(localStorage.getItem('lastCollected')) || 0;
         let daysLoggedIn = parseInt(localStorage.getItem('daysLoggedIn')) || 0;
@@ -615,8 +612,7 @@
 
                     if (achieved) {
                         achievement.completed = true;
-                        // Yeni sistemde sadece XP değil, başarımlar işaretlenecek
-                        addAchievement(`Başarımlar: ${achievement.description}`);
+                        // Başarımlar işaretlendi
                         const achievementDiv = document.getElementById(`achievement-${achievement.id}`);
                         if (achievementDiv) {
                             achievementDiv.classList.add('completed');
@@ -629,21 +625,10 @@
             });
         }
 
-        // Başarımların Dinamik Olarak Eklenmesi Fonksiyonu
-        function addAchievement(description) {
-            const achievementContainer = document.getElementById('achievements-list');
-            const achievement = document.createElement('div');
-            achievement.className = 'achievement completed';
-            achievement.innerHTML = `
-                <span>${description}</span>
-                <span class="checkmark">✔️</span>
-            `;
-            achievementContainer.appendChild(achievement);
-        }
-
         // XP Ekleme Fonksiyonu
         function addXP(amount) {
             playerXP += amount;
+            console.log(`XP Eklendi: +${amount}, Toplam XP: ${playerXP}`);
             updateXPDisplay();
             checkLevelUp();
         }
@@ -676,13 +661,7 @@
         // XP Display Güncelleme Fonksiyonu
         function updateXPDisplay() {
             document.getElementById("xp-text").textContent = playerXP;
-            // "level-text" yerine "home-level" kullanılıyor
             document.getElementById("home-level").textContent = playerLevel;
-            document.getElementById("cost-level").textContent = costLevel;
-
-            // Home İstatistiklerini Güncelle
-            document.getElementById("home-level").textContent = playerLevel;
-            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
             document.getElementById("home-xp").textContent = playerXP;
             document.getElementById("home-xp-needed").textContent = playerLevel * 100;
             document.getElementById("home-energy").textContent = gameState.energy;
@@ -829,7 +808,6 @@
                 gameState: gameState,
                 playerXP: playerXP,
                 playerLevel: playerLevel,
-                costLevel: costLevel,
                 totalCoinsSpent: totalCoinsSpent,
                 daysLoggedIn: daysLoggedIn,
                 lastCollected: lastCollected,
@@ -837,6 +815,7 @@
                 lastLoginDate: lastLoginDate
             };
             localStorage.setItem("gameSave", JSON.stringify(saveData));
+            console.log("Oyun kaydedildi:", saveData);
         }
 
         // Oyun Verilerini Yükleme Fonksiyonu
@@ -847,7 +826,6 @@
                 gameState = data.gameState || gameState;
                 playerXP = data.playerXP || 0;
                 playerLevel = data.playerLevel || 1;
-                costLevel = data.costLevel || 0;
                 totalCoinsSpent = data.totalCoinsSpent || 0;
                 daysLoggedIn = data.daysLoggedIn || 0;
                 lastCollected = parseInt(data.lastCollected) || 0;
@@ -860,7 +838,7 @@
             updateHomeDisplay();
             styleNo1Game();
             updateEarnRewards();
-            console.log("Loaded awardedLevels:", awardedLevels);
+            console.log("Yüklendi:", awardedLevels);
 
             // XP Güçlendirme aktifse interval başlat
             if (gameState.upgrades.xp.level > 0 && !gameState.xpBoostActive) {
@@ -906,6 +884,7 @@
                 addXP(10);
                 updateDisplay();
                 updateAchievements(); // Farm sayısı arttıkça başarımları güncelle
+                console.log("Farm yapıldı. Coin:", gameState.coins, "Enerji:", gameState.energy, "Farm Sayısı:", gameState.farmCount, "XP:", playerXP);
             } else {
                 alert("Enerjiniz yeterli değil!");
             }
@@ -917,6 +896,7 @@
             if (gameState.coins >= cost) {
                 gameState.coins -= cost;
                 totalCoinsSpent += cost;
+                console.log(`Upgrade Yapıldı: ${type}, Maliyet: ${cost}, Kalan Coin: ${gameState.coins}`);
 
                 switch(type) {
                     case 'click':
@@ -952,7 +932,9 @@
             gameState.xpBoostActive = true;
             gameState.upgrades.xp.interval = setInterval(() => {
                 addXP(2);
+                console.log("XP Boost aktif: +2 XP");
             }, 2000);
+            console.log("XP Boost Başlatıldı");
         }
 
         // Event Listeners
@@ -975,14 +957,6 @@
             hideAllContainers();
             document.getElementById("friends-container").style.display = "block";
         });
-
-        // "boost-button" Event Listener'ını Kaldırın (HTML'de yok)
-        // Eğer bir boost-button varsa, aşağıdaki kodu kullanın
-        // document.getElementById("boost-button").addEventListener("click", function() {
-        //     hideAllContainers();
-        //     document.getElementById("boost-container").style.display = "block";
-        //     resetBoost();
-        // });
 
         document.getElementById('farm-button').addEventListener('click', handleFarmClick);
         document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
@@ -1009,6 +983,7 @@
                 gameState.coins += gameState.autoCollectPower;
                 updateDisplay();
                 updateAchievements(); // Coin arttıkça başarımları güncelle
+                console.log(`Otomatik Toplama: +${gameState.autoCollectPower} Coin`);
             }
         }, 1000);
 
@@ -1016,12 +991,14 @@
             if (gameState.energy < 1000) {
                 gameState.energy = Math.min(gameState.energy + 5, 1000);
                 updateDisplay();
+                console.log(`Enerji Yenileniyor: ${gameState.energy}`);
             }
         }, 1000);
 
         setInterval(() => {
             addXP(1);
             updateDailyRewardTimer();
+            console.log("Her saniye +1 XP");
         }, 1000);
 
         // Sayfa Yüklendiğinde
@@ -1065,6 +1042,7 @@
                 localStorage.setItem('daysLoggedIn', daysLoggedIn);
                 localStorage.setItem('lastLoginDate', lastLoginDate);
                 updateHomeDisplay();
+                console.log(`Gün Sayısı Artırıldı: ${daysLoggedIn}`);
             }
         }
 
@@ -1092,6 +1070,7 @@
             }
             gameState.xpBoostActive = false;
             updateDisplay();
+            console.log("Boost Sıfırlandı");
         }
 
     </script>
