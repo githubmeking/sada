@@ -104,7 +104,7 @@
         }
 
         /* Ana İçerik Bölümleri */
-        #boost-container, #game-container, #earn-container, #home-container {
+        #boost-container, #earn-container, #home-container, #friends-container {
             display: none;
             background: rgba(255, 255, 255, 0.95);
             padding: 20px;
@@ -606,9 +606,7 @@
 
                     if (achieved) {
                         achievement.completed = true;
-                        // Ödül verme işlemi değiştirildi, XP değil coin değil
-                        // Önceki kodda coin eklenirken bu hatalıymış
-                        // Yeni sistemde sadece ödülü işaretlemek yeterli
+                        // Yeni sistemde sadece XP değil, başarımlar işaretlenecek
                         addAchievement(`Başarımlar: ${achievement.description}`);
                         const achievementDiv = document.getElementById(`achievement-${achievement.id}`);
                         if (achievementDiv) {
@@ -809,7 +807,7 @@
 
         // Tüm İçerikleri Gizleme Fonksiyonu
         function hideAllContainers() {
-            const containers = ["boost-container", "game-container", "earn-container", "home-container"];
+            const containers = ["boost-container", "earn-container", "home-container", "friends-container"];
             containers.forEach(id => {
                 document.getElementById(id).style.display = "none";
             });
@@ -866,7 +864,6 @@
             document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
             document.getElementById('xp-text').textContent = playerXP;
-            document.getElementById('farmCount').textContent = gameState.farmCount;
 
             document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
             document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
@@ -998,6 +995,7 @@
             if (gameState.autoCollectPower > 0) {
                 gameState.coins += gameState.autoCollectPower;
                 updateDisplay();
+                updateAchievements(); // Coin arttıkça başarımları güncelle
             }
         }, 1000);
 
@@ -1036,6 +1034,10 @@
 
             updateProgressBar(); // İlerleme çubuğunu güncelle
             displayDailyTip(); // Günlük ipucunu göster
+
+            // Başlangıçta Boost bölümünü göster
+            hideAllContainers();
+            document.getElementById("boost-container").style.display = "block";
         });
 
         // Oyun Kapatılırken Kaydetme
@@ -1064,47 +1066,6 @@
             const today = new Date().getDate();
             const tipIndex = today % dailyTips.length;
             document.getElementById('daily-tip').textContent = `Günlük İpucu: ${dailyTips[tipIndex]}`;
-        }
-
-        // Seviye Ödüllerini Almak için Fonksiyon
-        function claimLevelReward(level) {
-            if (playerLevel >= level && !awardedLevels[`reward_sv${level}`]) {
-                const xpAmount = rewardLevels[level].xp;
-                addXP(xpAmount);
-                awardedLevels[`reward_sv${level}`] = true;
-                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-                alert(`sv${level} ödülünüzü aldınız: ${xpAmount} XP kazandınız!`);
-                updateDisplay();
-                updateEarnRewards();
-            } else if (awardedLevels[`reward_sv${level}`]) {
-                alert("Bu ödülü zaten aldınız!");
-            } else {
-                alert("Yeterli seviyeye ulaşmadınız!");
-            }
-        }
-
-        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
-        function updateEarnRewards() {
-            const levels = [10, 20, 30, 40, 50, 100];
-            levels.forEach(level => {
-                const button = document.getElementById(`claim-reward-${level}`);
-                if (playerLevel >= level && !awardedLevels[`reward_sv${level}`]) {
-                    button.disabled = false;
-                    button.classList.add('enabled');
-                    button.classList.remove('disabled');
-                    button.textContent = "Al";
-                } else if (awardedLevels[`reward_sv${level}`]) {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                    button.classList.remove('enabled');
-                    button.textContent = "Alındı";
-                } else {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                    button.classList.remove('enabled');
-                    button.textContent = "Seviye Ulaşılamadı";
-                }
-            });
         }
 
         // Boost Bölümünü Sıfırlama Fonksiyonu
