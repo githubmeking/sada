@@ -311,8 +311,22 @@
         let playerLevel = 1;
         let costLevel = 0;
         let totalCoinsSpent = 0;
-        let lastCollected = localStorage.getItem('lastCollected') || 0;
-        let daysLoggedIn = 0;
+        let lastCollected = parseInt(localStorage.getItem('lastCollected')) || 0;
+        let daysLoggedIn = parseInt(localStorage.getItem('daysLoggedIn')) || 0;
+        let lastLoginDate = localStorage.getItem('lastLoginDate') || null;
+        let awardedLevels = JSON.parse(localStorage.getItem('awardedLevels')) || {};
+
+        // Track unique days logged in
+        function incrementDaysLoggedIn() {
+            const today = new Date().toDateString();
+            if (lastLoginDate !== today) {
+                daysLoggedIn++;
+                lastLoginDate = today;
+                localStorage.setItem('daysLoggedIn', daysLoggedIn);
+                localStorage.setItem('lastLoginDate', lastLoginDate);
+                updateHomeDisplay();
+            }
+        }
 
         function addXP(amount) {
             playerXP += amount;
@@ -328,6 +342,7 @@
                 alert(`Tebrikler! ${playerLevel}. seviyeye ulaştınız!`);
                 checkLevelRewards();
                 updateXPDisplay();
+                updateCaveIcon(); // Görseli güncelle
             }
         }
 
@@ -341,12 +356,13 @@
                 100: 100000
             };
 
-            if (rewardLevels[playerLevel]) {
-                if (gameState.coins < rewardLevels[playerLevel]) {
-                    gameState.coins += rewardLevels[playerLevel];
-                    alert(`Seviye ${playerLevel} ödülü: ${rewardLevels[playerLevel]} Coin kazandınız!`);
-                    updateDisplay();
-                }
+            if (rewardLevels[playerLevel] && !awardedLevels[playerLevel]) {
+                gameState.coins += rewardLevels[playerLevel];
+                alert(`Seviye ${playerLevel} ödülü: ${rewardLevels[playerLevel]} Coin kazandınız!`);
+                updateDisplay();
+
+                awardedLevels[playerLevel] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
             }
         }
 
@@ -357,27 +373,32 @@
         }
 
         function formatTime(ms) {
-            const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-            const minutes = Math.floor((ms / (1000 * 60)) % 60);
-            const seconds = Math.floor((ms / 1000) % 60);
-            return `${hours}s ${minutes}d ${seconds}s`;
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor((totalSeconds / 3600) % 24);
+            const minutes = Math.floor((totalSeconds / 60) % 60);
+            // const seconds = totalSeconds % 60;
+            return `${hours}h ${minutes}m`;
         }
 
         function updateDailyRewardTimer() {
             const now = Date.now();
-            const lastCollectedTime = parseInt(localStorage.getItem('lastCollected')) || 0;
+            const lastCollectedTime = lastCollected;
             const oneDay = 24 * 60 * 60 * 1000;
             const remainingTime = Math.max(0, oneDay - (now - lastCollectedTime));
-            
+
             const timerElement = document.getElementById('daily-reward-timer');
+            const startButton = document.querySelector('.start-button');
+
             if (remainingTime > 0) {
                 timerElement.textContent = `Kalan süre: ${formatTime(remainingTime)}`;
-                document.querySelector('.start-button').disabled = true;
+                startButton.disabled = true;
             } else {
                 timerElement.textContent = 'Ödül hazır!';
-                document.querySelector('.start-button').disabled = false;
+                startButton.disabled = false;
             }
         }
+
+        let countdownInterval;
 
         function collectDailyReward() {
             const now = Date.now();
@@ -386,10 +407,27 @@
             if (now - lastCollected >= oneDay) {
                 gameState.coins += 5000;
                 lastCollected = now;
-                localStorage.setItem('lastCollected', now);
+                localStorage.setItem('lastCollected', lastCollected);
                 alert("5000 Coin kazandınız!");
                 updateDisplay();
                 updateDailyRewardTimer();
+
+                // Start countdown
+                if (countdownInterval) clearInterval(countdownInterval);
+                countdownInterval = setInterval(() => {
+                    const now = Date.now();
+                    const remainingTime = Math.max(0, oneDay - (now - lastCollected));
+                    if (remainingTime > 0) {
+                        document.getElementById('daily-reward-timer').textContent = `Kalan süre: ${formatTime(remainingTime)}`;
+                    } else {
+                        document.getElementById('daily-reward-timer').textContent = 'Ödül hazır!';
+                        document.querySelector('.start-button').disabled = false;
+                        clearInterval(countdownInterval);
+                    }
+                }, 1000);
+            } else {
+                const remainingTime = oneDay - (now - lastCollected);
+                alert(`Giriş ödülünüzü zaten aldınız. ${formatTime(remainingTime)} sonra tekrar deneyin.`);
             }
         }
 
@@ -408,11 +446,6 @@
             document.getElementById("days-logged-in").textContent = daysLoggedIn;
         }
 
-        function incrementDaysLoggedIn() {
-            daysLoggedIn++;
-            updateHomeDisplay();
-        }
-
         function hideAllContainers() {
             const containers = ["boost-container", "game-container", "earn-container", "home-container"];
             containers.forEach(id => {
@@ -427,7 +460,10 @@
                 playerLevel: playerLevel,
                 costLevel: costLevel,
                 totalCoinsSpent: totalCoinsSpent,
-                daysLoggedIn: daysLoggedIn
+                daysLoggedIn: daysLoggedIn,
+                lastCollected: lastCollected,
+                awardedLevels: awardedLevels,
+                lastLoginDate: lastLoginDate
             };
             localStorage.setItem("gameSave", JSON.stringify(saveData));
         }
@@ -442,6 +478,9 @@
                 costLevel = data.costLevel;
                 totalCoinsSpent = data.totalCoinsSpent;
                 daysLoggedIn = data.daysLoggedIn;
+                lastCollected = parseInt(data.lastCollected) || 0;
+                awardedLevels = data.awardedLevels || {};
+                lastLoginDate = data.lastLoginDate || null;
             }
             updateDisplay();
             updateXPDisplay();
@@ -507,6 +546,25 @@
                 gameState.upgrades[type].cost = Math.floor(cost * 2);
                 gameState.upgrades[type].level++;
                 updateDisplay();
+            }
+        }
+
+        // Update cave icon based on level
+        function updateCaveIcon() {
+            if (playerLevel >= 10 && playerLevel < 20) {
+                document.getElementById("cave-icon").textContent = "🏰"; // Level 10-19
+            } else if (playerLevel >= 20 && playerLevel < 30) {
+                document.getElementById("cave-icon").textContent = "🏯"; // Level 20-29
+            } else if (playerLevel >= 30 && playerLevel < 40) {
+                document.getElementById("cave-icon").textContent = "🗼"; // Level 30-39
+            } else if (playerLevel >= 40 && playerLevel < 50) {
+                document.getElementById("cave-icon").textContent = "🕌"; // Level 40-49
+            } else if (playerLevel >= 50 && playerLevel < 100) {
+                document.getElementById("cave-icon").textContent = "🛕"; // Level 50-99
+            } else if (playerLevel >= 100) {
+                document.getElementById("cave-icon").textContent = "🏰✨"; // Level 100+
+            } else {
+                document.getElementById("cave-icon").textContent = "🪨"; // Default
             }
         }
 
@@ -581,6 +639,23 @@
             loadGame();
             incrementDaysLoggedIn();
             updateDailyRewardTimer();
+
+            // Start countdown if needed
+            if (Date.now() - lastCollected < 24 * 60 * 60 * 1000) {
+                countdownInterval = setInterval(() => {
+                    const now = Date.now();
+                    const remainingTime = Math.max(0, 24 * 60 * 60 * 1000 - (now - lastCollected));
+                    if (remainingTime > 0) {
+                        document.getElementById('daily-reward-timer').textContent = `Kalan süre: ${formatTime(remainingTime)}`;
+                    } else {
+                        document.getElementById('daily-reward-timer').textContent = 'Ödül hazır!';
+                        document.querySelector('.start-button').disabled = false;
+                        clearInterval(countdownInterval);
+                    }
+                }, 1000);
+            }
+
+            updateCaveIcon(); // Görseli güncelle
         });
         
         window.addEventListener("beforeunload", saveGame);
@@ -588,7 +663,7 @@
         // İlk yüklemede display güncelleme
         updateDisplay();
         updateXPDisplay();
-        document.getElementById("boost-container").style.display = "flex";
+        updateHomeDisplay();
     </script>
 </body>
 </html>
