@@ -627,6 +627,10 @@
 
         // XP Ekleme Fonksiyonu
         function addXP(amount) {
+            if (isNaN(amount)) {
+                console.error(`Geçersiz XP miktarı: ${amount}`);
+                return;
+            }
             playerXP += amount;
             console.log(`XP Eklendi: +${amount}, Toplam XP: ${playerXP}`);
             updateXPDisplay();
@@ -830,6 +834,13 @@
                 lastCollected = parseInt(data.lastCollected) || 0;
                 awardedLevels = data.awardedLevels || {};
             }
+
+            // xpMultiplier'ın geçerli bir sayı olduğundan emin olun
+            if (typeof gameState.xpMultiplier !== 'number' || isNaN(gameState.xpMultiplier)) {
+                gameState.xpMultiplier = 1;
+                console.warn("xpMultiplier geçersizdi, varsayılan değere (1) ayarlandı.");
+            }
+
             loadAchievements(); // Başarımları yükle
             updateDisplay();
             updateXPDisplay();
@@ -837,9 +848,6 @@
             styleNo1Game();
             updateEarnRewards();
             console.log("Yüklendi:", awardedLevels);
-
-            // XP Güçlendirme aktifse multiplier'ı güncelle
-            // (Bu adım artık gerekli değil çünkü multiplier her yükseltmede güncelleniyor)
         }
 
         // Display Güncelleme Fonksiyonu
@@ -905,8 +913,15 @@
                         gameState.energy += 200;
                         break;
                     case 'xp':
-                        gameState.xpMultiplier *= 2; // Multiplier'ı iki katına çıkar
-                        alert(`XP Güçlendirmeyi aktif ettiniz! XP artışınız şimdi saniyede ${gameState.xpMultiplier} XP!`);
+                        if (typeof gameState.xpMultiplier === 'number' && !isNaN(gameState.xpMultiplier)) {
+                            gameState.xpMultiplier *= 2; // Multiplier'ı iki katına çıkar
+                            alert(`XP Güçlendirmeyi aktif ettiniz! XP artışınız şimdi saniyede ${gameState.xpMultiplier} XP!`);
+                            console.log(`XP Multiplier Güncellendi: ${gameState.xpMultiplier}`);
+                        } else {
+                            gameState.xpMultiplier = 2; // Varsayılan olarak 2
+                            alert(`XP Güçlendirmeyi aktif ettiniz! XP artışınız şimdi saniyede ${gameState.xpMultiplier} XP!`);
+                            console.warn("xpMultiplier geçersizdi, 2 olarak ayarlandı.");
+                        }
                         break;
                 }
 
