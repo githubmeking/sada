@@ -6,6 +6,8 @@
     <title>No1Game - Gelişmiş Farm Oyunu</title>
     <!-- Pacifico Fontunu Ekleyin -->
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p1E1KZW3tW0jJgFjtBdYjInbFwFETiSg+q8AQ5+/BtV3tZ5HmuXYmUxtc5qJwnDm3p/KvB1A5RihCwHJoN+1wA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         * {
             box-sizing: border-box;
@@ -368,37 +370,111 @@
             background-color: #45a049;
         }
 
+        /* Friends Container Modernizasyonu */
+        #friends-container.card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #friends-container.card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.8em;
+            color: #1f3f60;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: #ff9800;
+        }
+
+        .referral-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .referral-count {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #4caf50;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .referral-label {
+            font-size: 0.6em;
+            color: #333;
+        }
+
+        .invite-link-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .copy-button {
+            background-color: #2196f3;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #1976d2;
+        }
+
+        .invite-link {
+            font-size: 0.9em;
+            color: #555;
+            text-decoration: none;
+            word-break: break-all;
+            transition: color 0.3s ease;
+        }
+
+        .invite-link:hover {
+            color: #2196f3;
+        }
+
         /* Responsive Tasarım */
         @media (max-width: 600px) {
-            #nav-container {
-                flex-direction: row;
-                justify-content: space-around;
-                padding: 10px 0;
+            .card-title {
+                font-size: 1.5em;
             }
 
-            .nav-button {
+            .referral-count {
+                font-size: 2em;
+            }
+
+            .copy-button {
+                padding: 8px 12px;
                 font-size: 0.8em;
             }
 
-            .resource-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .upgrade-button {
-                font-size: 0.9em;
-                padding: 10px;
-            }
-
-            #home-container {
-                margin-bottom: 100px; /* Navigasyon çubuğu için daha fazla alt marjin */
-            }
-
-            /* Upgrades Container için yeni düzenleme */
-            .upgrades-container {
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: auto auto;
-                gap: 15px;
+            .invite-link {
+                font-size: 0.8em;
             }
         }
 
@@ -521,29 +597,40 @@
     </div>
 
     <!-- Friends Container -->
-    <div id="friends-container">
-        <h2>Arkadaşlar</h2>
-        <p>Toplam Davet Edilen Kişi Sayısı: <span id="referral-count">0</span></p>
-        <p>Davet Linkin:</p>
-        <a href="#" id="invite-link">Davet Linki Yükleniyor...</a>
+    <div id="friends-container" class="card">
+        <h2 class="card-title">
+            <i class="fas fa-user-friends"></i> Arkadaşlar
+        </h2>
+        <div class="referral-info">
+            <div class="referral-count">
+                <span id="referral-count">0</span>
+                <span class="referral-label">Kişi</span>
+            </div>
+            <div class="invite-link-container">
+                <button id="copy-invite-link" class="copy-button" onclick="copyInviteLink()">
+                    <i class="fas fa-copy"></i> Davet Linkini Kopyala
+                </button>
+                <a href="#" id="invite-link" class="invite-link">Davet Linki Yükleniyor...</a>
+            </div>
+        </div>
     </div>
 
     <!-- Navigasyon Çubuğu -->
     <div id="nav-container">
         <div class="nav-button" id="home-nav">
-            <i>🏠</i>
+            <i class="fas fa-home"></i>
             <span>Home</span>
         </div>
         <div class="nav-button" id="earn-nav">
-            <i>📋</i>
+            <i class="fas fa-clipboard-list"></i>
             <span>Earn</span>
         </div>
         <div class="nav-button" id="boost-nav">
-            <i>🚀</i>
+            <i class="fas fa-rocket"></i>
             <span>Boost</span>
         </div>
         <div class="nav-button" id="friends-nav">
-            <i>👥</i>
+            <i class="fas fa-users"></i>
             <span>Friends</span>
         </div>
     </div>
@@ -1103,6 +1190,17 @@
             } else {
                 console.error("Davet bilgilerini güncellerken bir hata oluştu.");
             }
+        }
+
+        // Davet Linkini Kopyalama Fonksiyonu
+        function copyInviteLink() {
+            const inviteLink = document.getElementById('invite-link').href;
+            navigator.clipboard.writeText(inviteLink).then(() => {
+                alert('Davet linki panonuza kopyalandı!');
+            }).catch(err => {
+                console.error('Davet linki kopyalanamadı:', err);
+                alert('Davet linki kopyalanamadı. Lütfen manuel olarak kopyalayın.');
+            });
         }
 
     </script>
