@@ -470,23 +470,23 @@
         <h2>Seviye Ödülleri</h2>
         <div class="reward">
             <span>50.000 Coin Kazanıldı</span>
-            <button onclick="claimCoinAchievement(50000)" id="claim-reward-50000" class="disabled" disabled>Seviye Olmalı</button>
+            <button onclick="claimCoinAchievement(50000)" id="claim-reward-50000" class="disabled" disabled>Al</button>
         </div>
         <div class="reward">
             <span>100.000 Coin Kazanıldı</span>
-            <button onclick="claimCoinAchievement(100000)" id="claim-reward-100000" class="disabled" disabled>Seviye Olmalı</button>
+            <button onclick="claimCoinAchievement(100000)" id="claim-reward-100000" class="disabled" disabled>Al</button>
         </div>
         <div class="reward">
             <span>200.000 Coin Kazanıldı</span>
-            <button onclick="claimCoinAchievement(200000)" id="claim-reward-200000" class="disabled" disabled>Seviye Olmalı</button>
+            <button onclick="claimCoinAchievement(200000)" id="claim-reward-200000" class="disabled" disabled>Al</button>
         </div>
         <div class="reward">
             <span>300.000 Coin Kazanıldı</span>
-            <button onclick="claimCoinAchievement(300000)" id="claim-reward-300000" class="disabled" disabled>Seviye Olmalı</button>
+            <button onclick="claimCoinAchievement(300000)" id="claim-reward-300000" class="disabled" disabled>Al</button>
         </div>
         <div class="reward">
             <span>1.000.000 Coin Kazanıldı</span>
-            <button onclick="claimCoinAchievement(1000000)" id="claim-reward-1000000" class="disabled" disabled>Seviye Olmalı</button>
+            <button onclick="claimCoinAchievement(1000000)" id="claim-reward-1000000" class="disabled" disabled>Al</button>
         </div>
     </div>
 
@@ -786,23 +786,25 @@
 
         // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
         function updateEarnRewards() {
-            Object.keys(rewardLevels).forEach(level => {
-                const button = document.getElementById(`claim-reward-${level}`);
-                if (level <= 3000000 && gameState.coins >= level && !awardedLevels[`reward_${level}`]) { // Maksimum 1M için
-                    button.disabled = false;
-                    button.classList.add('enabled');
-                    button.classList.remove('disabled');
-                    button.textContent = "Al";
-                } else if (awardedLevels[`reward_${level}`]) {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                    button.classList.remove('enabled');
-                    button.textContent = "Alındı";
-                } else {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                    button.classList.remove('enabled');
-                    button.textContent = "Seviye Ulaşılamadı";
+            predefinedAchievements.forEach(achievement => {
+                if (achievement.coinAmount) {
+                    const button = document.getElementById(`claim-reward-${achievement.coinAmount}`);
+                    if (gameState.coins >= achievement.coinAmount && !awardedLevels[`reward_${achievement.coinAmount}`]) {
+                        button.disabled = false;
+                        button.classList.add('enabled');
+                        button.classList.remove('disabled');
+                        button.textContent = "Al";
+                    } else if (awardedLevels[`reward_${achievement.coinAmount}`]) {
+                        button.disabled = true;
+                        button.classList.add('disabled');
+                        button.classList.remove('enabled');
+                        button.textContent = "Alındı";
+                    } else {
+                        button.disabled = true;
+                        button.classList.add('disabled');
+                        button.classList.remove('enabled');
+                        button.textContent = "Seviye Ulaşılamadı";
+                    }
                 }
             });
         }
@@ -953,8 +955,8 @@
                 const newCostLevel = Math.floor(totalCoinsSpent / 50); // Maliyet Seviyesi: Her 50 Coin harcaması için bir seviye
                 if (newCostLevel > costLevel) {
                     costLevel = newCostLevel;
-                    addXP(rewardLevels[costLevel]?.xp || 0);
                     if (rewardLevels[costLevel]) {
+                        addXP(rewardLevels[costLevel].xp);
                         alert(`Maliyet Seviyesi ${costLevel} ödülü: ${rewardLevels[costLevel].xp} XP kazandınız!`);
                     }
                 }
@@ -999,8 +1001,8 @@
         // Event Listeners
         document.getElementById("boost-nav").addEventListener("click", function() {
             hideAllContainers();
-            document.getElementById("boost-container").style.display = "block";
-            resetBoost();
+            document.getElementById("game-container").style.display = "block"; // Game Container'ı göster
+            // resetBoost() fonksiyonunu burada çağırmıyoruz
         });
 
         document.getElementById("home-nav").addEventListener("click", function() {
@@ -1019,8 +1021,8 @@
 
         document.getElementById("boost-button").addEventListener("click", function() {
             hideAllContainers();
-            document.getElementById("boost-container").style.display = "block";
-            resetBoost();
+            document.getElementById("game-container").style.display = "block"; // Game Container'ı göster
+            resetBoost(); // Boost bölümünü sıfırla
         });
 
         document.getElementById('farm-button').addEventListener('click', handleFarmClick);
@@ -1200,10 +1202,12 @@
         // Boost Bölümünü Sıfırlama Fonksiyonu
         function resetBoost() {
             // Boost bölümünde yapılmış olabilecek tüm değişiklikleri sıfırlayın
-            // Örneğin, otomatik toplama gücünü sıfırlamak
+            // Örneğin, otomatik toplama gücünü sıfırlamak ve XP Boost'u durdurmak
             gameState.autoCollectPower = 0;
-            clearInterval(gameState.upgrades.xp.interval);
-            gameState.upgrades.xp.interval = null;
+            if (gameState.upgrades.xp.interval) {
+                clearInterval(gameState.upgrades.xp.interval);
+                gameState.upgrades.xp.interval = null;
+            }
             gameState.xpBoostActive = false;
             updateDisplay();
         }
