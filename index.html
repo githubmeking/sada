@@ -541,7 +541,7 @@
                 energy: { level: 1, cost: 1000 },
                 xp: { level: 0, cost: 1000 }
             },
-            xpBoostActive: false // XP Güçlendirme aktif mi?
+            xpMultiplier: 1 // Başlangıçta 1
         };
 
         let playerXP = 0;
@@ -811,8 +811,7 @@
                 totalCoinsSpent: totalCoinsSpent,
                 daysLoggedIn: daysLoggedIn,
                 lastCollected: lastCollected,
-                awardedLevels: awardedLevels,
-                lastLoginDate: lastLoginDate
+                awardedLevels: awardedLevels
             };
             localStorage.setItem("gameSave", JSON.stringify(saveData));
             console.log("Oyun kaydedildi:", saveData);
@@ -830,7 +829,6 @@
                 daysLoggedIn = data.daysLoggedIn || 0;
                 lastCollected = parseInt(data.lastCollected) || 0;
                 awardedLevels = data.awardedLevels || {};
-                lastLoginDate = data.lastLoginDate || null;
             }
             loadAchievements(); // Başarımları yükle
             updateDisplay();
@@ -840,10 +838,8 @@
             updateEarnRewards();
             console.log("Yüklendi:", awardedLevels);
 
-            // XP Güçlendirme aktifse interval başlat
-            if (gameState.upgrades.xp.level > 0 && !gameState.xpBoostActive) {
-                activateXPBoost();
-            }
+            // XP Güçlendirme aktifse multiplier'ı güncelle
+            // (Bu adım artık gerekli değil çünkü multiplier her yükseltmede güncelleniyor)
         }
 
         // Display Güncelleme Fonksiyonu
@@ -909,12 +905,8 @@
                         gameState.energy += 200;
                         break;
                     case 'xp':
-                        if (!gameState.xpBoostActive) {
-                            activateXPBoost();
-                            alert("XP Güçlendirmeyi aktif ettiniz! Her 2 saniyede 2 XP kazanıyorsunuz.");
-                        } else {
-                            alert("XP Güçlendirme zaten aktif!");
-                        }
+                        gameState.xpMultiplier *= 2; // Multiplier'ı iki katına çıkar
+                        alert(`XP Güçlendirmeyi aktif ettiniz! XP artışınız şimdi saniyede ${gameState.xpMultiplier} XP!`);
                         break;
                 }
 
@@ -925,16 +917,6 @@
             } else {
                 alert("Yeterli coininiz yok!");
             }
-        }
-
-        // XP Güçlendirme Fonksiyonu
-        function activateXPBoost() {
-            gameState.xpBoostActive = true;
-            gameState.upgrades.xp.interval = setInterval(() => {
-                addXP(2);
-                console.log("XP Boost aktif: +2 XP");
-            }, 2000);
-            console.log("XP Boost Başlatıldı");
         }
 
         // Event Listeners
@@ -995,10 +977,11 @@
             }
         }, 1000);
 
+        // XP Ekleyen setInterval
         setInterval(() => {
-            addXP(1);
+            addXP(gameState.xpMultiplier);
             updateDailyRewardTimer();
-            console.log("Her saniye +1 XP");
+            console.log(`Her saniye +${gameState.xpMultiplier} XP`);
         }, 1000);
 
         // Sayfa Yüklendiğinde
@@ -1064,11 +1047,14 @@
             // Boost bölümünde yapılmış olabilecek tüm değişiklikleri sıfırlayın
             // Örneğin, otomatik toplama gücünü sıfırlamak ve XP Boost'u durdurmak
             gameState.autoCollectPower = 0;
+            // XP Boost artık multiplier üzerinden kontrol edildiği için aşağıdaki kod kaldırıldı
+            /*
             if (gameState.upgrades.xp.interval) {
                 clearInterval(gameState.upgrades.xp.interval);
                 gameState.upgrades.xp.interval = null;
             }
-            gameState.xpBoostActive = false;
+            */
+            gameState.xpMultiplier = 1; // Multiplier'ı başlangıç değerine döndür
             updateDisplay();
             console.log("Boost Sıfırlandı");
         }
