@@ -190,6 +190,15 @@
             gap: 15px;
             margin: 20px 0;
         }
+        /* Yeni düzenleme: Üç butonu uygun şekilde yerleştirmek için grid-template-areas kullanıyoruz */
+        .upgrades-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(2, auto);
+            grid-gap: 15px;
+            width: 100%;
+        }
+        /* Upgrade Buttonlar için genel stil */
         .upgrade-button {
             padding: 15px;
             border-radius: 8px;
@@ -384,6 +393,13 @@
             #home-container {
                 margin-bottom: 100px; /* Navigasyon çubuğu için daha fazla alt marjin */
             }
+
+            /* Upgrades Container için yeni düzenleme */
+            .upgrades-container {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                gap: 15px;
+            }
         }
 
     </style>
@@ -431,10 +447,13 @@
                 Enerji Yükseltme
                 <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
             </button>
+            <!-- XP Güçlendirme Butonu Kaldırıldı -->
+            <!--
             <button class="upgrade-button inactive" id="xp-upgrade">
                 XP Güçlendirme
                 <span class="upgrade-cost" id="xp-cost">Maliyet: 1000 coin</span>
             </button>
+            -->
         </div>
     </div>
 
@@ -538,8 +557,8 @@
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
-                energy: { level: 1, cost: 1000 },
-                xp: { level: 0, cost: 1000 }
+                energy: { level: 1, cost: 1000 }
+                // XP Güçlendirme kaldırıldı
             },
             xpMultiplier: 1 // Başlangıçta 1
         };
@@ -860,7 +879,8 @@
             document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
             document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
             document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+            // XP Güçlendirme maliyeti kaldırıldı
+            // document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
 
             updateUpgradeButtons();
             updateProgressBar();
@@ -870,7 +890,7 @@
 
         // Upgrade Butonlarının Güncellenmesi Fonksiyonu
         function updateUpgradeButtons() {
-            ['click', 'auto', 'energy', 'xp'].forEach(type => {
+            ['click', 'auto', 'energy'].forEach(type => {
                 const button = document.getElementById(`${type}-upgrade`);
                 const cost = gameState.upgrades[type].cost;
                 const canAfford = gameState.coins >= cost;
@@ -911,17 +931,6 @@
                         break;
                     case 'energy':
                         gameState.energy += 200;
-                        break;
-                    case 'xp':
-                        if (typeof gameState.xpMultiplier === 'number' && !isNaN(gameState.xpMultiplier)) {
-                            gameState.xpMultiplier *= 2; // Multiplier'ı iki katına çıkar
-                            alert(`XP Güçlendirmeyi aktif ettiniz! XP artışınız şimdi saniyede ${gameState.xpMultiplier} XP!`);
-                            console.log(`XP Multiplier Güncellendi: ${gameState.xpMultiplier}`);
-                        } else {
-                            gameState.xpMultiplier = 2; // Varsayılan olarak 2
-                            alert(`XP Güçlendirmeyi aktif ettiniz! XP artışınız şimdi saniyede ${gameState.xpMultiplier} XP!`);
-                            console.warn("xpMultiplier geçersizdi, 2 olarak ayarlandı.");
-                        }
                         break;
                 }
 
@@ -968,10 +977,6 @@
 
         document.getElementById('energy-upgrade').addEventListener('click', () => {
             handleUpgrade('energy');
-        });
-
-        document.getElementById('xp-upgrade').addEventListener('click', () => {
-            handleUpgrade('xp');
         });
 
         // Otomatik İşlemler
