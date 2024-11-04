@@ -203,6 +203,68 @@
             font-size: 0.9em;
             margin-top: 5px;
         }
+
+        /* Yeni Eklenen Stil */
+        #home-container h2 {
+            color: #1f3f60;
+            margin-bottom: 10px;
+        }
+
+        #home-stats {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .stat {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        #achievement-container {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .achievement {
+            background-color: #e6f7ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            font-size: 1em;
+            color: #005c99;
+        }
+
+        #progress-bar-container {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 25px;
+            overflow: hidden;
+            height: 20px;
+            margin-top: 5px;
+        }
+
+        #progress-bar-fill {
+            height: 100%;
+            background-color: #4caf50;
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        #daily-tip {
+            margin-top: 20px;
+            background-color: #fff8e1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1em;
+            color: #ff9800;
+            border: 1px solid #ffecb3;
+        }
+
     </style>
 </head>
 <body>
@@ -291,7 +353,44 @@
             Toplam Giriş Günü: <span id="days-logged-in">0</span>
         </div>
         <div id="cave-icon">🪨</div>
-        <button class="claim-button" onclick="claimReward()">Claim</button>
+
+        <!-- Yeni Eklenen Bölümler -->
+        <h2>Oyuncu İstatistikleri</h2>
+        <div id="home-stats">
+            <div class="stat">Seviye: <span id="home-level">1</span></div>
+            <div class="stat">Toplam Coin: <span id="home-coins">0</span></div>
+            <div class="stat">XP: <span id="home-xp">0</span> / <span id="home-xp-needed">100</span></div>
+            <div class="stat">Enerji: <span id="home-energy">1000</span></div>
+        </div>
+
+        <div id="achievement-container">
+            <h2>Başarımlar</h2>
+            <div class="achievement">Başarımlar Yüklendi...</div>
+        </div>
+
+        <div id="progress-bar-container">
+            <h2>Seviye İlerlemesi</h2>
+            <div id="progress-bar">
+                <div id="progress-bar-fill"></div>
+            </div>
+        </div>
+
+        <div id="daily-tip">
+            Günlük İpucu: Daha fazla enerji kazanmak için enerji yükseltmelerini tercih edin!
+        </div>
+    </div>
+
+    <div id="earn-container">
+        <h2 style="color: #1f3f60;">Giriş Ödülü</h2>
+        <button class="start-button" onclick="collectDailyReward()">5000 Coin Al</button>
+        <div class="cooldown-timer" id="daily-reward-timer"></div>
+        <h2 style="color: #1f3f60;">Seviye Ödülleri</h2>
+        <div class="reward">Seviye 10 - 5000 Coin</div>
+        <div class="reward">Seviye 20 - 10000 Coin</div>
+        <div class="reward">Seviye 30 - 20000 Coin</div>
+        <div class="reward">Seviye 40 - 35000 Coin</div>
+        <div class="reward">Seviye 50 - 50000 Coin</div>
+        <div class="reward">Seviye 100 - 100000 Coin</div>
     </div>
 
     <script>
@@ -343,6 +442,7 @@
                 checkLevelRewards();
                 updateXPDisplay();
                 updateCaveIcon(); // Görseli güncelle
+                updateProgressBar();
             }
         }
 
@@ -364,13 +464,31 @@
                 awardedLevels[playerLevel] = true;
                 localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
                 console.log(`Level ${playerLevel} ödülü verildi. Toplam Coin: ${gameState.coins}`);
+
+                // Ekstra Başarımlar Ekle
+                addAchievement(`Seviye ${playerLevel} olundu!`);
             }
+        }
+
+        function addAchievement(description) {
+            const achievementContainer = document.getElementById('achievement-container');
+            const achievement = document.createElement('div');
+            achievement.className = 'achievement';
+            achievement.textContent = description;
+            achievementContainer.appendChild(achievement);
         }
 
         function updateXPDisplay() {
             document.getElementById("xp-text").textContent = playerXP;
             document.getElementById("level-text").textContent = playerLevel;
             document.getElementById("cost-level").textContent = costLevel;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
         }
 
         function formatTime(ms) {
@@ -433,18 +551,62 @@
         }
 
         function claimReward() {
-            const rewards = [200, 500, 1000, 5000, 10000];
-            const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
-            gameState.coins += randomReward;
-            addXP(50);
-            alert(`${randomReward} Coin kazandınız!`);
-            updateDisplay();
+            // Bu fonksiyonu kaldırıyoruz çünkü home kısmında kullanıcının sürekli tıklayabileceği bir claim butonu mevcut.
+            // Ancak bu butonun kaldırılması için sadece HTML'den kaldırdık.
         }
 
         function updateHomeDisplay() {
             document.getElementById("level-text").textContent = playerLevel;
             document.getElementById("cost-level").textContent = costLevel;
             document.getElementById("days-logged-in").textContent = daysLoggedIn;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        function updateCaveIcon() {
+            console.log("Updating cave icon for level:", playerLevel);
+            if (playerLevel >= 10 && playerLevel < 20) {
+                document.getElementById("cave-icon").textContent = "🏰"; // Level 10-19
+            } else if (playerLevel >= 20 && playerLevel < 30) {
+                document.getElementById("cave-icon").textContent = "🏯"; // Level 20-29
+            } else if (playerLevel >= 30 && playerLevel < 40) {
+                document.getElementById("cave-icon").textContent = "🗼"; // Level 30-39
+            } else if (playerLevel >= 40 && playerLevel < 50) {
+                document.getElementById("cave-icon").textContent = "🕌"; // Level 40-49
+            } else if (playerLevel >= 50 && playerLevel < 100) {
+                document.getElementById("cave-icon").textContent = "🛕"; // Level 50-99
+            } else if (playerLevel >= 100) {
+                document.getElementById("cave-icon").textContent = "🏰✨"; // Level 100+
+            } else {
+                document.getElementById("cave-icon").textContent = "🪨"; // Default
+            }
+        }
+
+        function addAchievement(description) {
+            const achievementContainer = document.getElementById('achievement-container');
+            const achievement = document.createElement('div');
+            achievement.className = 'achievement';
+            achievement.textContent = description;
+            achievementContainer.appendChild(achievement);
+        }
+
+        function updateHomeStats() {
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
         }
 
         function hideAllContainers() {
@@ -499,6 +661,8 @@
             document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
 
             updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeStats();
         }
 
         function updateUpgradeButtons() {
@@ -551,24 +715,10 @@
             }
         }
 
-        // Update cave icon based on level
-        function updateCaveIcon() {
-            console.log("Updating cave icon for level:", playerLevel);
-            if (playerLevel >= 10 && playerLevel < 20) {
-                document.getElementById("cave-icon").textContent = "🏰"; // Level 10-19
-            } else if (playerLevel >= 20 && playerLevel < 30) {
-                document.getElementById("cave-icon").textContent = "🏯"; // Level 20-29
-            } else if (playerLevel >= 30 && playerLevel < 40) {
-                document.getElementById("cave-icon").textContent = "🗼"; // Level 30-39
-            } else if (playerLevel >= 40 && playerLevel < 50) {
-                document.getElementById("cave-icon").textContent = "🕌"; // Level 40-49
-            } else if (playerLevel >= 50 && playerLevel < 100) {
-                document.getElementById("cave-icon").textContent = "🛕"; // Level 50-99
-            } else if (playerLevel >= 100) {
-                document.getElementById("cave-icon").textContent = "🏰✨"; // Level 100+
-            } else {
-                document.getElementById("cave-icon").textContent = "🪨"; // Default
-            }
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
         }
 
         // Event Listeners
@@ -659,6 +809,7 @@
             }
 
             updateCaveIcon(); // Görseli güncelle
+            updateProgressBar(); // İlerleme çubuğunu güncelle
         });
         
         window.addEventListener("beforeunload", saveGame);
