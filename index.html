@@ -137,11 +137,10 @@
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s;
-            margin: 20px 0;
+            margin: 10px auto;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             width: 100%;
             max-width: 300px;
-            margin: 10px auto;
         }
 
         /* Upgrades Container */
@@ -327,15 +326,15 @@
         <button id="farm-button">FARM</button>
 
         <div class="upgrades-container">
-            <button class="upgrade-button" id="click-upgrade">
+            <button class="upgrade-button inactive" id="click-upgrade">
                 Tıklama Güçlendirmesi
                 <span class="upgrade-cost" id="click-cost">Maliyet: 10 coin</span>
             </button>
-            <button class="upgrade-button" id="auto-upgrade">
+            <button class="upgrade-button inactive" id="auto-upgrade">
                 CPS Arttırma
                 <span class="upgrade-cost" id="auto-cost">Maliyet: 50 coin</span>
             </button>
-            <button class="upgrade-button" id="energy-upgrade">
+            <button class="upgrade-button inactive" id="energy-upgrade">
                 Enerji Yükseltme
                 <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
             </button>
@@ -408,6 +407,7 @@
     </div>
 
     <script>
+        // Oyun Durumu
         let gameState = {
             coins: 2840,
             clickPower: 1,
@@ -439,12 +439,27 @@
             // Diğer başarımlar eklenebilir
         ];
 
+        // Seviye Ödülleri
+        const rewardLevels = {
+            10: 5000,
+            20: 10000,
+            30: 20000,
+            40: 35000,
+            50: 50000,
+            100: 100000
+        };
+
         // Başarımların Başlangıçta Yüklenmesi
         function loadAchievements() {
             const achievementsList = document.getElementById('achievements-list');
             achievementsList.innerHTML = ""; // Önceki başarımları temizle
 
             predefinedAchievements.forEach(achievement => {
+                // Başarımları daha önce tamamlandıysa işaretle
+                if (awardedLevels[achievement.id]) {
+                    achievement.completed = true;
+                }
+
                 const achievementDiv = document.createElement('div');
                 achievementDiv.className = 'achievement';
                 achievementDiv.id = `achievement-${achievement.id}`;
@@ -463,15 +478,26 @@
         function updateAchievements() {
             predefinedAchievements.forEach(achievement => {
                 if (!achievement.completed) {
+                    let achieved = false;
                     if (achievement.level && playerLevel >= achievement.level) {
+                        achieved = true;
+                    }
+                    if (achievement.farmCount && gameState.farmCount >= achievement.farmCount) {
+                        achieved = true;
+                    }
+
+                    if (achieved) {
                         achievement.completed = true;
                         addCoin(1000); // Ödül ekleme (örnek)
                         addAchievement(`Başarımlar: ${achievement.description}`);
-                        document.getElementById(`achievement-${achievement.id}`).classList.add('completed');
-                        document.getElementById(`achievement-${achievement.id}`).querySelector('.checkmark').textContent = "✔️";
+                        const achievementDiv = document.getElementById(`achievement-${achievement.id}`);
+                        if (achievementDiv) {
+                            achievementDiv.classList.add('completed');
+                            achievementDiv.querySelector('.checkmark').textContent = "✔️";
+                        }
+                        awardedLevels[achievement.id] = true; // Ödül verildi olarak işaretle
+                        localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
                     }
-                    // Diğer başarımların kontrolü (örn. farmCount)
-                    // if (achievement.farmCount && farmCount >= achievement.farmCount) { ... }
                 }
             });
         }
@@ -488,11 +514,20 @@
             achievementContainer.appendChild(achievement);
         }
 
+        // Coin Eklemek için Fonksiyon
         function addCoin(amount) {
             gameState.coins += amount;
             updateDisplay();
         }
 
+        // XP Ekleme Fonksiyonu
+        function addXP(amount) {
+            playerXP += amount;
+            updateXPDisplay();
+            checkLevelUp();
+        }
+
+        // Seviye Atlama Fonksiyonu
         function checkLevelUp() {
             const xpNeeded = playerLevel * 100;
             if (playerXP >= xpNeeded) {
@@ -506,16 +541,8 @@
             }
         }
 
+        // Seviye Ödüllerini Kontrol Etme Fonksiyonu
         function checkLevelRewards() {
-            const rewardLevels = {
-                10: 5000,
-                20: 10000,
-                30: 20000,
-                40: 35000,
-                50: 50000,
-                100: 100000
-            };
-
             if (rewardLevels[playerLevel] && !awardedLevels[playerLevel]) {
                 gameState.coins += rewardLevels[playerLevel];
                 alert(`Seviye ${playerLevel} ödülü: ${rewardLevels[playerLevel]} Coin kazandınız!`);
@@ -530,6 +557,7 @@
             }
         }
 
+        // XP Display Güncelleme Fonksiyonu
         function updateXPDisplay() {
             document.getElementById("xp-text").textContent = playerXP;
             document.getElementById("level-text").textContent = playerLevel;
@@ -543,14 +571,15 @@
             document.getElementById("home-energy").textContent = gameState.energy;
         }
 
+        // Zaman Formatlama Fonksiyonu
         function formatTime(ms) {
             const totalSeconds = Math.floor(ms / 1000);
             const hours = Math.floor((totalSeconds / 3600) % 24);
             const minutes = Math.floor((totalSeconds / 60) % 60);
-            // const seconds = totalSeconds % 60;
             return `${hours}h ${minutes}m`;
         }
 
+        // Günlük Ödül Zamanlayıcı Güncelleme Fonksiyonu
         function updateDailyRewardTimer() {
             const now = Date.now();
             const lastCollectedTime = lastCollected;
@@ -571,6 +600,7 @@
 
         let countdownInterval;
 
+        // Günlük Ödül Toplama Fonksiyonu
         function collectDailyReward() {
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
@@ -583,7 +613,7 @@
                 updateDisplay();
                 updateDailyRewardTimer();
 
-                // Start countdown
+                // Countdown Başlat
                 if (countdownInterval) clearInterval(countdownInterval);
                 countdownInterval = setInterval(() => {
                     const now = Date.now();
@@ -602,11 +632,7 @@
             }
         }
 
-        function claimReward() {
-            // Bu fonksiyonu kaldırıyoruz çünkü home kısmında kullanıcının sürekli tıklayabileceği bir claim butonu mevcut.
-            // Ancak bu butonun kaldırılması için sadece HTML'den kaldırdık.
-        }
-
+        // Home İstatistiklerini Güncelleme Fonksiyonu
         function updateHomeDisplay() {
             document.getElementById("level-text").textContent = playerLevel;
             document.getElementById("cost-level").textContent = costLevel;
@@ -620,19 +646,14 @@
             document.getElementById("home-energy").textContent = gameState.energy;
         }
 
+        // İlerleme Çubuğunu Güncelleme Fonksiyonu
         function updateProgressBar() {
             const progressBarFill = document.getElementById('progress-bar-fill');
             const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
             progressBarFill.style.width = `${progressPercentage}%`;
         }
 
-        function updateCaveIcon() {
-            console.log("Updating cave icon for level:", playerLevel);
-            // Artık cave icon'u kaldırdık, bu fonksiyonu temizleyebiliriz veya başka bir şey için kullanabiliriz
-            // Ancak ilerleme çubuğunu güncellemeye devam ediyoruz
-        }
-
-        // Home'daki "No1Game" yazısını stilize etmek için fonksiyon
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
         function styleNo1Game() {
             const homeContainer = document.getElementById('home-container');
             const no1GameHeader = homeContainer.querySelector('h1');
@@ -641,56 +662,31 @@
             no1GameHeader.style.textShadow = "2px 2px 4px rgba(0,0,0,0.2)";
         }
 
-        // Başarımların Yüklenmesi
-        function loadAchievements() {
-            const achievementsList = document.getElementById('achievements-list');
-            achievementsList.innerHTML = ""; // Önceki başarımları temizle
-
-            predefinedAchievements.forEach(achievement => {
-                const achievementDiv = document.createElement('div');
-                achievementDiv.className = 'achievement';
-                achievementDiv.id = `achievement-${achievement.id}`;
-                achievementDiv.innerHTML = `
-                    <span>${achievement.description}</span>
-                    <span class="checkmark">${achievement.completed ? "✔️" : "❌"}</span>
-                `;
-                if (achievement.completed) {
-                    achievementDiv.classList.add('completed');
-                }
-                achievementsList.appendChild(achievementDiv);
+        // Tüm İçerikleri Gizleme Fonksiyonu
+        function hideAllContainers() {
+            const containers = ["boost-container", "game-container", "earn-container", "home-container"];
+            containers.forEach(id => {
+                document.getElementById(id).style.display = "none";
             });
         }
 
-        // Başarımların Güncellenmesi
-        function updateAchievements() {
-            predefinedAchievements.forEach(achievement => {
-                if (!achievement.completed) {
-                    if (achievement.level && playerLevel >= achievement.level) {
-                        achievement.completed = true;
-                        addCoin(1000); // Ödül ekleme (örnek)
-                        addAchievement(`Başarımlar: ${achievement.description}`);
-                        document.getElementById(`achievement-${achievement.id}`).classList.add('completed');
-                        document.getElementById(`achievement-${achievement.id}`).querySelector('.checkmark').textContent = "✔️";
-                    }
-                    // Diğer başarımların kontrolü (örn. farmCount)
-                    // if (achievement.farmCount && farmCount >= achievement.farmCount) { ... }
-                }
-            });
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const saveData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                costLevel: costLevel,
+                totalCoinsSpent: totalCoinsSpent,
+                daysLoggedIn: daysLoggedIn,
+                lastCollected: lastCollected,
+                awardedLevels: awardedLevels,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
         }
 
-        // Başarımların Dinamik Olarak Eklenmesi Fonksiyonu
-        function addAchievement(description) {
-            const achievementContainer = document.getElementById('achievements-list');
-            const achievement = document.createElement('div');
-            achievement.className = 'achievement completed';
-            achievement.innerHTML = `
-                <span>${description}</span>
-                <span class="checkmark">✔️</span>
-            `;
-            achievementContainer.appendChild(achievement);
-        }
-
-        // Oyun Yüklenirken Başarımların Yüklenmesi
+        // Oyun Verilerini Yükleme Fonksiyonu
         function loadGame() {
             const savedData = localStorage.getItem("gameSave");
             if (savedData) {
@@ -713,6 +709,7 @@
             console.log("Loaded awardedLevels:", awardedLevels);
         }
 
+        // Display Güncelleme Fonksiyonu
         function updateDisplay() {
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
             document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
@@ -727,6 +724,7 @@
             updateHomeStats();
         }
 
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
         function updateUpgradeButtons() {
             ['click', 'auto', 'energy'].forEach(type => {
                 const button = document.getElementById(`${type}-upgrade`);
@@ -737,6 +735,7 @@
             });
         }
 
+        // Farm Butonuna Tıklama Fonksiyonu
         function handleFarmClick() {
             if (gameState.energy >= 33) {
                 gameState.coins += gameState.clickPower;
@@ -746,6 +745,7 @@
             }
         }
 
+        // Upgrade Yapma Fonksiyonu
         function handleUpgrade(type, powerIncrease = 1.5) {
             const cost = gameState.upgrades[type].cost;
             if (gameState.coins >= cost) {
@@ -777,669 +777,13 @@
             }
         }
 
-        // Home'daki "No1Game" yazısını stilize etmek için fonksiyon
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
         function styleNo1Game() {
             const homeContainer = document.getElementById('home-container');
             const no1GameHeader = homeContainer.querySelector('h1');
             no1GameHeader.style.fontFamily = "'Pacifico', cursive";
             no1GameHeader.style.color = "#1f3f60";
             no1GameHeader.style.textShadow = "2px 2px 4px rgba(0,0,0,0.2)";
-        }
-
-        // Başarımların Yüklenmesi
-        function loadAchievements() {
-            const achievementsList = document.getElementById('achievements-list');
-            achievementsList.innerHTML = ""; // Önceki başarımları temizle
-
-            predefinedAchievements.forEach(achievement => {
-                // Başarımları daha önce tamamlandıysa işaretle
-                if (awardedLevels[achievement.id]) {
-                    achievement.completed = true;
-                }
-
-                const achievementDiv = document.createElement('div');
-                achievementDiv.className = 'achievement';
-                achievementDiv.id = `achievement-${achievement.id}`;
-                achievementDiv.innerHTML = `
-                    <span>${achievement.description}</span>
-                    <span class="checkmark">${achievement.completed ? "✔️" : "❌"}</span>
-                `;
-                if (achievement.completed) {
-                    achievementDiv.classList.add('completed');
-                }
-                achievementsList.appendChild(achievementDiv);
-            });
-        }
-
-        // Başarımların Güncellenmesi
-        function updateAchievements() {
-            predefinedAchievements.forEach(achievement => {
-                if (!achievement.completed) {
-                    if (achievement.level && playerLevel >= achievement.level) {
-                        achievement.completed = true;
-                        addCoin(1000); // Ödül ekleme (örnek)
-                        addAchievement(`Başarımlar: ${achievement.description}`);
-                        document.getElementById(`achievement-${achievement.id}`).classList.add('completed');
-                        document.getElementById(`achievement-${achievement.id}`).querySelector('.checkmark').textContent = "✔️";
-                        awardedLevels[achievement.id] = true; // Ödül verildi olarak işaretle
-                        localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-                    }
-                    // Diğer başarımların kontrolü (örn. farmCount)
-                    // if (achievement.farmCount && farmCount >= achievement.farmCount) { ... }
-                }
-            });
-        }
-
-        // Oyun Yüklenirken Başarımların Yüklenmesi ve Güncellenmesi
-        function loadGame() {
-            const savedData = localStorage.getItem("gameSave");
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                gameState = data.gameState;
-                playerXP = data.playerXP;
-                playerLevel = data.playerLevel;
-                costLevel = data.costLevel;
-                totalCoinsSpent = data.totalCoinsSpent;
-                daysLoggedIn = data.daysLoggedIn;
-                lastCollected = parseInt(data.lastCollected) || 0;
-                awardedLevels = data.awardedLevels || {};
-                lastLoginDate = data.lastLoginDate || null;
-            }
-            loadAchievements(); // Başarımları yükle
-            updateDisplay();
-            updateXPDisplay();
-            updateHomeDisplay();
-            styleNo1Game();
-            console.log("Loaded awardedLevels:", awardedLevels);
-        }
-
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeStats();
-        }
-
-        function updateUpgradeButtons() {
-            ['click', 'auto', 'energy'].forEach(type => {
-                const button = document.getElementById(`${type}-upgrade`);
-                const cost = gameState.upgrades[type].cost;
-                const canAfford = gameState.coins >= cost;
-                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
-                button.disabled = !canAfford;
-            });
-        }
-
-        function handleFarmClick() {
-            if (gameState.energy >= 33) {
-                gameState.coins += gameState.clickPower;
-                gameState.energy -= 33;
-                addXP(10);
-                updateDisplay();
-            }
-        }
-
-        function handleUpgrade(type, powerIncrease = 1.5) {
-            const cost = gameState.upgrades[type].cost;
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                totalCoinsSpent += cost;
-                
-                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
-                if (newCostLevel > costLevel) {
-                    costLevel = newCostLevel;
-                    addXP(100);
-                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
-                }
-                
-                switch(type) {
-                    case 'click':
-                        gameState.clickPower *= powerIncrease;
-                        break;
-                    case 'auto':
-                        gameState.autoCollectPower += 1;
-                        break;
-                    case 'energy':
-                        gameState.energy += 200;
-                        break;
-                }
-                
-                gameState.upgrades[type].cost = Math.floor(cost * 2);
-                gameState.upgrades[type].level++;
-                updateDisplay();
-            }
-        }
-
-        // Home'daki "No1Game" yazısını stilize etmek için fonksiyon
-        function styleNo1Game() {
-            const homeContainer = document.getElementById('home-container');
-            const no1GameHeader = homeContainer.querySelector('h1');
-            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
-            no1GameHeader.style.color = "#1f3f60";
-            no1GameHeader.style.textShadow = "2px 2px 4px rgba(0,0,0,0.2)";
-        }
-
-        // Başarımların Yüklenmesi
-        function loadAchievements() {
-            const achievementsList = document.getElementById('achievements-list');
-            achievementsList.innerHTML = ""; // Önceki başarımları temizle
-
-            predefinedAchievements.forEach(achievement => {
-                // Başarımları daha önce tamamlandıysa işaretle
-                if (awardedLevels[achievement.id]) {
-                    achievement.completed = true;
-                }
-
-                const achievementDiv = document.createElement('div');
-                achievementDiv.className = 'achievement';
-                achievementDiv.id = `achievement-${achievement.id}`;
-                achievementDiv.innerHTML = `
-                    <span>${achievement.description}</span>
-                    <span class="checkmark">${achievement.completed ? "✔️" : "❌"}</span>
-                `;
-                if (achievement.completed) {
-                    achievementDiv.classList.add('completed');
-                }
-                achievementsList.appendChild(achievementDiv);
-            });
-        }
-
-        // Başarımların Güncellenmesi
-        function updateAchievements() {
-            predefinedAchievements.forEach(achievement => {
-                if (!achievement.completed) {
-                    if (achievement.level && playerLevel >= achievement.level) {
-                        achievement.completed = true;
-                        addCoin(1000); // Ödül ekleme (örnek)
-                        addAchievement(`Başarımlar: ${achievement.description}`);
-                        document.getElementById(`achievement-${achievement.id}`).classList.add('completed');
-                        document.getElementById(`achievement-${achievement.id}`).querySelector('.checkmark').textContent = "✔️";
-                        awardedLevels[achievement.id] = true; // Ödül verildi olarak işaretle
-                        localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-                    }
-                    // Diğer başarımların kontrolü (örn. farmCount)
-                    // if (achievement.farmCount && farmCount >= achievement.farmCount) { ... }
-                }
-            });
-        }
-
-        // Oyun Yüklenirken Başarımların Yüklenmesi ve Güncellenmesi
-        function loadGame() {
-            const savedData = localStorage.getItem("gameSave");
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                gameState = data.gameState;
-                playerXP = data.playerXP;
-                playerLevel = data.playerLevel;
-                costLevel = data.costLevel;
-                totalCoinsSpent = data.totalCoinsSpent;
-                daysLoggedIn = data.daysLoggedIn;
-                lastCollected = parseInt(data.lastCollected) || 0;
-                awardedLevels = data.awardedLevels || {};
-                lastLoginDate = data.lastLoginDate || null;
-            }
-            loadAchievements(); // Başarımları yükle
-            updateDisplay();
-            updateXPDisplay();
-            updateHomeDisplay();
-            styleNo1Game();
-            console.log("Loaded awardedLevels:", awardedLevels);
-        }
-
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeStats();
-        }
-
-        function updateUpgradeButtons() {
-            ['click', 'auto', 'energy'].forEach(type => {
-                const button = document.getElementById(`${type}-upgrade`);
-                const cost = gameState.upgrades[type].cost;
-                const canAfford = gameState.coins >= cost;
-                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
-                button.disabled = !canAfford;
-            });
-        }
-
-        function handleFarmClick() {
-            if (gameState.energy >= 33) {
-                gameState.coins += gameState.clickPower;
-                gameState.energy -= 33;
-                addXP(10);
-                updateDisplay();
-            }
-        }
-
-        function handleUpgrade(type, powerIncrease = 1.5) {
-            const cost = gameState.upgrades[type].cost;
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                totalCoinsSpent += cost;
-                
-                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
-                if (newCostLevel > costLevel) {
-                    costLevel = newCostLevel;
-                    addXP(100);
-                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
-                }
-                
-                switch(type) {
-                    case 'click':
-                        gameState.clickPower *= powerIncrease;
-                        break;
-                    case 'auto':
-                        gameState.autoCollectPower += 1;
-                        break;
-                    case 'energy':
-                        gameState.energy += 200;
-                        break;
-                }
-                
-                gameState.upgrades[type].cost = Math.floor(cost * 2);
-                gameState.upgrades[type].level++;
-                updateDisplay();
-            }
-        }
-
-        // Home'daki "No1Game" yazısını stilize etmek için fonksiyon
-        function styleNo1Game() {
-            const homeContainer = document.getElementById('home-container');
-            const no1GameHeader = homeContainer.querySelector('h1');
-            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
-            no1GameHeader.style.color = "#1f3f60";
-            no1GameHeader.style.textShadow = "2px 2px 4px rgba(0,0,0,0.2)";
-        }
-
-        // Başarımların Yüklenmesi
-        function loadAchievements() {
-            const achievementsList = document.getElementById('achievements-list');
-            achievementsList.innerHTML = ""; // Önceki başarımları temizle
-
-            predefinedAchievements.forEach(achievement => {
-                // Başarımları daha önce tamamlandıysa işaretle
-                if (awardedLevels[achievement.id]) {
-                    achievement.completed = true;
-                }
-
-                const achievementDiv = document.createElement('div');
-                achievementDiv.className = 'achievement';
-                achievementDiv.id = `achievement-${achievement.id}`;
-                achievementDiv.innerHTML = `
-                    <span>${achievement.description}</span>
-                    <span class="checkmark">${achievement.completed ? "✔️" : "❌"}</span>
-                `;
-                if (achievement.completed) {
-                    achievementDiv.classList.add('completed');
-                }
-                achievementsList.appendChild(achievementDiv);
-            });
-        }
-
-        // Başarımların Güncellenmesi
-        function updateAchievements() {
-            predefinedAchievements.forEach(achievement => {
-                if (!achievement.completed) {
-                    if (achievement.level && playerLevel >= achievement.level) {
-                        achievement.completed = true;
-                        addCoin(1000); // Ödül ekleme (örnek)
-                        addAchievement(`Başarımlar: ${achievement.description}`);
-                        document.getElementById(`achievement-${achievement.id}`).classList.add('completed');
-                        document.getElementById(`achievement-${achievement.id}`).querySelector('.checkmark').textContent = "✔️";
-                        awardedLevels[achievement.id] = true; // Ödül verildi olarak işaretle
-                        localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-                    }
-                    // Diğer başarımların kontrolü (örn. farmCount)
-                    // if (achievement.farmCount && farmCount >= achievement.farmCount) { ... }
-                }
-            });
-        }
-
-        // Oyun Yüklenirken Başarımların Yüklenmesi ve Güncellenmesi
-        function loadGame() {
-            const savedData = localStorage.getItem("gameSave");
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                gameState = data.gameState;
-                playerXP = data.playerXP;
-                playerLevel = data.playerLevel;
-                costLevel = data.costLevel;
-                totalCoinsSpent = data.totalCoinsSpent;
-                daysLoggedIn = data.daysLoggedIn;
-                lastCollected = parseInt(data.lastCollected) || 0;
-                awardedLevels = data.awardedLevels || {};
-                lastLoginDate = data.lastLoginDate || null;
-            }
-            loadAchievements(); // Başarımları yükle
-            updateDisplay();
-            updateXPDisplay();
-            updateHomeDisplay();
-            styleNo1Game();
-            console.log("Loaded awardedLevels:", awardedLevels);
-        }
-
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeStats();
-        }
-
-        function updateUpgradeButtons() {
-            ['click', 'auto', 'energy'].forEach(type => {
-                const button = document.getElementById(`${type}-upgrade`);
-                const cost = gameState.upgrades[type].cost;
-                const canAfford = gameState.coins >= cost;
-                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
-                button.disabled = !canAfford;
-            });
-        }
-
-        function handleFarmClick() {
-            if (gameState.energy >= 33) {
-                gameState.coins += gameState.clickPower;
-                gameState.energy -= 33;
-                addXP(10);
-                updateDisplay();
-            }
-        }
-
-        function handleUpgrade(type, powerIncrease = 1.5) {
-            const cost = gameState.upgrades[type].cost;
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                totalCoinsSpent += cost;
-                
-                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
-                if (newCostLevel > costLevel) {
-                    costLevel = newCostLevel;
-                    addXP(100);
-                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
-                }
-                
-                switch(type) {
-                    case 'click':
-                        gameState.clickPower *= powerIncrease;
-                        break;
-                    case 'auto':
-                        gameState.autoCollectPower += 1;
-                        break;
-                    case 'energy':
-                        gameState.energy += 200;
-                        break;
-                }
-                
-                gameState.upgrades[type].cost = Math.floor(cost * 2);
-                gameState.upgrades[type].level++;
-                updateDisplay();
-            }
-        }
-
-        // Home'daki "No1Game" yazısını stilize etmek için fonksiyon
-        function styleNo1Game() {
-            const homeContainer = document.getElementById('home-container');
-            const no1GameHeader = homeContainer.querySelector('h1');
-            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
-            no1GameHeader.style.color = "#1f3f60";
-            no1GameHeader.style.textShadow = "2px 2px 4px rgba(0,0,0,0.2)";
-        }
-
-        // Başarımların Yüklenmesi
-        function loadAchievements() {
-            const achievementsList = document.getElementById('achievements-list');
-            achievementsList.innerHTML = ""; // Önceki başarımları temizle
-
-            predefinedAchievements.forEach(achievement => {
-                // Başarımları daha önce tamamlandıysa işaretle
-                if (awardedLevels[achievement.id]) {
-                    achievement.completed = true;
-                }
-
-                const achievementDiv = document.createElement('div');
-                achievementDiv.className = 'achievement';
-                achievementDiv.id = `achievement-${achievement.id}`;
-                achievementDiv.innerHTML = `
-                    <span>${achievement.description}</span>
-                    <span class="checkmark">${achievement.completed ? "✔️" : "❌"}</span>
-                `;
-                if (achievement.completed) {
-                    achievementDiv.classList.add('completed');
-                }
-                achievementsList.appendChild(achievementDiv);
-            });
-        }
-
-        // Başarımların Güncellenmesi
-        function updateAchievements() {
-            predefinedAchievements.forEach(achievement => {
-                if (!achievement.completed) {
-                    if (achievement.level && playerLevel >= achievement.level) {
-                        achievement.completed = true;
-                        addCoin(1000); // Ödül ekleme (örnek)
-                        addAchievement(`Başarımlar: ${achievement.description}`);
-                        document.getElementById(`achievement-${achievement.id}`).classList.add('completed');
-                        document.getElementById(`achievement-${achievement.id}`).querySelector('.checkmark').textContent = "✔️";
-                        awardedLevels[achievement.id] = true; // Ödül verildi olarak işaretle
-                        localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-                    }
-                    // Diğer başarımların kontrolü (örn. farmCount)
-                    // if (achievement.farmCount && farmCount >= achievement.farmCount) { ... }
-                }
-            });
-        }
-
-        // Oyun Yüklenirken Başarımların Yüklenmesi ve Güncellenmesi
-        function loadGame() {
-            const savedData = localStorage.getItem("gameSave");
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                gameState = data.gameState;
-                playerXP = data.playerXP;
-                playerLevel = data.playerLevel;
-                costLevel = data.costLevel;
-                totalCoinsSpent = data.totalCoinsSpent;
-                daysLoggedIn = data.daysLoggedIn;
-                lastCollected = parseInt(data.lastCollected) || 0;
-                awardedLevels = data.awardedLevels || {};
-                lastLoginDate = data.lastLoginDate || null;
-            }
-            loadAchievements(); // Başarımları yükle
-            updateDisplay();
-            updateXPDisplay();
-            updateHomeDisplay();
-            styleNo1Game();
-            console.log("Loaded awardedLevels:", awardedLevels);
-        }
-
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeStats();
-        }
-
-        function updateUpgradeButtons() {
-            ['click', 'auto', 'energy'].forEach(type => {
-                const button = document.getElementById(`${type}-upgrade`);
-                const cost = gameState.upgrades[type].cost;
-                const canAfford = gameState.coins >= cost;
-                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
-                button.disabled = !canAfford;
-            });
-        }
-
-        function handleFarmClick() {
-            if (gameState.energy >= 33) {
-                gameState.coins += gameState.clickPower;
-                gameState.energy -= 33;
-                addXP(10);
-                updateDisplay();
-            }
-        }
-
-        function handleUpgrade(type, powerIncrease = 1.5) {
-            const cost = gameState.upgrades[type].cost;
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                totalCoinsSpent += cost;
-                
-                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
-                if (newCostLevel > costLevel) {
-                    costLevel = newCostLevel;
-                    addXP(100);
-                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
-                }
-                
-                switch(type) {
-                    case 'click':
-                        gameState.clickPower *= powerIncrease;
-                        break;
-                    case 'auto':
-                        gameState.autoCollectPower += 1;
-                        break;
-                    case 'energy':
-                        gameState.energy += 200;
-                        break;
-                }
-                
-                gameState.upgrades[type].cost = Math.floor(cost * 2);
-                gameState.upgrades[type].level++;
-                updateDisplay();
-            }
-        }
-
-        // Home'daki "No1Game" yazısını stilize etmek için fonksiyon
-        function styleNo1Game() {
-            const homeContainer = document.getElementById('home-container');
-            const no1GameHeader = homeContainer.querySelector('h1');
-            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
-            no1GameHeader.style.color = "#1f3f60";
-            no1GameHeader.style.textShadow = "2px 2px 4px rgba(0,0,0,0.2)";
-        }
-
-        // Başarımların Yüklenmesi
-        function loadAchievements() {
-            const achievementsList = document.getElementById('achievements-list');
-            achievementsList.innerHTML = ""; // Önceki başarımları temizle
-
-            predefinedAchievements.forEach(achievement => {
-                // Başarımları daha önce tamamlandıysa işaretle
-                if (awardedLevels[achievement.id]) {
-                    achievement.completed = true;
-                }
-
-                const achievementDiv = document.createElement('div');
-                achievementDiv.className = 'achievement';
-                achievementDiv.id = `achievement-${achievement.id}`;
-                achievementDiv.innerHTML = `
-                    <span>${achievement.description}</span>
-                    <span class="checkmark">${achievement.completed ? "✔️" : "❌"}</span>
-                `;
-                if (achievement.completed) {
-                    achievementDiv.classList.add('completed');
-                }
-                achievementsList.appendChild(achievementDiv);
-            });
-        }
-
-        // Başarımların Güncellenmesi
-        function updateAchievements() {
-            predefinedAchievements.forEach(achievement => {
-                if (!achievement.completed) {
-                    if (achievement.level && playerLevel >= achievement.level) {
-                        achievement.completed = true;
-                        addCoin(1000); // Ödül ekleme (örnek)
-                        addAchievement(`Başarımlar: ${achievement.description}`);
-                        document.getElementById(`achievement-${achievement.id}`).classList.add('completed');
-                        document.getElementById(`achievement-${achievement.id}`).querySelector('.checkmark').textContent = "✔️";
-                        awardedLevels[achievement.id] = true; // Ödül verildi olarak işaretle
-                        localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-                    }
-                    // Diğer başarımların kontrolü (örn. farmCount)
-                    // if (achievement.farmCount && farmCount >= achievement.farmCount) { ... }
-                }
-            });
-        }
-
-        // Oyun Yüklenirken Başarımların Yüklenmesi ve Güncellenmesi
-        function loadGame() {
-            const savedData = localStorage.getItem("gameSave");
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                gameState = data.gameState;
-                playerXP = data.playerXP;
-                playerLevel = data.playerLevel;
-                costLevel = data.costLevel;
-                totalCoinsSpent = data.totalCoinsSpent;
-                daysLoggedIn = data.daysLoggedIn;
-                lastCollected = parseInt(data.lastCollected) || 0;
-                awardedLevels = data.awardedLevels || {};
-                lastLoginDate = data.lastLoginDate || null;
-            }
-            loadAchievements(); // Başarımları yükle
-            updateDisplay();
-            updateXPDisplay();
-            updateHomeDisplay();
-            styleNo1Game();
-            console.log("Loaded awardedLevels:", awardedLevels);
-        }
-
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeStats();
-        }
-
-        function updateHomeStats() {
-            document.getElementById("home-level").textContent = playerLevel;
-            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById("home-xp").textContent = playerXP;
-            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
-            document.getElementById("home-energy").textContent = gameState.energy;
-        }
-
-        // Update progress bar when XP changes
-        function updateProgressBar() {
-            const progressBarFill = document.getElementById('progress-bar-fill');
-            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
-            progressBarFill.style.width = `${progressPercentage}%`;
         }
 
         // Event Listeners
@@ -1488,7 +832,7 @@
             }
         });
 
-        // Otomatik işlemler
+        // Otomatik İşlemler
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
                 gameState.coins += gameState.autoCollectPower;
@@ -1508,13 +852,13 @@
             updateDailyRewardTimer();
         }, 1000);
 
-        // Sayfa yüklendiğinde
+        // Sayfa Yüklendiğinde
         window.addEventListener("load", () => {
             loadGame();
             incrementDaysLoggedIn();
             updateDailyRewardTimer();
 
-            // Start countdown if needed
+            // Countdown Başlatma
             if (Date.now() - lastCollected < 24 * 60 * 60 * 1000) {
                 countdownInterval = setInterval(() => {
                     const now = Date.now();
@@ -1530,15 +874,37 @@
             }
 
             updateProgressBar(); // İlerleme çubuğunu güncelle
-            displayDailyTip(); // Günlük ipucunu göster
+            displayDailyTip(); // Günlük ipucunu göster (Fonksiyon tanımlı değil, kaldırıldı)
         });
 
+        // Oyun Kapatılırken Kaydetme
         window.addEventListener("beforeunload", saveGame);
 
-        // İlk yüklemede display güncelleme
-        updateDisplay();
-        updateXPDisplay();
-        updateHomeDisplay();
+        // Gün Sayısını Artırma Fonksiyonu
+        function incrementDaysLoggedIn() {
+            const today = new Date().toDateString();
+            if (lastLoginDate !== today) {
+                daysLoggedIn++;
+                lastLoginDate = today;
+                localStorage.setItem('daysLoggedIn', daysLoggedIn);
+                localStorage.setItem('lastLoginDate', lastLoginDate);
+                updateHomeDisplay();
+            }
+        }
+
+        // Günlük İpucu Fonksiyonu (Basit)
+        function displayDailyTip() {
+            const dailyTips = [
+                "Enerjinizi daha verimli kullanmak için enerji yükseltmelerini tercih edin!",
+                "Otomatik toplayıcılarınızı yükselterek daha fazla coin kazanın!",
+                "Seviye ödüllerini kaçırmayın, her seviyede büyük ödüller sizi bekliyor!",
+                "Daha fazla XP kazanmak için farm butonuna sık sık tıklayın!"
+            ];
+            const today = new Date().getDate();
+            const tipIndex = today % dailyTips.length;
+            document.getElementById('daily-tip').textContent = `Günlük İpucu: ${dailyTips[tipIndex]}`;
+        }
+
     </script>
 </body>
 </html>
