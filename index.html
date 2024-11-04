@@ -156,6 +156,10 @@
             flex: 1;
             text-align: center;
         }
+        .resource-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
         #coin-resource { 
             background: #FFD700; 
             border: 2px solid #DAA520;
@@ -312,6 +316,63 @@
             border: 1px solid #ffecb3;
         }
 
+        /* Seviye Ödülleri Stil İyileştirmesi */
+        .reward {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            font-size: 1em;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reward button {
+            background-color: #ff4d4d; /* Başlangıçta kırmızı */
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.9em;
+        }
+
+        .reward button.enabled {
+            background-color: #4caf50; /* Yeşil */
+            cursor: pointer;
+        }
+
+        .reward button.disabled {
+            background-color: #ff4d4d; /* Kırmızı */
+            cursor: not-allowed;
+        }
+
+        .reward button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .start-button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .start-button:hover {
+            background-color: #45a049;
+        }
+
         /* Responsive Tasarım */
         @media (max-width: 600px) {
             #nav-container {
@@ -337,53 +398,6 @@
             #home-container {
                 margin-bottom: 100px; /* Navigasyon çubuğu için daha fazla alt marjin */
             }
-        }
-
-        /* Seviye Ödülleri Stil İyileştirmesi */
-        .reward {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 5px 0;
-            font-size: 1em;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .reward button {
-            background-color: #4caf50;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 0.9em;
-        }
-
-        .reward button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .start-button {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .start-button:hover {
-            background-color: #45a049;
         }
 
     </style>
@@ -456,27 +470,27 @@
         <h2>Seviye Ödülleri</h2>
         <div class="reward">
             <span>Seviye 10 - 5000 Coin</span>
-            <button onclick="claimLevelReward(10)" id="claim-reward-10">Al</button>
+            <button onclick="claimLevelReward(10)" id="claim-reward-10" class="disabled" disabled>Seviye 10 Olmalı</button>
         </div>
         <div class="reward">
             <span>Seviye 20 - 10000 Coin</span>
-            <button onclick="claimLevelReward(20)" id="claim-reward-20">Al</button>
+            <button onclick="claimLevelReward(20)" id="claim-reward-20" class="disabled" disabled>Seviye 20 Olmalı</button>
         </div>
         <div class="reward">
             <span>Seviye 30 - 20000 Coin</span>
-            <button onclick="claimLevelReward(30)" id="claim-reward-30">Al</button>
+            <button onclick="claimLevelReward(30)" id="claim-reward-30" class="disabled" disabled>Seviye 30 Olmalı</button>
         </div>
         <div class="reward">
             <span>Seviye 40 - 35000 Coin</span>
-            <button onclick="claimLevelReward(40)" id="claim-reward-40">Al</button>
+            <button onclick="claimLevelReward(40)" id="claim-reward-40" class="disabled" disabled>Seviye 40 Olmalı</button>
         </div>
         <div class="reward">
             <span>Seviye 50 - 50000 Coin</span>
-            <button onclick="claimLevelReward(50)" id="claim-reward-50">Al</button>
+            <button onclick="claimLevelReward(50)" id="claim-reward-50" class="disabled" disabled>Seviye 50 Olmalı</button>
         </div>
         <div class="reward">
             <span>Seviye 100 - 100000 Coin</span>
-            <button onclick="claimLevelReward(100)" id="claim-reward-100">Al</button>
+            <button onclick="claimLevelReward(100)" id="claim-reward-100" class="disabled" disabled>Seviye 100 Olmalı</button>
         </div>
     </div>
 
@@ -534,17 +548,18 @@
     <script>
         // Oyun Durumu
         let gameState = {
-            coins: 2840,
+            coins: 0, // Başlangıçta 0
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
-            farmCount: 0, // Farm sayısı eklendi
+            farmCount: 0, // Farm sayısı
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
                 energy: { level: 1, cost: 1000 },
                 xp: { level: 0, cost: 1000 }
-            }
+            },
+            xpBoostActive: false // XP Güçlendirme aktif mi?
         };
 
         let playerXP = 0;
@@ -558,11 +573,13 @@
 
         // Başarımların Tanımlanması
         const predefinedAchievements = [
-            { id: 1, description: "Seviye 5'e ulaştınız!", level: 5, completed: false },
-            { id: 2, description: "Seviye 10'a ulaştınız!", level: 10, completed: false },
-            { id: 3, description: "Seviye 20'ye ulaştınız!", level: 20, completed: false },
-            { id: 4, description: "Seviye 30'a ulaştınız!", level: 30, completed: false },
-            { id: 5, description: "500 Farm yaptınız!", farmCount: 500, completed: false },
+            { id: 1, description: "Seviye 10'a ulaştınız!", level: 10, completed: false },
+            { id: 2, description: "Seviye 20'ye ulaştınız!", level: 20, completed: false },
+            { id: 3, description: "Seviye 30'a ulaştınız!", level: 30, completed: false },
+            { id: 4, description: "Seviye 40'a ulaştınız!", level: 40, completed: false },
+            { id: 5, description: "Seviye 50'ye ulaştınız!", level: 50, completed: false },
+            { id: 6, description: "Seviye 100'e ulaştınız!", level: 100, completed: false },
+            { id: 7, description: "500 Farm yaptınız!", farmCount: 500, completed: false }
             // Diğer başarımlar eklenebilir
         ];
 
@@ -671,11 +688,8 @@
         // Seviye Ödüllerini Kontrol Etme Fonksiyonu
         function checkLevelRewards() {
             if (rewardLevels[playerLevel] && !awardedLevels[`reward_${playerLevel}`]) {
-                // Bu seviye için ödül alındı
-                // Ödül almayı oyuncunun yapması gerekiyor, bu yüzden otomatik eklemiyoruz
-                // Kullanıcı Earn bölümünden ödülü alacak
-                // Ancak oyun sırasında otomatik olarak kullanıcıya haber veriyoruz
-                alert(`Seviye ${playerLevel} ödülü alabilirsiniz! Earn bölümüne gidin.`);
+                // Bu seviye için ödül almayı oyuncunun yapması gerekiyor
+                alert(`Seviye ${playerLevel} ödülünüzü alabilirsiniz! Earn bölümüne gidin.`);
             }
         }
 
@@ -764,6 +778,7 @@
                 alert(`Seviye ${level} ödülünüzü aldınız: ${rewardAmount} Coin kazandınız!`);
                 updateDisplay();
                 updateEarnRewards();
+                markAchievementForReward(level);
             }
         }
 
@@ -773,15 +788,36 @@
                 const button = document.getElementById(`claim-reward-${level}`);
                 if (playerLevel >= level && !awardedLevels[`reward_${level}`]) {
                     button.disabled = false;
+                    button.classList.add('enabled');
+                    button.classList.remove('disabled');
                     button.textContent = "Al";
                 } else if (awardedLevels[`reward_${level}`]) {
                     button.disabled = true;
+                    button.classList.add('disabled');
+                    button.classList.remove('enabled');
                     button.textContent = "Alındı";
                 } else {
                     button.disabled = true;
+                    button.classList.add('disabled');
+                    button.classList.remove('enabled');
                     button.textContent = "Seviye Ulaşılamadı";
                 }
             });
+        }
+
+        // Seviye Ödülleri ile Eşleşen Başarımları İşaretleme Fonksiyonu
+        function markAchievementForReward(level) {
+            const achievement = predefinedAchievements.find(a => a.level === level);
+            if (achievement) {
+                achievement.completed = true;
+                const achievementDiv = document.getElementById(`achievement-${achievement.id}`);
+                if (achievementDiv) {
+                    achievementDiv.classList.add('completed');
+                    achievementDiv.querySelector('.checkmark').textContent = "✔️";
+                }
+                awardedLevels[`achievement_${achievement.id}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+            }
         }
 
         // Home İstatistiklerini Güncelleme Fonksiyonu
@@ -855,6 +891,11 @@
             styleNo1Game();
             updateEarnRewards();
             console.log("Loaded awardedLevels:", awardedLevels);
+
+            // XP Güçlendirme aktifse interval başlat
+            if (gameState.upgrades.xp.level > 0 && !gameState.xpBoostActive) {
+                activateXPBoost();
+            }
         }
 
         // Display Güncelleme Fonksiyonu
@@ -872,7 +913,7 @@
 
             updateUpgradeButtons();
             updateProgressBar();
-            updateHomeStats();
+            updateHomeDisplay();
             updateEarnRewards();
         }
 
@@ -901,7 +942,7 @@
         }
 
         // Upgrade Yapma Fonksiyonu
-        function handleUpgrade(type, powerIncrease = 1.5) {
+        function handleUpgrade(type) {
             const cost = gameState.upgrades[type].cost;
             if (gameState.coins >= cost) {
                 gameState.coins -= cost;
@@ -916,7 +957,7 @@
 
                 switch(type) {
                     case 'click':
-                        gameState.clickPower *= powerIncrease;
+                        gameState.clickPower *= 1.5;
                         break;
                     case 'auto':
                         gameState.autoCollectPower += 1;
@@ -925,11 +966,8 @@
                         gameState.energy += 200;
                         break;
                     case 'xp':
-                        // XP Güçlendirme Özelliği
-                        if (!gameState.upgrades.xp.interval) {
-                            gameState.upgrades.xp.interval = setInterval(() => {
-                                addXP(2);
-                            }, 2000);
+                        if (!gameState.xpBoostActive) {
+                            activateXPBoost();
                             alert("XP Güçlendirmeyi aktif ettiniz! Her 2 saniyede 2 XP kazanıyorsunuz.");
                         } else {
                             alert("XP Güçlendirme zaten aktif!");
@@ -944,6 +982,14 @@
             } else {
                 alert("Yeterli coininiz yok!");
             }
+        }
+
+        // XP Güçlendirme Fonksiyonu
+        function activateXPBoost() {
+            gameState.xpBoostActive = true;
+            gameState.upgrades.xp.interval = setInterval(() => {
+                addXP(2);
+            }, 2000);
         }
 
         // Event Listeners
@@ -975,27 +1021,19 @@
         document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
 
         document.getElementById('click-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.click.cost) {
-                handleUpgrade('click');
-            }
+            handleUpgrade('click');
         });
 
         document.getElementById('auto-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.auto.cost) {
-                handleUpgrade('auto');
-            }
+            handleUpgrade('auto');
         });
 
         document.getElementById('energy-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.energy.cost) {
-                handleUpgrade('energy');
-            }
+            handleUpgrade('energy');
         });
 
         document.getElementById('xp-upgrade').addEventListener('click', () => {
-            if (gameState.coins >= gameState.upgrades.xp.cost) {
-                handleUpgrade('xp');
-            }
+            handleUpgrade('xp');
         });
 
         // Otomatik İşlemler
@@ -1077,37 +1115,37 @@
                 const button = document.getElementById(`claim-reward-${level}`);
                 if (playerLevel >= level && !awardedLevels[`reward_${level}`]) {
                     button.disabled = false;
+                    button.classList.add('enabled');
+                    button.classList.remove('disabled');
                     button.textContent = "Al";
                 } else if (awardedLevels[`reward_${level}`]) {
                     button.disabled = true;
+                    button.classList.add('disabled');
+                    button.classList.remove('enabled');
                     button.textContent = "Alındı";
                 } else {
                     button.disabled = true;
+                    button.classList.add('disabled');
+                    button.classList.remove('enabled');
                     button.textContent = "Seviye Ulaşılamadı";
                 }
             });
         }
 
-        // Coin Display Güncelleme Fonksiyonu
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-            document.getElementById('xp-text').textContent = playerXP;
-            document.getElementById('farmCount').textContent = gameState.farmCount;
-
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
-
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeDisplay();
-            updateEarnRewards();
+        // Seviye Ödülleri ile Eşleşen Başarımları İşaretleme Fonksiyonu
+        function markAchievementForReward(level) {
+            const achievement = predefinedAchievements.find(a => a.level === level);
+            if (achievement) {
+                achievement.completed = true;
+                const achievementDiv = document.getElementById(`achievement-${achievement.id}`);
+                if (achievementDiv) {
+                    achievementDiv.classList.add('completed');
+                    achievementDiv.querySelector('.checkmark').textContent = "✔️";
+                }
+                awardedLevels[`achievement_${achievement.id}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+            }
         }
-
-        // Coin Güçlendirme ve diğer fonksiyonlar yukarıda tanımlanmış
 
     </script>
 </body>
