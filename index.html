@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gelişmiş Farm Oyunu</title>
+    <title>No1Game - Gelişmiş Farm Oyunu</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,7 +11,7 @@
             padding: 0;
         }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -21,16 +21,20 @@
             padding: 10px;
         }
 
+        /* Navigasyon Çubuğunu Alt Kısma Taşı */
         #nav-container {
-            display: flex;
-            justify-content: space-around;
+            position: fixed;
+            bottom: 0;
             width: 100%;
             max-width: 600px;
             background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            padding: 10px 0;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
         }
 
         .nav-button {
@@ -38,16 +42,14 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px;
-            font-size: 0.9em;
+            padding: 5px;
+            font-size: 0.8em;
             color: #333;
             text-decoration: none;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
-            width: 80px;
-            border: 1px solid #ccc;
-            background-color: #f0f0f0;
+            flex: 1;
         }
 
         .nav-button:hover {
@@ -57,20 +59,23 @@
 
         .nav-button i {
             font-size: 1.5em;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
+        /* Ana İçerik Bölümleri */
         #boost-container, #game-container, #earn-container, #home-container {
             display: none;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             max-width: 500px;
             width: 100%;
-            margin: 20px auto;
+            margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
+            overflow-y: auto;
         }
 
+        /* Boost Container */
         #boost-container {
             display: flex;
             justify-content: center;
@@ -90,6 +95,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
+        /* Resource Container */
         .resource-container {
             display: flex;
             justify-content: space-around;
@@ -121,6 +127,7 @@
             border: 2px solid #32CD32;
         }
 
+        /* Farm Button */
         #farm-button {
             background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
             border: none;
@@ -137,6 +144,7 @@
             margin: 10px auto;
         }
 
+        /* Upgrades Container */
         .upgrades-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -157,54 +165,30 @@
             border: none;
             font-size: 1em;
             font-weight: bold;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .reward {
-            background-color: #d0eaff;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-            color: #1f3f60;
-            font-weight: bold;
-        }
-
-        #cave-icon {
-            font-size: 4em;
-            color: goldenrod;
-            margin-top: 20px;
-        }
-
-        .claim-button, .start-button {
-            background-color: #8a2be2;
+        .upgrade-button.active {
+            background-color: #4caf50;
             color: white;
-            font-size: 1em;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            margin: 10px 0;
+        }
+        .upgrade-button.inactive {
+            background-color: #f9f9f9;
+            color: #333;
         }
 
-        .claim-button:hover, .start-button:hover {
-            background-color: #6f22b0;
-        }
-
-        #days-logged-in-container {
-            background-color: #ffd700;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
+        /* Home Container */
+        #home-container h1 {
+            font-size: 2em;
+            color: #1f3f60;
+            margin-bottom: 10px;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
-        .cooldown-timer {
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-
-        /* Yeni Eklenen Stil */
         #home-container h2 {
             color: #1f3f60;
             margin-bottom: 10px;
@@ -265,34 +249,43 @@
             border: 1px solid #ffecb3;
         }
 
+        /* Responsive Tasarım */
+        @media (max-width: 600px) {
+            #nav-container {
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 10px 0;
+            }
+
+            .nav-button {
+                font-size: 0.8em;
+            }
+
+            .resource-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .upgrade-button {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+
+            #home-container {
+                margin-bottom: 100px; /* Navigasyon çubuğu için daha fazla alt marjin */
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="nav-container">
-        <div class="nav-button" id="home-nav">
-            <i>🏠</i>
-            <span>Home</span>
-        </div>
-        <div class="nav-button" id="earn-nav">
-            <i>📋</i>
-            <span>Earn</span>
-        </div>
-        <div class="nav-button" id="boost-nav">
-            <i>🚀</i>
-            <span>Boost</span>
-        </div>
-        <div class="nav-button" id="friends-nav">
-            <i>👥</i>
-            <span>Friends</span>
-        </div>
-    </div>
-
+    <!-- Boost Container -->
     <div id="boost-container">
         <h1>Hoş Geldiniz!</h1>
         <p>Oynamak için Boost butonuna tıklayın!</p>
         <button id="boost-button">Boost</button>
     </div>
 
+    <!-- Game Container -->
     <div id="game-container">
         <div id="level-indicator">Seviye: <span id="level-text">1</span></div>
         
@@ -335,11 +328,12 @@
         </div>
     </div>
 
+    <!-- Earn Container -->
     <div id="earn-container">
-        <h2 style="color: #1f3f60;">Giriş Ödülü</h2>
+        <h2>Giriş Ödülü</h2>
         <button class="start-button" onclick="collectDailyReward()">5000 Coin Al</button>
         <div class="cooldown-timer" id="daily-reward-timer"></div>
-        <h2 style="color: #1f3f60;">Seviye Ödülleri</h2>
+        <h2>Seviye Ödülleri</h2>
         <div class="reward">Seviye 10 - 5000 Coin</div>
         <div class="reward">Seviye 20 - 10000 Coin</div>
         <div class="reward">Seviye 30 - 20000 Coin</div>
@@ -348,13 +342,10 @@
         <div class="reward">Seviye 100 - 100000 Coin</div>
     </div>
 
+    <!-- Home Container -->
     <div id="home-container">
-        <div id="days-logged-in-container">
-            Toplam Giriş Günü: <span id="days-logged-in">0</span>
-        </div>
-        <div id="cave-icon">🪨</div>
+        <h1>No1Game</h1>
 
-        <!-- Yeni Eklenen Bölümler -->
         <h2>Oyuncu İstatistikleri</h2>
         <div id="home-stats">
             <div class="stat">Seviye: <span id="home-level">1</span></div>
@@ -380,17 +371,24 @@
         </div>
     </div>
 
-    <div id="earn-container">
-        <h2 style="color: #1f3f60;">Giriş Ödülü</h2>
-        <button class="start-button" onclick="collectDailyReward()">5000 Coin Al</button>
-        <div class="cooldown-timer" id="daily-reward-timer"></div>
-        <h2 style="color: #1f3f60;">Seviye Ödülleri</h2>
-        <div class="reward">Seviye 10 - 5000 Coin</div>
-        <div class="reward">Seviye 20 - 10000 Coin</div>
-        <div class="reward">Seviye 30 - 20000 Coin</div>
-        <div class="reward">Seviye 40 - 35000 Coin</div>
-        <div class="reward">Seviye 50 - 50000 Coin</div>
-        <div class="reward">Seviye 100 - 100000 Coin</div>
+    <!-- Navigasyon Çubuğu -->
+    <div id="nav-container">
+        <div class="nav-button" id="home-nav">
+            <i>🏠</i>
+            <span>Home</span>
+        </div>
+        <div class="nav-button" id="earn-nav">
+            <i>📋</i>
+            <span>Earn</span>
+        </div>
+        <div class="nav-button" id="boost-nav">
+            <i>🚀</i>
+            <span>Boost</span>
+        </div>
+        <div class="nav-button" id="friends-nav">
+            <i>👥</i>
+            <span>Friends</span>
+        </div>
     </div>
 
     <script>
@@ -576,39 +574,20 @@
 
         function updateCaveIcon() {
             console.log("Updating cave icon for level:", playerLevel);
-            if (playerLevel >= 10 && playerLevel < 20) {
-                document.getElementById("cave-icon").textContent = "🏰"; // Level 10-19
-            } else if (playerLevel >= 20 && playerLevel < 30) {
-                document.getElementById("cave-icon").textContent = "🏯"; // Level 20-29
-            } else if (playerLevel >= 30 && playerLevel < 40) {
-                document.getElementById("cave-icon").textContent = "🗼"; // Level 30-39
-            } else if (playerLevel >= 40 && playerLevel < 50) {
-                document.getElementById("cave-icon").textContent = "🕌"; // Level 40-49
-            } else if (playerLevel >= 50 && playerLevel < 100) {
-                document.getElementById("cave-icon").textContent = "🛕"; // Level 50-99
-            } else if (playerLevel >= 100) {
-                document.getElementById("cave-icon").textContent = "🏰✨"; // Level 100+
-            } else {
-                document.getElementById("cave-icon").textContent = "🪨"; // Default
-            }
+            // Artık cave icon'u kaldırdık, bu fonksiyonu temizleyebiliriz veya başka bir şey için kullanabiliriz
+            // Ancak ilerleme çubuğunu güncellemeye devam ediyoruz
         }
 
-        function addAchievement(description) {
-            const achievementContainer = document.getElementById('achievement-container');
-            const achievement = document.createElement('div');
-            achievement.className = 'achievement';
-            achievement.textContent = description;
-            achievementContainer.appendChild(achievement);
+        // Home'daki "No1Game" yazısını stilize etmek için fonksiyon
+        function styleNo1Game() {
+            const homeContainer = document.getElementById('home-container');
+            const no1GameHeader = homeContainer.querySelector('h1');
+            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
+            no1GameHeader.style.color = "#1f3f60";
+            no1GameHeader.style.textShadow = "2px 2px 4px rgba(0,0,0,0.2)";
         }
 
-        function updateHomeStats() {
-            document.getElementById("home-level").textContent = playerLevel;
-            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById("home-xp").textContent = playerXP;
-            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
-            document.getElementById("home-energy").textContent = gameState.energy;
-        }
-
+        // Event Handlers
         function hideAllContainers() {
             const containers = ["boost-container", "game-container", "earn-container", "home-container"];
             containers.forEach(id => {
@@ -648,6 +627,7 @@
             updateDisplay();
             updateXPDisplay();
             updateHomeDisplay();
+            styleNo1Game();
             console.log("Loaded awardedLevels:", awardedLevels);
         }
 
@@ -715,6 +695,23 @@
             }
         }
 
+        function addAchievement(description) {
+            const achievementContainer = document.getElementById('achievement-container');
+            const achievement = document.createElement('div');
+            achievement.className = 'achievement';
+            achievement.textContent = description;
+            achievementContainer.appendChild(achievement);
+        }
+
+        function updateHomeStats() {
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        // Update progress bar when XP changes
         function updateProgressBar() {
             const progressBarFill = document.getElementById('progress-bar-fill');
             const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
@@ -808,10 +805,9 @@
                 }, 1000);
             }
 
-            updateCaveIcon(); // Görseli güncelle
             updateProgressBar(); // İlerleme çubuğunu güncelle
         });
-        
+
         window.addEventListener("beforeunload", saveGame);
 
         // İlk yüklemede display güncelleme
