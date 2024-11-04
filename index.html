@@ -363,6 +363,7 @@
 
                 awardedLevels[playerLevel] = true;
                 localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                console.log(`Level ${playerLevel} ödülü verildi. Toplam Coin: ${gameState.coins}`);
             }
         }
 
@@ -485,6 +486,7 @@
             updateDisplay();
             updateXPDisplay();
             updateHomeDisplay();
+            console.log("Loaded awardedLevels:", awardedLevels);
         }
 
         function updateDisplay() {
@@ -551,6 +553,7 @@
 
         // Update cave icon based on level
         function updateCaveIcon() {
+            console.log("Updating cave icon for level:", playerLevel);
             if (playerLevel >= 10 && playerLevel < 20) {
                 document.getElementById("cave-icon").textContent = "🏰"; // Level 10-19
             } else if (playerLevel >= 20 && playerLevel < 30) {
