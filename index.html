@@ -235,7 +235,7 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
+            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
         }
 
         #home-container h2 {
@@ -349,6 +349,28 @@
             color: #333;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reward button {
+            background-color: #4caf50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .reward button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+
+        .reward button:disabled {
+            background-color: #a5d6a7;
+            cursor: not-allowed;
         }
 
         .start-button {
@@ -435,12 +457,30 @@
         <button class="start-button" onclick="collectDailyReward()">5000 Coin Al</button>
         <div class="cooldown-timer" id="daily-reward-timer"></div>
         <h2>Seviye Ödülleri</h2>
-        <div class="reward">Seviye 10 - 5000 Coin</div>
-        <div class="reward">Seviye 20 - 10000 Coin</div>
-        <div class="reward">Seviye 30 - 20000 Coin</div>
-        <div class="reward">Seviye 40 - 35000 Coin</div>
-        <div class="reward">Seviye 50 - 50000 Coin</div>
-        <div class="reward">Seviye 100 - 100000 Coin</div>
+        <div class="reward" data-level="10">
+            <span>Seviye 10 - 5000 Coin</span>
+            <button onclick="claimLevelReward(10)" id="reward-10">Al</button>
+        </div>
+        <div class="reward" data-level="20">
+            <span>Seviye 20 - 10000 Coin</span>
+            <button onclick="claimLevelReward(20)" id="reward-20">Al</button>
+        </div>
+        <div class="reward" data-level="30">
+            <span>Seviye 30 - 20000 Coin</span>
+            <button onclick="claimLevelReward(30)" id="reward-30">Al</button>
+        </div>
+        <div class="reward" data-level="40">
+            <span>Seviye 40 - 35000 Coin</span>
+            <button onclick="claimLevelReward(40)" id="reward-40">Al</button>
+        </div>
+        <div class="reward" data-level="50">
+            <span>Seviye 50 - 50000 Coin</span>
+            <button onclick="claimLevelReward(50)" id="reward-50">Al</button>
+        </div>
+        <div class="reward" data-level="100">
+            <span>Seviye 100 - 100000 Coin</span>
+            <button onclick="claimLevelReward(100)" id="reward-100">Al</button>
+        </div>
     </div>
 
     <!-- Home Container -->
@@ -453,6 +493,7 @@
             <div class="stat">Toplam Coin: <span id="home-coins">0</span></div>
             <div class="stat">XP: <span id="home-xp">0</span> / <span id="home-xp-needed">100</span></div>
             <div class="stat">Enerji: <span id="home-energy">1000</span></div>
+            <div class="stat">Gün Sayısı: <span id="days-logged-in">0</span></div>
         </div>
 
         <div id="achievement-container">
@@ -546,7 +587,7 @@
 
             predefinedAchievements.forEach(achievement => {
                 // Başarımları daha önce tamamlandıysa işaretle
-                if (awardedLevels[achievement.id]) {
+                if (awardedLevels[`achievement-${achievement.id}`]) {
                     achievement.completed = true;
                 }
 
@@ -585,7 +626,7 @@
                             achievementDiv.classList.add('completed');
                             achievementDiv.querySelector('.checkmark').textContent = "✔️";
                         }
-                        awardedLevels[achievement.id] = true; // Ödül verildi olarak işaretle
+                        awardedLevels[`achievement-${achievement.id}`] = true; // Ödül verildi olarak işaretle
                         localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
                     }
                 }
@@ -633,12 +674,12 @@
 
         // Seviye Ödüllerini Kontrol Etme Fonksiyonu
         function checkLevelRewards() {
-            if (rewardLevels[playerLevel] && !awardedLevels[playerLevel]) {
+            if (rewardLevels[playerLevel] && !awardedLevels[`reward-${playerLevel}`]) {
                 gameState.coins += rewardLevels[playerLevel];
                 alert(`Seviye ${playerLevel} ödülü: ${rewardLevels[playerLevel]} Coin kazandınız!`);
                 updateDisplay();
 
-                awardedLevels[playerLevel] = true;
+                awardedLevels[`reward-${playerLevel}`] = true;
                 localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
                 console.log(`Level ${playerLevel} ödülü verildi. Toplam Coin: ${gameState.coins}`);
 
@@ -659,6 +700,7 @@
             document.getElementById("home-xp").textContent = playerXP;
             document.getElementById("home-xp-needed").textContent = playerLevel * 100;
             document.getElementById("home-energy").textContent = gameState.energy;
+            document.getElementById("days-logged-in").textContent = daysLoggedIn;
         }
 
         // Zaman Formatlama Fonksiyonu
@@ -722,6 +764,39 @@
             }
         }
 
+        // Seviye Ödüllerini Alma Fonksiyonu
+        function claimLevelReward(level) {
+            if (playerLevel >= level && !awardedLevels[`reward-${level}`]) {
+                gameState.coins += rewardLevels[level];
+                awardedLevels[`reward-${level}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                alert(`Seviye ${level} ödülünü kazandınız! ${rewardLevels[level]} Coin kazandınız.`);
+                updateDisplay();
+                updateEarnRewardsUI();
+            } else if (awardedLevels[`reward-${level}`]) {
+                alert(`Seviye ${level} ödülünü zaten aldınız.`);
+            } else {
+                alert(`Seviye ${level} olmanız gerekiyor.`);
+            }
+        }
+
+        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
+        function updateEarnRewardsUI() {
+            for (const level in rewardLevels) {
+                const button = document.getElementById(`reward-${level}`);
+                if (awardedLevels[`reward-${level}`]) {
+                    button.textContent = "Ödül Alındı";
+                    button.disabled = true;
+                } else if (playerLevel >= level) {
+                    button.textContent = "Al";
+                    button.disabled = false;
+                } else {
+                    button.textContent = "Seviye Yeterli Değil";
+                    button.disabled = true;
+                }
+            }
+        }
+
         // Home İstatistiklerini Güncelleme Fonksiyonu
         function updateHomeDisplay() {
             document.getElementById("level-text").textContent = playerLevel;
@@ -781,20 +856,21 @@
             const savedData = localStorage.getItem("gameSave");
             if (savedData) {
                 const data = JSON.parse(savedData);
-                gameState = data.gameState;
-                playerXP = data.playerXP;
-                playerLevel = data.playerLevel;
-                costLevel = data.costLevel;
-                totalCoinsSpent = data.totalCoinsSpent;
-                daysLoggedIn = data.daysLoggedIn;
-                lastCollected = parseInt(data.lastCollected) || 0;
-                awardedLevels = data.awardedLevels || {};
-                lastLoginDate = data.lastLoginDate || null;
+                gameState = data.gameState || gameState;
+                playerXP = data.playerXP || playerXP;
+                playerLevel = data.playerLevel || playerLevel;
+                costLevel = data.costLevel || costLevel;
+                totalCoinsSpent = data.totalCoinsSpent || totalCoinsSpent;
+                daysLoggedIn = data.daysLoggedIn || daysLoggedIn;
+                lastCollected = parseInt(data.lastCollected) || lastCollected;
+                awardedLevels = data.awardedLevels || awardedLevels;
+                lastLoginDate = data.lastLoginDate || lastLoginDate;
             }
             loadAchievements(); // Başarımları yükle
             updateDisplay();
             updateXPDisplay();
             updateHomeDisplay();
+            updateEarnRewardsUI();
             styleNo1Game();
             console.log("Loaded awardedLevels:", awardedLevels);
         }
@@ -814,7 +890,8 @@
 
             updateUpgradeButtons();
             updateProgressBar();
-            updateHomeStats();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
         }
 
         // Upgrade Butonlarının Güncellenmesi Fonksiyonu
@@ -865,10 +942,15 @@
                         break;
                     case 'xp':
                         // XP Güçlendirme Özelliği
-                        gameState.upgrades.xp.interval = setInterval(() => {
-                            playerXP += 2;
-                            updateXPDisplay();
-                        }, 2000);
+                        if (!gameState.upgrades.xp.interval) {
+                            gameState.upgrades.xp.interval = setInterval(() => {
+                                playerXP += 2;
+                                updateXPDisplay();
+                            }, 2000);
+                            alert("XP Güçlendirme etkinleştirildi! Her 2 saniyede 2 XP artacak.");
+                        } else {
+                            alert("XP Güçlendirme zaten etkin.");
+                        }
                         break;
                 }
 
@@ -879,10 +961,1452 @@
             }
         }
 
+        // Seviye Ödüllerini Alma Fonksiyonu
+        function claimLevelReward(level) {
+            if (playerLevel >= level && !awardedLevels[`reward-${level}`]) {
+                gameState.coins += rewardLevels[level];
+                awardedLevels[`reward-${level}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                alert(`Seviye ${level} ödülünü kazandınız! ${rewardLevels[level]} Coin kazandınız.`);
+                updateDisplay();
+                updateEarnRewardsUI();
+            } else if (awardedLevels[`reward-${level}`]) {
+                alert(`Seviye ${level} ödülünü zaten aldınız.`);
+            } else {
+                alert(`Seviye ${level} olmanız gerekiyor.`);
+            }
+        }
+
+        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
+        function updateEarnRewardsUI() {
+            for (const level in rewardLevels) {
+                const button = document.getElementById(`reward-${level}`);
+                if (awardedLevels[`reward-${level}`]) {
+                    button.textContent = "Ödül Alındı";
+                    button.disabled = true;
+                } else if (playerLevel >= level) {
+                    button.textContent = "Al";
+                    button.disabled = false;
+                } else {
+                    button.textContent = "Seviye Yeterli Değil";
+                    button.disabled = true;
+                }
+            }
+        }
+
+        // Home İstatistiklerini Güncelleme Fonksiyonu
+        function updateHomeDisplay() {
+            document.getElementById("level-text").textContent = playerLevel;
+            document.getElementById("cost-level").textContent = costLevel;
+            document.getElementById("days-logged-in").textContent = daysLoggedIn;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        // İlerleme Çubuğunu Güncelleme Fonksiyonu
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
+        function styleNo1Game() {
+            const homeContainer = document.getElementById('home-container');
+            const no1GameHeader = homeContainer.querySelector('h1');
+            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
+            no1GameHeader.style.color = "#1f3f60";
+            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
+        }
+
+        // Tüm İçerikleri Gizleme Fonksiyonu
+        function hideAllContainers() {
+            const containers = ["boost-container", "game-container", "earn-container", "home-container"];
+            containers.forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const saveData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                costLevel: costLevel,
+                totalCoinsSpent: totalCoinsSpent,
+                daysLoggedIn: daysLoggedIn,
+                lastCollected: lastCollected,
+                awardedLevels: awardedLevels,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = localStorage.getItem("gameSave");
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState = data.gameState || gameState;
+                playerXP = data.playerXP || playerXP;
+                playerLevel = data.playerLevel || playerLevel;
+                costLevel = data.costLevel || costLevel;
+                totalCoinsSpent = data.totalCoinsSpent || totalCoinsSpent;
+                daysLoggedIn = data.daysLoggedIn || daysLoggedIn;
+                lastCollected = parseInt(data.lastCollected) || lastCollected;
+                awardedLevels = data.awardedLevels || awardedLevels;
+                lastLoginDate = data.lastLoginDate || lastLoginDate;
+            }
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+            styleNo1Game();
+            console.log("Loaded awardedLevels:", awardedLevels);
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+            document.getElementById('farmCount').textContent = gameState.farmCount;
+
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy', 'xp'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Farm Butonuna Tıklama Fonksiyonu
+        function handleFarmClick() {
+            if (gameState.energy >= 33) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy -= 33;
+                gameState.farmCount += 1;
+                addXP(10);
+                updateDisplay();
+            }
+        }
+
+        // Upgrade Yapma Fonksiyonu
+        function handleUpgrade(type, powerIncrease = 1.5) {
+            const cost = gameState.upgrades[type].cost;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                totalCoinsSpent += cost;
+
+                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
+                if (newCostLevel > costLevel) {
+                    costLevel = newCostLevel;
+                    addXP(100);
+                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
+                }
+
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower *= powerIncrease;
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                    case 'xp':
+                        // XP Güçlendirme Özelliği
+                        if (!gameState.upgrades.xp.interval) {
+                            gameState.upgrades.xp.interval = setInterval(() => {
+                                playerXP += 2;
+                                updateXPDisplay();
+                            }, 2000);
+                            alert("XP Güçlendirme etkinleştirildi! Her 2 saniyede 2 XP artacak.");
+                        } else {
+                            alert("XP Güçlendirme zaten etkin.");
+                        }
+                        break;
+                }
+
+                // Maliyetleri Güncelleme
+                gameState.upgrades[type].cost = Math.floor(cost * 2);
+                gameState.upgrades[type].level++;
+                updateDisplay();
+            }
+        }
+
+        // Seviye Ödüllerini Alma Fonksiyonu
+        function claimLevelReward(level) {
+            if (playerLevel >= level && !awardedLevels[`reward-${level}`]) {
+                gameState.coins += rewardLevels[level];
+                awardedLevels[`reward-${level}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                alert(`Seviye ${level} ödülünü kazandınız! ${rewardLevels[level]} Coin kazandınız.`);
+                updateDisplay();
+                updateEarnRewardsUI();
+            } else if (awardedLevels[`reward-${level}`]) {
+                alert(`Seviye ${level} ödülünü zaten aldınız.`);
+            } else {
+                alert(`Seviye ${level} olmanız gerekiyor.`);
+            }
+        }
+
+        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
+        function updateEarnRewardsUI() {
+            for (const level in rewardLevels) {
+                const button = document.getElementById(`reward-${level}`);
+                if (awardedLevels[`reward-${level}`]) {
+                    button.textContent = "Ödül Alındı";
+                    button.disabled = true;
+                } else if (playerLevel >= level) {
+                    button.textContent = "Al";
+                    button.disabled = false;
+                } else {
+                    button.textContent = "Seviye Yeterli Değil";
+                    button.disabled = true;
+                }
+            }
+        }
+
+        // Home İstatistiklerini Güncelleme Fonksiyonu
+        function updateHomeDisplay() {
+            document.getElementById("level-text").textContent = playerLevel;
+            document.getElementById("cost-level").textContent = costLevel;
+            document.getElementById("days-logged-in").textContent = daysLoggedIn;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        // İlerleme Çubuğunu Güncelleme Fonksiyonu
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
+        function styleNo1Game() {
+            const homeContainer = document.getElementById('home-container');
+            const no1GameHeader = homeContainer.querySelector('h1');
+            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
+            no1GameHeader.style.color = "#1f3f60";
+            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
+        }
+
+        // Tüm İçerikleri Gizleme Fonksiyonu
+        function hideAllContainers() {
+            const containers = ["boost-container", "game-container", "earn-container", "home-container"];
+            containers.forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const saveData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                costLevel: costLevel,
+                totalCoinsSpent: totalCoinsSpent,
+                daysLoggedIn: daysLoggedIn,
+                lastCollected: lastCollected,
+                awardedLevels: awardedLevels,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = localStorage.getItem("gameSave");
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState = data.gameState || gameState;
+                playerXP = data.playerXP || playerXP;
+                playerLevel = data.playerLevel || playerLevel;
+                costLevel = data.costLevel || costLevel;
+                totalCoinsSpent = data.totalCoinsSpent || totalCoinsSpent;
+                daysLoggedIn = data.daysLoggedIn || daysLoggedIn;
+                lastCollected = parseInt(data.lastCollected) || lastCollected;
+                awardedLevels = data.awardedLevels || awardedLevels;
+                lastLoginDate = data.lastLoginDate || lastLoginDate;
+            }
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+            styleNo1Game();
+            console.log("Loaded awardedLevels:", awardedLevels);
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+            document.getElementById('farmCount').textContent = gameState.farmCount;
+
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy', 'xp'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Farm Butonuna Tıklama Fonksiyonu
+        function handleFarmClick() {
+            if (gameState.energy >= 33) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy -= 33;
+                gameState.farmCount += 1;
+                addXP(10);
+                updateDisplay();
+            }
+        }
+
+        // Upgrade Yapma Fonksiyonu
+        function handleUpgrade(type, powerIncrease = 1.5) {
+            const cost = gameState.upgrades[type].cost;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                totalCoinsSpent += cost;
+
+                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
+                if (newCostLevel > costLevel) {
+                    costLevel = newCostLevel;
+                    addXP(100);
+                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
+                }
+
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower *= powerIncrease;
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                    case 'xp':
+                        // XP Güçlendirme Özelliği
+                        if (!gameState.upgrades.xp.interval) {
+                            gameState.upgrades.xp.interval = setInterval(() => {
+                                playerXP += 2;
+                                updateXPDisplay();
+                            }, 2000);
+                            alert("XP Güçlendirme etkinleştirildi! Her 2 saniyede 2 XP artacak.");
+                        } else {
+                            alert("XP Güçlendirme zaten etkin.");
+                        }
+                        break;
+                }
+
+                // Maliyetleri Güncelleme
+                gameState.upgrades[type].cost = Math.floor(cost * 2);
+                gameState.upgrades[type].level++;
+                updateDisplay();
+            }
+        }
+
+        // Seviye Ödüllerini Alma Fonksiyonu
+        function claimLevelReward(level) {
+            if (playerLevel >= level && !awardedLevels[`reward-${level}`]) {
+                gameState.coins += rewardLevels[level];
+                awardedLevels[`reward-${level}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                alert(`Seviye ${level} ödülünü kazandınız! ${rewardLevels[level]} Coin kazandınız.`);
+                updateDisplay();
+                updateEarnRewardsUI();
+            } else if (awardedLevels[`reward-${level}`]) {
+                alert(`Seviye ${level} ödülünü zaten aldınız.`);
+            } else {
+                alert(`Seviye ${level} olmanız gerekiyor.`);
+            }
+        }
+
+        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
+        function updateEarnRewardsUI() {
+            for (const level in rewardLevels) {
+                const button = document.getElementById(`reward-${level}`);
+                if (awardedLevels[`reward-${level}`]) {
+                    button.textContent = "Ödül Alındı";
+                    button.disabled = true;
+                } else if (playerLevel >= level) {
+                    button.textContent = "Al";
+                    button.disabled = false;
+                } else {
+                    button.textContent = "Seviye Yeterli Değil";
+                    button.disabled = true;
+                }
+            }
+        }
+
+        // Home İstatistiklerini Güncelleme Fonksiyonu
+        function updateHomeDisplay() {
+            document.getElementById("level-text").textContent = playerLevel;
+            document.getElementById("cost-level").textContent = costLevel;
+            document.getElementById("days-logged-in").textContent = daysLoggedIn;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        // İlerleme Çubuğunu Güncelleme Fonksiyonu
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
+        function styleNo1Game() {
+            const homeContainer = document.getElementById('home-container');
+            const no1GameHeader = homeContainer.querySelector('h1');
+            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
+            no1GameHeader.style.color = "#1f3f60";
+            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
+        }
+
+        // Tüm İçerikleri Gizleme Fonksiyonu
+        function hideAllContainers() {
+            const containers = ["boost-container", "game-container", "earn-container", "home-container"];
+            containers.forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const saveData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                costLevel: costLevel,
+                totalCoinsSpent: totalCoinsSpent,
+                daysLoggedIn: daysLoggedIn,
+                lastCollected: lastCollected,
+                awardedLevels: awardedLevels,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = localStorage.getItem("gameSave");
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState = data.gameState || gameState;
+                playerXP = data.playerXP || playerXP;
+                playerLevel = data.playerLevel || playerLevel;
+                costLevel = data.costLevel || costLevel;
+                totalCoinsSpent = data.totalCoinsSpent || totalCoinsSpent;
+                daysLoggedIn = data.daysLoggedIn || daysLoggedIn;
+                lastCollected = parseInt(data.lastCollected) || lastCollected;
+                awardedLevels = data.awardedLevels || awardedLevels;
+                lastLoginDate = data.lastLoginDate || lastLoginDate;
+            }
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+            styleNo1Game();
+            console.log("Loaded awardedLevels:", awardedLevels);
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+            document.getElementById('farmCount').textContent = gameState.farmCount;
+
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy', 'xp'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Farm Butonuna Tıklama Fonksiyonu
+        function handleFarmClick() {
+            if (gameState.energy >= 33) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy -= 33;
+                gameState.farmCount += 1;
+                addXP(10);
+                updateDisplay();
+            }
+        }
+
+        // Upgrade Yapma Fonksiyonu
+        function handleUpgrade(type, powerIncrease = 1.5) {
+            const cost = gameState.upgrades[type].cost;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                totalCoinsSpent += cost;
+
+                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
+                if (newCostLevel > costLevel) {
+                    costLevel = newCostLevel;
+                    addXP(100);
+                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
+                }
+
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower *= powerIncrease;
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                    case 'xp':
+                        // XP Güçlendirme Özelliği
+                        if (!gameState.upgrades.xp.interval) {
+                            gameState.upgrades.xp.interval = setInterval(() => {
+                                playerXP += 2;
+                                updateXPDisplay();
+                            }, 2000);
+                            alert("XP Güçlendirme etkinleştirildi! Her 2 saniyede 2 XP artacak.");
+                        } else {
+                            alert("XP Güçlendirme zaten etkin.");
+                        }
+                        break;
+                }
+
+                // Maliyetleri Güncelleme
+                gameState.upgrades[type].cost = Math.floor(cost * 2);
+                gameState.upgrades[type].level++;
+                updateDisplay();
+            }
+        }
+
+        // Seviye Ödüllerini Alma Fonksiyonu
+        function claimLevelReward(level) {
+            if (playerLevel >= level && !awardedLevels[`reward-${level}`]) {
+                gameState.coins += rewardLevels[level];
+                awardedLevels[`reward-${level}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                alert(`Seviye ${level} ödülünü kazandınız! ${rewardLevels[level]} Coin kazandınız.`);
+                updateDisplay();
+                updateEarnRewardsUI();
+            } else if (awardedLevels[`reward-${level}`]) {
+                alert(`Seviye ${level} ödülünü zaten aldınız.`);
+            } else {
+                alert(`Seviye ${level} olmanız gerekiyor.`);
+            }
+        }
+
+        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
+        function updateEarnRewardsUI() {
+            for (const level in rewardLevels) {
+                const button = document.getElementById(`reward-${level}`);
+                if (awardedLevels[`reward-${level}`]) {
+                    button.textContent = "Ödül Alındı";
+                    button.disabled = true;
+                } else if (playerLevel >= level) {
+                    button.textContent = "Al";
+                    button.disabled = false;
+                } else {
+                    button.textContent = "Seviye Yeterli Değil";
+                    button.disabled = true;
+                }
+            }
+        }
+
+        // Home İstatistiklerini Güncelleme Fonksiyonu
+        function updateHomeDisplay() {
+            document.getElementById("level-text").textContent = playerLevel;
+            document.getElementById("cost-level").textContent = costLevel;
+            document.getElementById("days-logged-in").textContent = daysLoggedIn;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        // İlerleme Çubuğunu Güncelleme Fonksiyonu
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
+        function styleNo1Game() {
+            const homeContainer = document.getElementById('home-container');
+            const no1GameHeader = homeContainer.querySelector('h1');
+            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
+            no1GameHeader.style.color = "#1f3f60";
+            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
+        }
+
+        // Tüm İçerikleri Gizleme Fonksiyonu
+        function hideAllContainers() {
+            const containers = ["boost-container", "game-container", "earn-container", "home-container"];
+            containers.forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const saveData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                costLevel: costLevel,
+                totalCoinsSpent: totalCoinsSpent,
+                daysLoggedIn: daysLoggedIn,
+                lastCollected: lastCollected,
+                awardedLevels: awardedLevels,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = localStorage.getItem("gameSave");
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState = data.gameState || gameState;
+                playerXP = data.playerXP || playerXP;
+                playerLevel = data.playerLevel || playerLevel;
+                costLevel = data.costLevel || costLevel;
+                totalCoinsSpent = data.totalCoinsSpent || totalCoinsSpent;
+                daysLoggedIn = data.daysLoggedIn || daysLoggedIn;
+                lastCollected = parseInt(data.lastCollected) || lastCollected;
+                awardedLevels = data.awardedLevels || awardedLevels;
+                lastLoginDate = data.lastLoginDate || lastLoginDate;
+            }
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+            styleNo1Game();
+            console.log("Loaded awardedLevels:", awardedLevels);
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+            document.getElementById('farmCount').textContent = gameState.farmCount;
+
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy', 'xp'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Farm Butonuna Tıklama Fonksiyonu
+        function handleFarmClick() {
+            if (gameState.energy >= 33) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy -= 33;
+                gameState.farmCount += 1;
+                addXP(10);
+                updateDisplay();
+            }
+        }
+
+        // Upgrade Yapma Fonksiyonu
+        function handleUpgrade(type, powerIncrease = 1.5) {
+            const cost = gameState.upgrades[type].cost;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                totalCoinsSpent += cost;
+
+                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
+                if (newCostLevel > costLevel) {
+                    costLevel = newCostLevel;
+                    addXP(100);
+                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
+                }
+
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower *= powerIncrease;
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                    case 'xp':
+                        // XP Güçlendirme Özelliği
+                        if (!gameState.upgrades.xp.interval) {
+                            gameState.upgrades.xp.interval = setInterval(() => {
+                                playerXP += 2;
+                                updateXPDisplay();
+                            }, 2000);
+                            alert("XP Güçlendirme etkinleştirildi! Her 2 saniyede 2 XP artacak.");
+                        } else {
+                            alert("XP Güçlendirme zaten etkin.");
+                        }
+                        break;
+                }
+
+                // Maliyetleri Güncelleme
+                gameState.upgrades[type].cost = Math.floor(cost * 2);
+                gameState.upgrades[type].level++;
+                updateDisplay();
+            }
+        }
+
+        // Seviye Ödüllerini Alma Fonksiyonu
+        function claimLevelReward(level) {
+            if (playerLevel >= level && !awardedLevels[`reward-${level}`]) {
+                gameState.coins += rewardLevels[level];
+                awardedLevels[`reward-${level}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                alert(`Seviye ${level} ödülünü kazandınız! ${rewardLevels[level]} Coin kazandınız.`);
+                updateDisplay();
+                updateEarnRewardsUI();
+            } else if (awardedLevels[`reward-${level}`]) {
+                alert(`Seviye ${level} ödülünü zaten aldınız.`);
+            } else {
+                alert(`Seviye ${level} olmanız gerekiyor.`);
+            }
+        }
+
+        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
+        function updateEarnRewardsUI() {
+            for (const level in rewardLevels) {
+                const button = document.getElementById(`reward-${level}`);
+                if (awardedLevels[`reward-${level}`]) {
+                    button.textContent = "Ödül Alındı";
+                    button.disabled = true;
+                } else if (playerLevel >= level) {
+                    button.textContent = "Al";
+                    button.disabled = false;
+                } else {
+                    button.textContent = "Seviye Yeterli Değil";
+                    button.disabled = true;
+                }
+            }
+        }
+
+        // Home İstatistiklerini Güncelleme Fonksiyonu
+        function updateHomeDisplay() {
+            document.getElementById("level-text").textContent = playerLevel;
+            document.getElementById("cost-level").textContent = costLevel;
+            document.getElementById("days-logged-in").textContent = daysLoggedIn;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        // İlerleme Çubuğunu Güncelleme Fonksiyonu
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
+        function styleNo1Game() {
+            const homeContainer = document.getElementById('home-container');
+            const no1GameHeader = homeContainer.querySelector('h1');
+            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
+            no1GameHeader.style.color = "#1f3f60";
+            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
+        }
+
+        // Tüm İçerikleri Gizleme Fonksiyonu
+        function hideAllContainers() {
+            const containers = ["boost-container", "game-container", "earn-container", "home-container"];
+            containers.forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const saveData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                costLevel: costLevel,
+                totalCoinsSpent: totalCoinsSpent,
+                daysLoggedIn: daysLoggedIn,
+                lastCollected: lastCollected,
+                awardedLevels: awardedLevels,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = localStorage.getItem("gameSave");
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState = data.gameState || gameState;
+                playerXP = data.playerXP || playerXP;
+                playerLevel = data.playerLevel || playerLevel;
+                costLevel = data.costLevel || costLevel;
+                totalCoinsSpent = data.totalCoinsSpent || totalCoinsSpent;
+                daysLoggedIn = data.daysLoggedIn || daysLoggedIn;
+                lastCollected = parseInt(data.lastCollected) || lastCollected;
+                awardedLevels = data.awardedLevels || awardedLevels;
+                lastLoginDate = data.lastLoginDate || lastLoginDate;
+            }
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+            styleNo1Game();
+            console.log("Loaded awardedLevels:", awardedLevels);
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+            document.getElementById('farmCount').textContent = gameState.farmCount;
+
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy', 'xp'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Farm Butonuna Tıklama Fonksiyonu
+        function handleFarmClick() {
+            if (gameState.energy >= 33) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy -= 33;
+                gameState.farmCount += 1;
+                addXP(10);
+                updateDisplay();
+            }
+        }
+
+        // Upgrade Yapma Fonksiyonu
+        function handleUpgrade(type, powerIncrease = 1.5) {
+            const cost = gameState.upgrades[type].cost;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                totalCoinsSpent += cost;
+
+                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
+                if (newCostLevel > costLevel) {
+                    costLevel = newCostLevel;
+                    addXP(100);
+                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
+                }
+
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower *= powerIncrease;
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                    case 'xp':
+                        // XP Güçlendirme Özelliği
+                        if (!gameState.upgrades.xp.interval) {
+                            gameState.upgrades.xp.interval = setInterval(() => {
+                                playerXP += 2;
+                                updateXPDisplay();
+                            }, 2000);
+                            alert("XP Güçlendirme etkinleştirildi! Her 2 saniyede 2 XP artacak.");
+                        } else {
+                            alert("XP Güçlendirme zaten etkin.");
+                        }
+                        break;
+                }
+
+                // Maliyetleri Güncelleme
+                gameState.upgrades[type].cost = Math.floor(cost * 2);
+                gameState.upgrades[type].level++;
+                updateDisplay();
+            }
+        }
+
+        // Seviye Ödüllerini Alma Fonksiyonu
+        function claimLevelReward(level) {
+            if (playerLevel >= level && !awardedLevels[`reward-${level}`]) {
+                gameState.coins += rewardLevels[level];
+                awardedLevels[`reward-${level}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                alert(`Seviye ${level} ödülünü kazandınız! ${rewardLevels[level]} Coin kazandınız.`);
+                updateDisplay();
+                updateEarnRewardsUI();
+            } else if (awardedLevels[`reward-${level}`]) {
+                alert(`Seviye ${level} ödülünü zaten aldınız.`);
+            } else {
+                alert(`Seviye ${level} olmanız gerekiyor.`);
+            }
+        }
+
+        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
+        function updateEarnRewardsUI() {
+            for (const level in rewardLevels) {
+                const button = document.getElementById(`reward-${level}`);
+                if (awardedLevels[`reward-${level}`]) {
+                    button.textContent = "Ödül Alındı";
+                    button.disabled = true;
+                } else if (playerLevel >= level) {
+                    button.textContent = "Al";
+                    button.disabled = false;
+                } else {
+                    button.textContent = "Seviye Yeterli Değil";
+                    button.disabled = true;
+                }
+            }
+        }
+
+        // Home İstatistiklerini Güncelleme Fonksiyonu
+        function updateHomeDisplay() {
+            document.getElementById("level-text").textContent = playerLevel;
+            document.getElementById("cost-level").textContent = costLevel;
+            document.getElementById("days-logged-in").textContent = daysLoggedIn;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        // İlerleme Çubuğunu Güncelleme Fonksiyonu
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
+        function styleNo1Game() {
+            const homeContainer = document.getElementById('home-container');
+            const no1GameHeader = homeContainer.querySelector('h1');
+            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
+            no1GameHeader.style.color = "#1f3f60";
+            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
+        }
+
+        // Tüm İçerikleri Gizleme Fonksiyonu
+        function hideAllContainers() {
+            const containers = ["boost-container", "game-container", "earn-container", "home-container"];
+            containers.forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const saveData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                costLevel: costLevel,
+                totalCoinsSpent: totalCoinsSpent,
+                daysLoggedIn: daysLoggedIn,
+                lastCollected: lastCollected,
+                awardedLevels: awardedLevels,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = localStorage.getItem("gameSave");
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState = data.gameState || gameState;
+                playerXP = data.playerXP || playerXP;
+                playerLevel = data.playerLevel || playerLevel;
+                costLevel = data.costLevel || costLevel;
+                totalCoinsSpent = data.totalCoinsSpent || totalCoinsSpent;
+                daysLoggedIn = data.daysLoggedIn || daysLoggedIn;
+                lastCollected = parseInt(data.lastCollected) || lastCollected;
+                awardedLevels = data.awardedLevels || awardedLevels;
+                lastLoginDate = data.lastLoginDate || lastLoginDate;
+            }
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+            styleNo1Game();
+            console.log("Loaded awardedLevels:", awardedLevels);
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+            document.getElementById('farmCount').textContent = gameState.farmCount;
+
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy', 'xp'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Farm Butonuna Tıklama Fonksiyonu
+        function handleFarmClick() {
+            if (gameState.energy >= 33) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy -= 33;
+                gameState.farmCount += 1;
+                addXP(10);
+                updateDisplay();
+            }
+        }
+
+        // Upgrade Yapma Fonksiyonu
+        function handleUpgrade(type, powerIncrease = 1.5) {
+            const cost = gameState.upgrades[type].cost;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                totalCoinsSpent += cost;
+
+                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
+                if (newCostLevel > costLevel) {
+                    costLevel = newCostLevel;
+                    addXP(100);
+                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
+                }
+
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower *= powerIncrease;
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                    case 'xp':
+                        // XP Güçlendirme Özelliği
+                        if (!gameState.upgrades.xp.interval) {
+                            gameState.upgrades.xp.interval = setInterval(() => {
+                                playerXP += 2;
+                                updateXPDisplay();
+                            }, 2000);
+                            alert("XP Güçlendirme etkinleştirildi! Her 2 saniyede 2 XP artacak.");
+                        } else {
+                            alert("XP Güçlendirme zaten etkin.");
+                        }
+                        break;
+                }
+
+                // Maliyetleri Güncelleme
+                gameState.upgrades[type].cost = Math.floor(cost * 2);
+                gameState.upgrades[type].level++;
+                updateDisplay();
+            }
+        }
+
+        // Seviye Ödüllerini Alma Fonksiyonu
+        function claimLevelReward(level) {
+            if (playerLevel >= level && !awardedLevels[`reward-${level}`]) {
+                gameState.coins += rewardLevels[level];
+                awardedLevels[`reward-${level}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                alert(`Seviye ${level} ödülünü kazandınız! ${rewardLevels[level]} Coin kazandınız.`);
+                updateDisplay();
+                updateEarnRewardsUI();
+            } else if (awardedLevels[`reward-${level}`]) {
+                alert(`Seviye ${level} ödülünü zaten aldınız.`);
+            } else {
+                alert(`Seviye ${level} olmanız gerekiyor.`);
+            }
+        }
+
+        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
+        function updateEarnRewardsUI() {
+            for (const level in rewardLevels) {
+                const button = document.getElementById(`reward-${level}`);
+                if (awardedLevels[`reward-${level}`]) {
+                    button.textContent = "Ödül Alındı";
+                    button.disabled = true;
+                } else if (playerLevel >= level) {
+                    button.textContent = "Al";
+                    button.disabled = false;
+                } else {
+                    button.textContent = "Seviye Yeterli Değil";
+                    button.disabled = true;
+                }
+            }
+        }
+
+        // Home İstatistiklerini Güncelleme Fonksiyonu
+        function updateHomeDisplay() {
+            document.getElementById("level-text").textContent = playerLevel;
+            document.getElementById("cost-level").textContent = costLevel;
+            document.getElementById("days-logged-in").textContent = daysLoggedIn;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        // İlerleme Çubuğunu Güncelleme Fonksiyonu
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
+        function styleNo1Game() {
+            const homeContainer = document.getElementById('home-container');
+            const no1GameHeader = homeContainer.querySelector('h1');
+            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
+            no1GameHeader.style.color = "#1f3f60";
+            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
+        }
+
+        // Tüm İçerikleri Gizleme Fonksiyonu
+        function hideAllContainers() {
+            const containers = ["boost-container", "game-container", "earn-container", "home-container"];
+            containers.forEach(id => {
+                document.getElementById(id).style.display = "none";
+            });
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const saveData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                costLevel: costLevel,
+                totalCoinsSpent: totalCoinsSpent,
+                daysLoggedIn: daysLoggedIn,
+                lastCollected: lastCollected,
+                awardedLevels: awardedLevels,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem("gameSave", JSON.stringify(saveData));
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = localStorage.getItem("gameSave");
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                gameState = data.gameState || gameState;
+                playerXP = data.playerXP || playerXP;
+                playerLevel = data.playerLevel || playerLevel;
+                costLevel = data.costLevel || costLevel;
+                totalCoinsSpent = data.totalCoinsSpent || totalCoinsSpent;
+                daysLoggedIn = data.daysLoggedIn || daysLoggedIn;
+                lastCollected = parseInt(data.lastCollected) || lastCollected;
+                awardedLevels = data.awardedLevels || awardedLevels;
+                lastLoginDate = data.lastLoginDate || lastLoginDate;
+            }
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+            styleNo1Game();
+            console.log("Loaded awardedLevels:", awardedLevels);
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+            document.getElementById('farmCount').textContent = gameState.farmCount;
+
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewardsUI();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy', 'xp'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Farm Butonuna Tıklama Fonksiyonu
+        function handleFarmClick() {
+            if (gameState.energy >= 33) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy -= 33;
+                gameState.farmCount += 1;
+                addXP(10);
+                updateDisplay();
+            }
+        }
+
+        // Upgrade Yapma Fonksiyonu
+        function handleUpgrade(type, powerIncrease = 1.5) {
+            const cost = gameState.upgrades[type].cost;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                totalCoinsSpent += cost;
+
+                const newCostLevel = Math.floor(totalCoinsSpent / 1000);
+                if (newCostLevel > costLevel) {
+                    costLevel = newCostLevel;
+                    addXP(100);
+                    alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
+                }
+
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower *= powerIncrease;
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                    case 'xp':
+                        // XP Güçlendirme Özelliği
+                        if (!gameState.upgrades.xp.interval) {
+                            gameState.upgrades.xp.interval = setInterval(() => {
+                                playerXP += 2;
+                                updateXPDisplay();
+                            }, 2000);
+                            alert("XP Güçlendirme etkinleştirildi! Her 2 saniyede 2 XP artacak.");
+                        } else {
+                            alert("XP Güçlendirme zaten etkin.");
+                        }
+                        break;
+                }
+
+                // Maliyetleri Güncelleme
+                gameState.upgrades[type].cost = Math.floor(cost * 2);
+                gameState.upgrades[type].level++;
+                updateDisplay();
+            }
+        }
+
+        // Seviye Ödüllerini Alma Fonksiyonu
+        function claimLevelReward(level) {
+            if (playerLevel >= level && !awardedLevels[`reward-${level}`]) {
+                gameState.coins += rewardLevels[level];
+                awardedLevels[`reward-${level}`] = true;
+                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+                alert(`Seviye ${level} ödülünü kazandınız! ${rewardLevels[level]} Coin kazandınız.`);
+                updateDisplay();
+                updateEarnRewardsUI();
+            } else if (awardedLevels[`reward-${level}`]) {
+                alert(`Seviye ${level} ödülünü zaten aldınız.`);
+            } else {
+                alert(`Seviye ${level} olmanız gerekiyor.`);
+            }
+        }
+
+        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
+        function updateEarnRewardsUI() {
+            for (const level in rewardLevels) {
+                const button = document.getElementById(`reward-${level}`);
+                if (awardedLevels[`reward-${level}`]) {
+                    button.textContent = "Ödül Alındı";
+                    button.disabled = true;
+                } else if (playerLevel >= level) {
+                    button.textContent = "Al";
+                    button.disabled = false;
+                } else {
+                    button.textContent = "Seviye Yeterli Değil";
+                    button.disabled = true;
+                }
+            }
+        }
+
+        // Home İstatistiklerini Güncelleme Fonksiyonu
+        function updateHomeDisplay() {
+            document.getElementById("level-text").textContent = playerLevel;
+            document.getElementById("cost-level").textContent = costLevel;
+            document.getElementById("days-logged-in").textContent = daysLoggedIn;
+
+            // Home İstatistiklerini Güncelle
+            document.getElementById("home-level").textContent = playerLevel;
+            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
+            document.getElementById("home-energy").textContent = gameState.energy;
+        }
+
+        // İlerleme Çubuğunu Güncelleme Fonksiyonu
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        // "No1Game" Yazısını Stilize Etme Fonksiyonu
+        function styleNo1Game() {
+            const homeContainer = document.getElementById('home-container');
+            const no1GameHeader = homeContainer.querySelector('h1');
+            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
+            no1GameHeader.style.color = "#1f3f60";
+            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
+        }
+
         // Event Listeners
         document.getElementById("boost-nav").addEventListener("click", function() {
             hideAllContainers();
-            document.getElementById("game-container").style.display = "block";
+            document.getElementById("boost-container").style.display = "block";
         });
 
         document.getElementById("home-nav").addEventListener("click", function() {
@@ -973,6 +2497,7 @@
             }
 
             updateProgressBar(); // İlerleme çubuğunu güncelle
+            updateEarnRewardsUI(); // Earn ödüllerini güncelle
             displayDailyTip(); // Günlük ipucunu göster
         });
 
