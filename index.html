@@ -523,6 +523,11 @@
                 Enerji Yükseltme
                 <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
             </button>
+            <!-- Farm Bot 🤖 Geliştirmesi Eklendi -->
+            <button class="upgrade-button inactive" id="farmbot-upgrade">
+                Farm Bot 🤖
+                <span class="upgrade-cost" id="farmbot-cost">Maliyet: 5000 coin</span>
+            </button>
             <!-- XP Güçlendirme Butonu Kaldırıldı -->
             <!--
             <button class="upgrade-button inactive" id="xp-upgrade">
@@ -646,7 +651,8 @@
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
-                energy: { level: 1, cost: 1000 }
+                energy: { level: 1, cost: 1000 },
+                farmBot: { level: 0, cost: 5000 } // Farm Bot Ekleniyor
                 // XP Güçlendirme kaldırıldı
             },
             xpMultiplier: 1 // Başlangıçta 1
@@ -807,6 +813,7 @@
         }
 
         let countdownInterval;
+        let farmBotInterval = null; // Farm Bot Interval Değişkeni
 
         // Günlük Ödül Toplama Fonksiyonu
         function collectDailyReward() {
@@ -923,7 +930,8 @@
                 totalCoinsSpent: totalCoinsSpent,
                 daysLoggedIn: daysLoggedIn,
                 lastCollected: lastCollected,
-                awardedLevels: awardedLevels
+                awardedLevels: awardedLevels,
+                lastExitTime: Date.now() // Son çıkış zamanını kaydet
             };
             localStorage.setItem("gameSave", JSON.stringify(saveData));
             console.log("Oyun kaydedildi:", saveData);
@@ -956,6 +964,38 @@
             styleNo1Game();
             updateEarnRewards();
             console.log("Yüklendi:", awardedLevels);
+
+            // Farm Bot Offline Clicks
+            if (gameState.upgrades.farmBot.level > 0) {
+                const lastExitTime = parseInt(localStorage.getItem('lastExitTime')) || Date.now();
+                const now = Date.now();
+                const timeElapsed = now - lastExitTime; // in ms
+                const energyRegen = Math.floor(timeElapsed / 1000) * 5; // 5 energy per second
+                gameState.energy = Math.min(gameState.energy + energyRegen, 1000);
+                console.log(`Offline enerji regenerasyonu: +${energyRegen}, Toplam Enerji: ${gameState.energy}`);
+
+                // Calculate how many farm clicks can be done based on energy
+                const possibleClicks = Math.floor(gameState.energy / 33);
+                if (possibleClicks > 0) {
+                    gameState.coins += possibleClicks * gameState.clickPower;
+                    gameState.energy -= possibleClicks * 33;
+                    gameState.farmCount += possibleClicks;
+                    addXP(possibleClicks * 10);
+                    console.log(`Farm Bot Offline Clicks: ${possibleClicks} Clicks, Coin: ${gameState.coins}, Enerji: ${gameState.energy}`);
+                    updateDisplay();
+                    updateAchievements();
+                }
+
+                // Start Farm Bot if not already running
+                if (!farmBotInterval) {
+                    startFarmBot();
+                }
+            }
+
+            // Start Farm Bot if active
+            if (gameState.upgrades.farmBot.level > 0 && !farmBotInterval) {
+                startFarmBot();
+            }
         }
 
         // Display Güncelleme Fonksiyonu
@@ -968,6 +1008,7 @@
             document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
             document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
             document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('farmbot-cost').textContent = `Maliyet: ${gameState.upgrades.farmBot.cost.toLocaleString()} coin`;
             // XP Güçlendirme maliyeti kaldırıldı
             // document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
 
@@ -979,7 +1020,7 @@
 
         // Upgrade Butonlarının Güncellenmesi Fonksiyonu
         function updateUpgradeButtons() {
-            ['click', 'auto', 'energy'].forEach(type => {
+            ['click', 'auto', 'energy', 'farmBot'].forEach(type => { // 'farmBot' ekleniyor
                 const button = document.getElementById(`${type}-upgrade`);
                 const cost = gameState.upgrades[type].cost;
                 const canAfford = gameState.coins >= cost;
@@ -1021,14 +1062,37 @@
                     case 'energy':
                         gameState.energy += 200;
                         break;
+                    case 'farmBot': // Farm Bot Eklendi
+                        gameState.upgrades.farmBot.level++;
+                        alert("Farm Bot satın alındı! 🤖 Oyundan çıktığınızda otomatik olarak farm yapacaktır.");
+                        startFarmBot(); // Farm Bot'u Başlat
+                        break;
                 }
 
                 // Maliyetleri Güncelleme
-                gameState.upgrades[type].cost = Math.floor(cost * 2);
-                gameState.upgrades[type].level++;
+                if(type !== 'farmBot') { // Farm Bot'un maliyeti sabit kalabilir
+                    gameState.upgrades[type].cost = Math.floor(cost * 2);
+                }
                 updateDisplay();
             } else {
                 alert("Yeterli coininiz yok!");
+            }
+        }
+
+        // Farm Bot'un Otomatik Farm Yapmasını Sağlayan Fonksiyon
+        function startFarmBot() {
+            if (farmBotInterval) clearInterval(farmBotInterval);
+            farmBotInterval = setInterval(() => {
+                if (gameState.energy >= 33) {
+                    handleFarmClick();
+                }
+            }, 1000); // Her saniye farm yapmaya çalış
+        }
+
+        function stopFarmBot() {
+            if (farmBotInterval) {
+                clearInterval(farmBotInterval);
+                farmBotInterval = null;
             }
         }
 
@@ -1066,6 +1130,10 @@
 
         document.getElementById('energy-upgrade').addEventListener('click', () => {
             handleUpgrade('energy');
+        });
+
+        document.getElementById('farmbot-upgrade').addEventListener('click', () => { // Farm Bot Upgrade Listener
+            handleUpgrade('farmBot');
         });
 
         // Otomatik İşlemler
@@ -1125,8 +1193,12 @@
             updateFriendsContainer();
         });
 
-        // Oyun Kapatılırken Kaydetme
-        window.addEventListener("beforeunload", saveGame);
+        // Oyun Kapatılırken Kaydetme ve Çıkış Zamanını Kaydetme
+        window.addEventListener("beforeunload", () => {
+            saveGame();
+            // Store the exit time
+            localStorage.setItem('lastExitTime', Date.now());
+        });
 
         // Gün Sayısını Artırma Fonksiyonu
         function incrementDaysLoggedIn() {
