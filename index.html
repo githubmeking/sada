@@ -523,7 +523,9 @@
     <!-- Friends Container -->
     <div id="friends-container">
         <h2>Arkadaşlar</h2>
-        <p>Henüz arkadaş eklemediniz.</p>
+        <p>Toplam Davet Edilen Kişi Sayısı: <span id="referral-count">0</span></p>
+        <p>Davet Linkin:</p>
+        <a href="#" id="invite-link">Davet Linki Yükleniyor...</a>
     </div>
 
     <!-- Navigasyon Çubuğu -->
@@ -1031,6 +1033,9 @@
             // Başlangıçta Boost bölümünü göster
             hideAllContainers();
             document.getElementById("boost-container").style.display = "block";
+
+            // Friends Container için Davet Bilgilerini Güncelleme
+            updateFriendsContainer();
         });
 
         // Oyun Kapatılırken Kaydetme
@@ -1077,6 +1082,27 @@
             gameState.xpMultiplier = 1; // Multiplier'ı başlangıç değerine döndür
             updateDisplay();
             console.log("Boost Sıfırlandı");
+        }
+
+        // Friends Container için Davet Bilgilerini Güncelleme Fonksiyonu
+        function updateFriendsContainer() {
+            // URL'den referral ve userId bilgilerini al
+            const urlParams = new URLSearchParams(window.location.search);
+            const referralCount = urlParams.get('referrals') || 0;
+            const userId = urlParams.get('userId') || '0'; // Varsayılan '0'
+
+            // Davet bilgilerini güncelle
+            const referralCountElement = document.getElementById("referral-count");
+            const inviteLinkElement = document.getElementById("invite-link");
+
+            if (referralCountElement && inviteLinkElement) {
+                referralCountElement.textContent = referralCount;
+                const inviteLink = `https://t.me/no1livebot?start=${userId}`;
+                inviteLinkElement.href = inviteLink;
+                inviteLinkElement.textContent = inviteLink;
+            } else {
+                console.error("Davet bilgilerini güncellerken bir hata oluştu.");
+            }
         }
 
     </script>
