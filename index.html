@@ -19,6 +19,47 @@
             text-align: center;
             background: linear-gradient(135deg, #83a4d4, #b6fbff);
             padding: 10px;
+            position: relative;
+        }
+
+        /* Hoş Geldin Efekti */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeOut 3s forwards 5s;
+        }
+
+        #welcome-overlay h1 {
+            color: #fff;
+            font-size: 3em;
+            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8);
+            animation: zoomIn 1s;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         /* Navigasyon Çubuğunu Alt Kısma Taşı */
@@ -95,6 +136,10 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
+        #boost-button:hover {
+            background-color: #e0e0e0;
+        }
+
         /* Resource Container */
         .resource-container {
             display: flex;
@@ -109,6 +154,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             min-width: 120px;
             flex: 1;
+            text-align: center;
         }
         #coin-resource { 
             background: #FFD700; 
@@ -141,6 +187,10 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             width: 100%;
             max-width: 300px;
+        }
+
+        #farm-button:hover {
+            background: linear-gradient(45deg, #FFC107, #DDA0DD, #00BCD4);
         }
 
         /* Upgrades Container */
@@ -185,7 +235,7 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 4px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
         }
 
         #home-container h2 {
@@ -288,9 +338,43 @@
                 margin-bottom: 100px; /* Navigasyon çubuğu için daha fazla alt marjin */
             }
         }
+
+        /* Seviye Ödülleri Stil İyileştirmesi */
+        .reward {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            font-size: 1em;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        .start-button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .start-button:hover {
+            background-color: #45a049;
+        }
+
     </style>
 </head>
 <body>
+    <!-- Hoş Geldin Overlay -->
+    <div id="welcome-overlay">
+        <h1>Hoş Geldiniz No1Game'e!</h1>
+    </div>
+
     <!-- Boost Container -->
     <div id="boost-container">
         <h1>Hoş Geldiniz!</h1>
@@ -337,6 +421,10 @@
             <button class="upgrade-button inactive" id="energy-upgrade">
                 Enerji Yükseltme
                 <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
+            </button>
+            <button class="upgrade-button inactive" id="xp-upgrade">
+                XP Güçlendirme
+                <span class="upgrade-cost" id="xp-cost">Maliyet: 1000 coin</span>
             </button>
         </div>
     </div>
@@ -413,10 +501,12 @@
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
+            farmCount: 0, // Farm sayısı eklendi
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
-                energy: { level: 1, cost: 1000 }
+                energy: { level: 1, cost: 1000 },
+                xp: { level: 0, cost: 1000 }
             }
         };
 
@@ -659,7 +749,7 @@
             const no1GameHeader = homeContainer.querySelector('h1');
             no1GameHeader.style.fontFamily = "'Pacifico', cursive";
             no1GameHeader.style.color = "#1f3f60";
-            no1GameHeader.style.textShadow = "2px 2px 4px rgba(0,0,0,0.2)";
+            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
         }
 
         // Tüm İçerikleri Gizleme Fonksiyonu
@@ -714,10 +804,13 @@
             document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
             document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+            document.getElementById('farmCount').textContent = gameState.farmCount;
 
             document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
             document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
             document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
 
             updateUpgradeButtons();
             updateProgressBar();
@@ -726,7 +819,7 @@
 
         // Upgrade Butonlarının Güncellenmesi Fonksiyonu
         function updateUpgradeButtons() {
-            ['click', 'auto', 'energy'].forEach(type => {
+            ['click', 'auto', 'energy', 'xp'].forEach(type => {
                 const button = document.getElementById(`${type}-upgrade`);
                 const cost = gameState.upgrades[type].cost;
                 const canAfford = gameState.coins >= cost;
@@ -740,6 +833,7 @@
             if (gameState.energy >= 33) {
                 gameState.coins += gameState.clickPower;
                 gameState.energy -= 33;
+                gameState.farmCount += 1;
                 addXP(10);
                 updateDisplay();
             }
@@ -751,14 +845,14 @@
             if (gameState.coins >= cost) {
                 gameState.coins -= cost;
                 totalCoinsSpent += cost;
-                
+
                 const newCostLevel = Math.floor(totalCoinsSpent / 1000);
                 if (newCostLevel > costLevel) {
                     costLevel = newCostLevel;
                     addXP(100);
                     alert(`Maliyet Seviyesi ${costLevel} oldu! 100 XP kazandınız.`);
                 }
-                
+
                 switch(type) {
                     case 'click':
                         gameState.clickPower *= powerIncrease;
@@ -769,21 +863,20 @@
                     case 'energy':
                         gameState.energy += 200;
                         break;
+                    case 'xp':
+                        // XP Güçlendirme Özelliği
+                        gameState.upgrades.xp.interval = setInterval(() => {
+                            playerXP += 2;
+                            updateXPDisplay();
+                        }, 2000);
+                        break;
                 }
-                
+
+                // Maliyetleri Güncelleme
                 gameState.upgrades[type].cost = Math.floor(cost * 2);
                 gameState.upgrades[type].level++;
                 updateDisplay();
             }
-        }
-
-        // "No1Game" Yazısını Stilize Etme Fonksiyonu
-        function styleNo1Game() {
-            const homeContainer = document.getElementById('home-container');
-            const no1GameHeader = homeContainer.querySelector('h1');
-            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
-            no1GameHeader.style.color = "#1f3f60";
-            no1GameHeader.style.textShadow = "2px 2px 4px rgba(0,0,0,0.2)";
         }
 
         // Event Listeners
@@ -832,6 +925,12 @@
             }
         });
 
+        document.getElementById('xp-upgrade').addEventListener('click', () => {
+            if (gameState.coins >= gameState.upgrades.xp.cost) {
+                handleUpgrade('xp');
+            }
+        });
+
         // Otomatik İşlemler
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
@@ -874,7 +973,7 @@
             }
 
             updateProgressBar(); // İlerleme çubuğunu güncelle
-            displayDailyTip(); // Günlük ipucunu göster (Fonksiyon tanımlı değil, kaldırıldı)
+            displayDailyTip(); // Günlük ipucunu göster
         });
 
         // Oyun Kapatılırken Kaydetme
@@ -892,7 +991,7 @@
             }
         }
 
-        // Günlük İpucu Fonksiyonu (Basit)
+        // Günlük İpucu Fonksiyonu
         function displayDailyTip() {
             const dailyTips = [
                 "Enerjinizi daha verimli kullanmak için enerji yükseltmelerini tercih edin!",
@@ -904,7 +1003,6 @@
             const tipIndex = today % dailyTips.length;
             document.getElementById('daily-tip').textContent = `Günlük İpucu: ${dailyTips[tipIndex]}`;
         }
-
     </script>
 </body>
 </html>
