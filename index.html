@@ -10,481 +10,489 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p1E1KZW3tW0jJgFjtBdYjInbFwFETiSg+q8AQ5+/BtV3tZ5HmuXYmUxtc5qJwnDm3p/KvB1A5RihCwHJoN+1wA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Mevcut CSS Kodunuz */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    text-align: center;
-    background: linear-gradient(135deg, #83a4d4, #b6fbff);
-    padding: 10px;
-    position: relative;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            background: linear-gradient(135deg, #83a4d4, #b6fbff);
+            padding: 10px;
+            position: relative;
+        }
 
-/* Hoş Geldin Efekti */
-#welcome-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    animation: fadeOut 3s forwards 5s;
-}
+        /* Hoş Geldin Efekti */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeOut 3s forwards 5s;
+        }
 
-#welcome-overlay h1 {
-    color: #fff;
-    font-size: 3em;
-    text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8);
-    animation: zoomIn 1s;
-}
+        #welcome-overlay h1 {
+            color: #fff;
+            font-size: 3em;
+            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8);
+            animation: zoomIn 1s;
+        }
 
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-        visibility: hidden;
-    }
-}
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
 
-@keyframes zoomIn {
-    from {
-        transform: scale(0.5);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
 
-/* Navigasyon Çubuğunu Alt Kısma Taşı */
-#nav-container {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    max-width: 600px;
-    background-color: #f0f0f0;
-    padding: 10px 0;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
+        /* Navigasyon Çubuğunu Alt Kısma Taşı */
+        #nav-container {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 600px;
+            background-color: #f0f0f0;
+            padding: 10px 0;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
 
-.nav-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 5px;
-    font-size: 0.8em;
-    color: #333;
-    text-decoration: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s;
-    flex: 1;
-}
+        .nav-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            font-size: 0.8em;
+            color: #333;
+            text-decoration: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
 
-.nav-button:hover {
-    background-color: #e0e0e0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+        .nav-button:hover {
+            background-color: #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-.nav-button i {
-    font-size: 1.5em;
-    margin-bottom: 3px;
-}
+        .nav-button i {
+            font-size: 1.5em;
+            margin-bottom: 3px;
+        }
 
-/* Ana İçerik Bölümleri */
-#boost-container, #earn-container, #home-container, #friends-container {
-    display: none;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    max-width: 500px;
-    width: 100%;
-    margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
-    overflow-y: auto;
-}
+        /* Ana İçerik Bölümleri */
+        #boost-container, #earn-container, #home-container, #friends-container {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
+            overflow-y: auto;
+        }
 
-/* Boost Container */
-#boost-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
+        /* Boost Container */
+        #boost-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
 
-/* Oyun Elemanları için Resource Container */
-.resource-container {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-    gap: 10px;
-}
-.resource {
-    padding: 10px 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    min-width: 120px;
-    flex: 1;
-    text-align: center;
-}
-.resource-title {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-#coin-resource { 
-    background: #FFD700; 
-    border: 2px solid #DAA520;
-}
-#cps-resource { 
-    background: #DDA0DD;
-    border: 2px solid #BA55D3;
-}
-#energy-resource { 
-    background: #87CEFA;
-    border: 2px solid #4169E1;
-}
-#xp-resource {
-    background: #90EE90;
-    border: 2px solid #32CD32;
-}
+        /* Oyun Elemanları için Resource Container */
+        .resource-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .resource {
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-width: 120px;
+            flex: 1;
+            text-align: center;
+        }
+        .resource-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        #coin-resource { 
+            background: #FFD700; 
+            border: 2px solid #DAA520;
+        }
+        #cps-resource { 
+            background: #DDA0DD;
+            border: 2px solid #BA55D3;
+        }
+        #energy-resource { 
+            background: #87CEFA;
+            border: 2px solid #4169E1;
+        }
+        #xp-resource {
+            background: #90EE90;
+            border: 2px solid #32CD32;
+        }
 
-/* Farm Button */
-#farm-button {
-    background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    font-size: 18px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin: 10px auto;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    width: 100%;
-    max-width: 300px;
-}
+        /* Farm Button */
+        #farm-button {
+            background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 300px;
+        }
 
-#farm-button:hover {
-    background: linear-gradient(45deg, #FFC107, #DDA0DD, #00BCD4);
-}
+        #farm-button:hover {
+            background: linear-gradient(45deg, #FFC107, #DDA0DD, #00BCD4);
+        }
 
-/* Upgrades Container */
-.upgrades-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin: 20px 0;
-}
-/* Upgrade Buttonlar için genel stil */
-.upgrade-button {
-    padding: 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    min-height: 80px;
-    justify-content: center;
-    border: none;
-    font-size: 1em;
-    font-weight: bold;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+        /* Upgrades Container */
+        .upgrades-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        /* Yeni düzenleme: Üç butonu uygun şekilde yerleştirmek için grid-template-areas kullanıyoruz */
+        .upgrades-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(2, auto);
+            grid-gap: 15px;
+            width: 100%;
+        }
+        /* Upgrade Buttonlar için genel stil */
+        .upgrade-button {
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-height: 80px;
+            justify-content: center;
+            border: none;
+            font-size: 1em;
+            font-weight: bold;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-.upgrade-button.active {
-    background-color: #4caf50;
-    color: white;
-}
-.upgrade-button.inactive {
-    background-color: #f9f9f9;
-    color: #333;
-}
+        .upgrade-button.active {
+            background-color: #4caf50;
+            color: white;
+        }
+        .upgrade-button.inactive {
+            background-color: #f9f9f9;
+            color: #333;
+        }
 
-/* Home Container */
-#home-container h1 {
-    font-size: 2em;
-    color: #1f3f60;
-    margin-bottom: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
-}
+        /* Home Container */
+        #home-container h1 {
+            font-size: 2em;
+            color: #1f3f60;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
+        }
 
-#home-container h2 {
-    color: #1f3f60;
-    margin-bottom: 10px;
-}
+        #home-container h2 {
+            color: #1f3f60;
+            margin-bottom: 10px;
+        }
 
-#home-stats {
-    text-align: left;
-    margin-top: 20px;
-}
+        #home-stats {
+            text-align: left;
+            margin-top: 20px;
+        }
 
-.stat {
-    margin: 10px 0;
-    font-size: 1.1em;
-}
+        .stat {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
 
-#achievement-container {
-    margin-top: 20px;
-    text-align: left;
-}
+        #achievement-container {
+            margin-top: 20px;
+            text-align: left;
+        }
 
-.achievement {
-    background-color: #e6f7ff;
-    padding: 10px;
-    border-radius: 8px;
-    margin: 5px 0;
-    font-size: 1em;
-    color: #005c99;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+        .achievement {
+            background-color: #e6f7ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            font-size: 1em;
+            color: #005c99;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-.achievement.completed {
-    background-color: #d4edda;
-    color: #155724;
-}
+        .achievement.completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
 
-.achievement .checkmark {
-    font-size: 1.2em;
-    color: #28a745;
-}
+        .achievement .checkmark {
+            font-size: 1.2em;
+            color: #28a745;
+        }
 
-#progress-bar-container {
-    margin-top: 20px;
-    text-align: left;
-}
+        #progress-bar-container {
+            margin-top: 20px;
+            text-align: left;
+        }
 
-#progress-bar {
-    width: 100%;
-    background-color: #f3f3f3;
-    border-radius: 25px;
-    overflow: hidden;
-    height: 20px;
-    margin-top: 5px;
-}
+        #progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 25px;
+            overflow: hidden;
+            height: 20px;
+            margin-top: 5px;
+        }
 
-#progress-bar-fill {
-    height: 100%;
-    background-color: #4caf50;
-    width: 0%;
-    transition: width 0.5s;
-}
+        #progress-bar-fill {
+            height: 100%;
+            background-color: #4caf50;
+            width: 0%;
+            transition: width 0.5s;
+        }
 
-#daily-tip {
-    margin-top: 20px;
-    background-color: #fff8e1;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 1em;
-    color: #ff9800;
-    border: 1px solid #ffecb3;
-}
+        #daily-tip {
+            margin-top: 20px;
+            background-color: #fff8e1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1em;
+            color: #ff9800;
+            border: 1px solid #ffecb3;
+        }
 
-/* Seviye Ödülleri Stil İyileştirmesi */
-.reward {
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 8px;
-    margin: 5px 0;
-    font-size: 1em;
-    color: #333;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        /* Seviye Ödülleri Stil İyileştirmesi */
+        .reward {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            font-size: 1em;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.reward button {
-    background-color: #ff4d4d; /* Başlangıçta kırmızı */
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 0.9em;
-}
+        .reward button {
+            background-color: #ff4d4d; /* Başlangıçta kırmızı */
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.9em;
+        }
 
-.reward button.enabled {
-    background-color: #4caf50; /* Yeşil */
-    cursor: pointer;
-}
+        .reward button.enabled {
+            background-color: #4caf50; /* Yeşil */
+            cursor: pointer;
+        }
 
-.reward button.disabled {
-    background-color: #ff4d4d; /* Kırmızı */
-    cursor: not-allowed;
-}
+        .reward button.disabled {
+            background-color: #ff4d4d; /* Kırmızı */
+            cursor: not-allowed;
+        }
 
-.reward button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
+        .reward button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
 
-.start-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+        .start-button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-.start-button:hover {
-    background-color: #45a049;
-}
+        .start-button:hover {
+            background-color: #45a049;
+        }
 
-/* Friends Container Modernizasyonu */
-#friends-container.card {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    width: 100%;
-    margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+        /* Friends Container Modernizasyonu */
+        #friends-container.card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-#friends-container.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-}
+        #friends-container.card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
 
-.card-title {
-    font-size: 1.8em;
-    color: #1f3f60;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+        .card-title {
+            font-size: 1.8em;
+            color: #1f3f60;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.card-title i {
-    color: #ff9800;
-}
+        .card-title i {
+            color: #ff9800;
+        }
 
-.referral-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-}
+        .referral-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
 
-.referral-count {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #4caf50;
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-}
+        .referral-count {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #4caf50;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
 
-.referral-label {
-    font-size: 0.6em;
-    color: #333;
-}
+        .referral-label {
+            font-size: 0.6em;
+            color: #333;
+        }
 
-.invite-link-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
+        .invite-link-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
 
-.copy-button {
-    background-color: #2196f3;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 0.9em;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: background-color 0.3s ease;
-}
+        .copy-button {
+            background-color: #2196f3;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.3s ease;
+        }
 
-.copy-button:hover {
-    background-color: #1976d2;
-}
+        .copy-button:hover {
+            background-color: #1976d2;
+        }
 
-.invite-link {
-    font-size: 0.9em;
-    color: #555;
-    text-decoration: none;
-    word-break: break-all;
-    transition: color 0.3s ease;
-}
+        .invite-link {
+            font-size: 0.9em;
+            color: #555;
+            text-decoration: none;
+            word-break: break-all;
+            transition: color 0.3s ease;
+        }
 
-.invite-link:hover {
-    color: #2196f3;
-}
+        .invite-link:hover {
+            color: #2196f3;
+        }
 
-/* Responsive Tasarım */
-@media (max-width: 600px) {
-    .card-title {
-        font-size: 1.5em;
-    }
+        /* Responsive Tasarım */
+        @media (max-width: 600px) {
+            .card-title {
+                font-size: 1.5em;
+            }
 
-    .referral-count {
-        font-size: 2em;
-    }
+            .referral-count {
+                font-size: 2em;
+            }
 
-    .copy-button {
-        padding: 8px 12px;
-        font-size: 0.8em;
-    }
+            .copy-button {
+                padding: 8px 12px;
+                font-size: 0.8em;
+            }
 
-    .invite-link {
-        font-size: 0.8em;
-    }
-}
+            .invite-link {
+                font-size: 0.8em;
+            }
+        }
 
-/* Yeni Eklenecek Bildirim Stilleri */
-#farm-bot-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #4caf50;
-    color: white;
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 1001;
-    display: none;
-}
-</style>
+        /* Yeni Eklenecek Bildirim Stilleri */
+        #farm-bot-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1001;
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <!-- Hoş Geldin Overlay -->
@@ -537,6 +545,13 @@ body {
                 Farm Bot 🤖
                 <span class="upgrade-cost" id="farmbot-cost">Maliyet: 5000 coin</span>
             </button>
+            <!-- XP Güçlendirme Butonu Kaldırıldı -->
+            <!--
+            <button class="upgrade-button inactive" id="xp-upgrade">
+                XP Güçlendirme
+                <span class="upgrade-cost" id="xp-cost">Maliyet: 1000 coin</span>
+            </button>
+            -->
         </div>
     </div>
 
@@ -660,6 +675,7 @@ body {
                     durations: [2, 7, 14], // Her seviye için süreler (gün)
                     activeUntil: null // Farm Bot'un aktif olduğu son zaman
                 }
+                // XP Güçlendirme kaldırıldı
             },
             xpMultiplier: 1 // Başlangıçta 1
         };
@@ -693,7 +709,7 @@ body {
             // Diğer başarımlar eklenebilir
         ];
 
-        // Farm Bot Satın Alma Bildirimi
+        // Farm Bot Satın Alma Bildirimini Yönetme
         function showFarmBotNotification(message) {
             const notification = document.getElementById('farm-bot-notification');
             notification.textContent = message;
@@ -807,8 +823,7 @@ body {
             const totalSeconds = Math.floor(ms / 1000);
             const hours = Math.floor((totalSeconds / 3600) % 24);
             const minutes = Math.floor((totalSeconds / 60) % 60);
-            const seconds = totalSeconds % 60;
-            return `${hours}h ${minutes}m ${seconds}s`;
+            return `${hours}h ${minutes}m`;
         }
 
         // Günlük Ödül Zamanlayıcı Güncelleme Fonksiyonu
@@ -832,7 +847,6 @@ body {
 
         let countdownInterval;
         let farmBotInterval = null; // Farm Bot Interval Değişkeni
-        let energyInterval = null; // Enerji Yenileme Interval Değişkeni
 
         // Günlük Ödül Toplama Fonksiyonu
         function collectDailyReward() {
@@ -949,8 +963,8 @@ body {
                 totalCoinsSpent: totalCoinsSpent,
                 daysLoggedIn: daysLoggedIn,
                 lastCollected: lastCollected,
-                awardedLevels: awardedLevels
-                // lastEnergyUpdate artık handleEnergyRegenOnLoad fonksiyonunda yönetilecek
+                awardedLevels: awardedLevels,
+                lastExitTime: Date.now() // Son çıkış zamanını kaydet
             };
             localStorage.setItem("gameSave", JSON.stringify(saveData));
             console.log("Oyun kaydedildi:", saveData);
@@ -968,9 +982,12 @@ body {
                 daysLoggedIn = data.daysLoggedIn || 0;
                 lastCollected = parseInt(data.lastCollected) || 0;
                 awardedLevels = data.awardedLevels || {};
-
-                // lastEnergyUpdate'i localStorage'dan al
-                // Ancak burada set etmiyoruz, handleEnergyRegenOnLoad fonksiyonu bunu yapacak
+                // activeUntil tarihini Date objesine dönüştür
+                if (gameState.upgrades.farmBot.activeUntil) {
+                    gameState.upgrades.farmBot.activeUntil = new Date(gameState.upgrades.farmBot.activeUntil);
+                } else {
+                    gameState.upgrades.farmBot.activeUntil = null;
+                }
             }
 
             // xpMultiplier'ın geçerli bir sayı olduğundan emin olun
@@ -987,35 +1004,243 @@ body {
             updateEarnRewards();
             console.log("Yüklendi:", awardedLevels);
 
-            // Enerji Yenilemesini Kapsayıcı Fonksiyon
-            handleEnergyRegenOnLoad();
+            // Farm Bot Offline Clicks
+            if (gameState.upgrades.farmBot.level > 0 && gameState.upgrades.farmBot.activeUntil) {
+                const lastExitTime = parseInt(localStorage.getItem('lastExitTime')) || Date.now();
+                const now = Date.now();
+                const timeElapsed = now - lastExitTime; // ms cinsinden
+                const activeUntilTime = gameState.upgrades.farmBot.activeUntil.getTime();
 
-            // Farm Bot İşlevselliğini Başlat
+                // Enerji Yenilemesi
+                const energyRegenerated = Math.floor(timeElapsed / 1000) * 5; // 5 enerji/saniye
+                gameState.energy = Math.min(gameState.energy + energyRegenerated, 1000);
+                console.log(`Offline enerji regenerasyonu: +${energyRegenerated}, Toplam Enerji: ${gameState.energy}`);
+
+                // Farm Bot'un Aktif Olduğu Süre
+                let activeTimeElapsed = 0;
+                if (activeUntilTime > lastExitTime) {
+                    const effectiveEndTime = Math.min(now, activeUntilTime);
+                    activeTimeElapsed = effectiveEndTime - lastExitTime; // ms cinsinden
+                }
+
+                const farmClicks = Math.floor((activeTimeElapsed / 1000) / 1) * 1; // Her 1 saniyede 1 farm
+                const energyNeeded = farmClicks * 33;
+                const possibleClicks = gameState.energy >= energyNeeded ? farmClicks : Math.floor(gameState.energy / 33);
+                const coinsEarned = possibleClicks * gameState.clickPower;
+
+                if (possibleClicks > 0) {
+                    gameState.coins += coinsEarned;
+                    gameState.energy -= possibleClicks * 33;
+                    gameState.farmCount += possibleClicks;
+                    addXP(possibleClicks * 10);
+                    showFarmBotNotification(`${coinsEarned} coin farm yapıldı bottan.`);
+                    console.log(`Farm Bot Offline Clicks: ${possibleClicks} Clicks, Coin: ${gameState.coins}, Enerji: ${gameState.energy}`);
+                }
+
+                updateDisplay();
+                updateAchievements();
+
+                // Farm Bot'un hala aktif olup olmadığını kontrol et
+                if (now < activeUntilTime) {
+                    gameState.upgrades.farmBot.activeUntil = new Date(activeUntilTime);
+                    startFarmBot(); // Farm Bot'u başlat
+                } else {
+                    gameState.upgrades.farmBot.activeUntil = null;
+                    console.log("Farm Bot süresi doldu.");
+                    showFarmBotNotification("Farm Bot süresi doldu.");
+                }
+            }
+
+            // Start Farm Bot if active
             if (gameState.upgrades.farmBot.level > 0 && gameState.upgrades.farmBot.activeUntil && Date.now() < gameState.upgrades.farmBot.activeUntil.getTime()) {
                 startFarmBot();
             }
         }
 
-        // Enerji Yenilemesini Oyun Açıldığında ve Oyun Kapalıyken Yürütme Fonksiyonu
-        function handleEnergyRegenOnLoad() {
-            const lastEnergyUpdate = parseInt(localStorage.getItem('lastEnergyUpdate')) || Date.now();
-            const now = Date.now();
-            const elapsedSeconds = Math.floor((now - lastEnergyUpdate) / 1000);
-            const energyToAdd = elapsedSeconds * 5; // 5 enerji/saniye
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
 
-            console.log(`Enerji Yenileme: geçen süre (saniye) = ${elapsedSeconds}, eklenen enerji = ${energyToAdd}`);
+            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('farmbot-cost').textContent = gameState.upgrades.farmBot.level < gameState.upgrades.farmBot.costs.length ? `Maliyet: ${gameState.upgrades.farmBot.costs[gameState.upgrades.farmBot.level]} coin` : `Maliyet: Yükseltilemez`;
 
-            if (energyToAdd > 0) {
-                gameState.energy = Math.min(gameState.energy + energyToAdd, 1000);
-                showFarmBotNotification(`${energyToAdd} enerji yenilendi.`);
-                console.log(`Offline enerji regenerasyonu: +${energyToAdd}, Toplam Enerji: ${gameState.energy}`);
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewards();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy', 'farmBot'].forEach(type => { // 'farmBot' ekleniyor
+                const button = document.getElementById(`${type}-upgrade`);
+                let cost;
+                if (type === 'farmBot') {
+                    cost = gameState.upgrades[type].level < gameState.upgrades[type].costs.length ? gameState.upgrades[type].costs[gameState.upgrades[type].level] : null;
+                } else {
+                    cost = gameState.upgrades[type].cost;
+                }
+
+                const canAfford = cost !== null && gameState.coins >= cost;
+                if (type === 'farmBot' && cost === null) {
+                    button.disabled = true;
+                    button.className = `upgrade-button inactive`;
+                    button.innerHTML = `Farm Bot 🤖 <span class="upgrade-cost">Maliyet: Yükseltilemez</span>`;
+                } else {
+                    button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                    button.disabled = !canAfford;
+                }
+            });
+        }
+
+        // Farm Butonuna Tıklama Fonksiyonu
+        function handleFarmClick() {
+            if (gameState.energy >= 33) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy -= 33;
+                gameState.farmCount += 1;
+                addXP(10);
+                updateDisplay();
+                updateAchievements(); // Farm sayısı arttıkça başarımları güncelle
+                console.log("Farm yapıldı. Coin:", gameState.coins, "Enerji:", gameState.energy, "Farm Sayısı:", gameState.farmCount, "XP:", playerXP);
+            } else {
+                alert("Enerjiniz yeterli değil!");
+            }
+        }
+
+        // Upgrade Yapma Fonksiyonu
+        function handleUpgrade(type) {
+            if (type === 'farmBot') {
+                purchaseFarmBot();
+                return;
             }
 
-            // Yeni enerji güncelleme zamanını kaydet
-            const remainingMs = (now - lastEnergyUpdate) % 1000;
-            const newLastEnergyUpdate = now - remainingMs;
-            localStorage.setItem('lastEnergyUpdate', newLastEnergyUpdate);
+            const cost = gameState.upgrades[type].cost;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                totalCoinsSpent += cost;
+                console.log(`Upgrade Yapıldı: ${type}, Maliyet: ${cost}, Kalan Coin: ${gameState.coins}`);
+
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower = Math.floor(gameState.clickPower * 1.5);
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                }
+
+                // Maliyetleri Güncelleme
+                if(type !== 'farmBot') { // Farm Bot'un maliyeti sabit kalabilir
+                    gameState.upgrades[type].cost = Math.floor(cost * 2);
+                }
+                updateDisplay();
+            } else {
+                alert("Yeterli coininiz yok!");
+            }
+        }
+
+        // Farm Bot Satın Alma Fonksiyonu
+        function purchaseFarmBot() {
+            const farmBot = gameState.upgrades.farmBot;
+            const currentLevel = farmBot.level;
+
+            if (currentLevel >= farmBot.costs.length) {
+                alert("Daha fazla Farm Bot yükseltmesi yok.");
+                return;
+            }
+
+            const cost = farmBot.costs[currentLevel];
+            const durationDays = farmBot.durations[currentLevel];
+
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                farmBot.level += 1;
+                const now = Date.now();
+                const durationMs = durationDays * 24 * 60 * 60 * 1000;
+
+                if (farmBot.activeUntil && farmBot.activeUntil > now) {
+                    // Mevcut aktif sürenin üzerine ekle
+                    farmBot.activeUntil = new Date(farmBot.activeUntil.getTime() + durationMs);
+                } else {
+                    // Yeni bir aktif süre başlat
+                    farmBot.activeUntil = new Date(now + durationMs);
+                }
+
+                alert(`Farm Bot satın alındı! 🤖 Farm süresi: ${durationDays} gün. Toplam Farm Bot Süresi: ${formatDate(farmBot.activeUntil)}`);
+                showFarmBotNotification(`Farm Bot ${durationDays} gün boyunca farm yapacak!`);
+
+                updateDisplay();
+                startFarmBot();
+            } else {
+                alert("Yeterli coininiz yok!");
+            }
+        }
+
+        // Farm Bot'un Otomatik Farm Yapmasını Sağlayan Fonksiyon
+        function startFarmBot() {
+            if (farmBotInterval) clearInterval(farmBotInterval);
+            farmBotInterval = setInterval(() => {
+                const now = Date.now();
+                if (gameState.upgrades.farmBot.activeUntil && now < gameState.upgrades.farmBot.activeUntil.getTime()) {
+                    if (gameState.energy >= 33) {
+                        handleFarmClick();
+                    }
+                } else {
+                    stopFarmBot();
+                    gameState.upgrades.farmBot.activeUntil = null;
+                    alert("Farm Bot süresi doldu.");
+                    showFarmBotNotification("Farm Bot süresi doldu.");
+                }
+            }, 1000); // Her saniye kontrol et
+        }
+
+        function stopFarmBot() {
+            if (farmBotInterval) {
+                clearInterval(farmBotInterval);
+                farmBotInterval = null;
+            }
+        }
+
+        // Farm Bot İşlevi (Offline Durum için)
+        function handleOfflineFarmBot() {
+            const farmBot = gameState.upgrades.farmBot;
+            if (farmBot.level === 0 || !farmBot.activeUntil) return;
+
+            const lastExitTime = parseInt(localStorage.getItem('lastExitTime')) || Date.now();
+            const now = Date.now();
+            const activeUntilTime = farmBot.activeUntil.getTime();
+
+            // Sadece aktif olan süreyi hesapla
+            const effectiveEndTime = Math.min(now, activeUntilTime);
+            const activeTimeElapsed = effectiveEndTime - lastExitTime; // ms cinsinden
+
+            if (activeTimeElapsed <= 0) return; // Farm Bot süresi henüz başlamamış
+
+            const farmClicks = Math.floor(activeTimeElapsed / 1000); // 1 farm/saniye
+            const energyNeeded = farmClicks * 33;
+            const possibleClicks = gameState.energy >= energyNeeded ? farmClicks : Math.floor(gameState.energy / 33);
+            const coinsEarned = possibleClicks * gameState.clickPower;
+
+            if (possibleClicks > 0) {
+                gameState.coins += coinsEarned;
+                gameState.energy -= possibleClicks * 33;
+                gameState.farmCount += possibleClicks;
+                addXP(possibleClicks * 10);
+                showFarmBotNotification(`${coinsEarned} coin farm yapıldı bottan.`);
+                console.log(`Farm Bot Offline Clicks: ${possibleClicks} Clicks, Coin: ${gameState.coins}, Enerji: ${gameState.energy}`);
+            }
+
             updateDisplay();
+            updateAchievements();
         }
 
         // Display Güncelleme Fonksiyonu
@@ -1085,84 +1310,6 @@ body {
             }
         }
 
-        // Upgrade Yapma Fonksiyonu
-        function handleUpgrade(type) {
-            if (type === 'farmBot') {
-                purchaseFarmBot();
-                return;
-            }
-
-            const cost = gameState.upgrades[type].cost;
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                totalCoinsSpent += cost;
-                console.log(`Upgrade Yapıldı: ${type}, Maliyet: ${cost}, Kalan Coin: ${gameState.coins}`);
-
-                switch(type) {
-                    case 'click':
-                        gameState.clickPower = Math.floor(gameState.clickPower * 1.5);
-                        break;
-                    case 'auto':
-                        gameState.autoCollectPower += 1;
-                        break;
-                    case 'energy':
-                        gameState.energy = Math.min(gameState.energy + 200, 1000); // Enerjiyi 200 arttır, maksimum 1000
-                        break;
-                }
-
-                // Maliyetleri Güncelleme
-                if(type !== 'farmBot') { // Farm Bot'un maliyeti sabit kalabilir
-                    gameState.upgrades[type].cost = Math.floor(cost * 2);
-                }
-                updateDisplay();
-            } else {
-                alert("Yeterli coininiz yok!");
-            }
-        }
-
-        // Farm Bot Satın Alma Fonksiyonu
-        function purchaseFarmBot() {
-            const farmBot = gameState.upgrades.farmBot;
-            const currentLevel = farmBot.level;
-
-            if (currentLevel >= farmBot.costs.length) {
-                alert("Daha fazla Farm Bot yükseltmesi yok.");
-                return;
-            }
-
-            const cost = farmBot.costs[currentLevel];
-            const durationDays = farmBot.durations[currentLevel];
-
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                farmBot.level += 1;
-                const now = Date.now();
-                const durationMs = durationDays * 24 * 60 * 60 * 1000;
-
-                if (farmBot.activeUntil && farmBot.activeUntil > now) {
-                    // Mevcut aktif sürenin üzerine ekle
-                    farmBot.activeUntil = new Date(farmBot.activeUntil.getTime() + durationMs);
-                } else {
-                    // Yeni bir aktif süre başlat
-                    farmBot.activeUntil = new Date(now + durationMs);
-                }
-
-                alert(`Farm Bot satın alındı! 🤖 Farm süresi: ${durationDays} gün. Toplam Farm Bot Süresi: ${formatDate(farmBot.activeUntil)}`);
-                showFarmBotNotification(`Farm Bot ${durationDays} gün boyunca farm yapacak!`);
-
-                updateDisplay();
-                startFarmBot();
-            } else {
-                alert("Yeterli coininiz yok!");
-            }
-        }
-
-        // Tarihi Formatlama Fonksiyonu
-        function formatDate(date) {
-            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            return date.toLocaleDateString('tr-TR', options);
-        }
-
         // Farm Bot'un Otomatik Farm Yapmasını Sağlayan Fonksiyon
         function startFarmBot() {
             if (farmBotInterval) clearInterval(farmBotInterval);
@@ -1190,6 +1337,51 @@ body {
                 clearInterval(farmBotInterval);
                 farmBotInterval = null;
             }
+        }
+
+        // Farm Bot İşlevi (Offline Durum için)
+        function handleOfflineFarmBot() {
+            const farmBot = gameState.upgrades.farmBot;
+            if (farmBot.level === 0 || !farmBot.activeUntil) return;
+
+            const lastExitTime = parseInt(localStorage.getItem('lastExitTime')) || Date.now();
+            const now = Date.now();
+            const activeUntilTime = farmBot.activeUntil.getTime();
+
+            // Sadece aktif olan süreyi hesapla
+            const effectiveEndTime = Math.min(now, activeUntilTime);
+            const activeTimeElapsed = effectiveEndTime - lastExitTime; // ms cinsinden
+
+            if (activeTimeElapsed <= 0) return; // Farm Bot süresi henüz başlamamış
+
+            const farmClicks = Math.floor(activeTimeElapsed / 1000); // 1 farm/saniye
+            const energyNeeded = farmClicks * 33;
+            const possibleClicks = gameState.energy >= energyNeeded ? farmClicks : Math.floor(gameState.energy / 33);
+            const coinsEarned = possibleClicks * gameState.clickPower;
+
+            if (possibleClicks > 0) {
+                gameState.coins += coinsEarned;
+                gameState.energy -= possibleClicks * 33;
+                gameState.farmCount += possibleClicks;
+                addXP(possibleClicks * 10);
+                showFarmBotNotification(`${coinsEarned} coin farm yapıldı bottan.`);
+                console.log(`Farm Bot Offline Clicks: ${possibleClicks} Clicks, Coin: ${gameState.coins}, Enerji: ${gameState.energy}`);
+            }
+
+            updateDisplay();
+            updateAchievements();
+        }
+
+        // Oyun Kapatılırken Farm Bot'u Aktifleştirme
+        function onExitGame() {
+            gameState.lastExitTime = Date.now();
+            localStorage.setItem('lastExitTime', gameState.lastExitTime);
+            saveGame();
+        }
+
+        // Oyun Açıldığında Farm Bot'un Offline İşlevini Çalıştırma
+        function onEnterGame() {
+            handleOfflineFarmBot();
         }
 
         // Event Listeners
@@ -1233,18 +1425,22 @@ body {
         });
 
         // Otomatik İşlemler
+        setInterval(() => {
+            if (gameState.autoCollectPower > 0) {
+                gameState.coins += gameState.autoCollectPower;
+                updateDisplay();
+                updateAchievements(); // Coin arttıkça başarımları güncelle
+                console.log(`Otomatik Toplama: +${gameState.autoCollectPower} Coin`);
+            }
+        }, 1000);
 
-        // Enerji Yenilemesi: Her saniye 5 enerji ekle, maksimum 1000
-        function startEnergyRegen() {
-            if (energyInterval) clearInterval(energyInterval);
-            energyInterval = setInterval(() => {
-                if (gameState.energy < 1000) {
-                    gameState.energy = Math.min(gameState.energy + 5, 1000);
-                    updateDisplay();
-                    console.log(`Enerji Yenileniyor: ${gameState.energy}`);
-                }
-            }, 1000);
-        }
+        setInterval(() => {
+            if (gameState.energy < 1000) {
+                gameState.energy = Math.min(gameState.energy + 5, 1000);
+                updateDisplay();
+                console.log(`Enerji Yenileniyor: ${gameState.energy}`);
+            }
+        }, 1000);
 
         // XP Ekleyen setInterval
         setInterval(() => {
@@ -1258,8 +1454,7 @@ body {
             loadGame();
             incrementDaysLoggedIn();
             updateDailyRewardTimer();
-            // Enerji yenilemesini başlat
-            startEnergyRegen();
+            onEnterGame(); // Farm Bot'un offline farm yapmasını sağla
 
             // Countdown Başlatma
             if (Date.now() - lastCollected < 24 * 60 * 60 * 1000) {
@@ -1287,9 +1482,9 @@ body {
             updateFriendsContainer();
         });
 
-        // Oyun Kapatılırken Kaydetme ve Enerji Yenileme Zamanını Kaydetma
+        // Oyun Kapatılırken Kaydetme ve Çıkış Zamanını Kaydetme
         window.addEventListener("beforeunload", () => {
-            saveEnergyOnExit();
+            onExitGame();
             saveGame();
         });
 
@@ -1324,6 +1519,13 @@ body {
             // Boost bölümünde yapılmış olabilecek tüm değişiklikleri sıfırlayın
             // Örneğin, otomatik toplama gücünü sıfırlamak ve XP Boost'u durdurmak
             gameState.autoCollectPower = 0;
+            // XP Boost artık multiplier üzerinden kontrol edildiği için aşağıdaki kod kaldırıldı
+            /*
+            if (gameState.upgrades.xp.interval) {
+                clearInterval(gameState.upgrades.xp.interval);
+                gameState.upgrades.xp.interval = null;
+            }
+            */
             gameState.xpMultiplier = 1; // Multiplier'ı başlangıç değerine döndür
             updateDisplay();
             console.log("Boost Sıfırlandı");
@@ -1359,13 +1561,6 @@ body {
                 console.error('Davet linki kopyalanamadı:', err);
                 alert('Davet linki kopyalanamadı. Lütfen manuel olarak kopyalayın.');
             });
-        }
-
-        // Enerji Yenilemesini Oyun Kapatılırken Kaydetme Fonksiyonu
-        function saveEnergyOnExit() {
-            const now = Date.now();
-            localStorage.setItem('lastEnergyUpdate', now);
-            console.log(`Enerji yenileme zamanı kaydedildi: ${now}`);
         }
 
     </script>
