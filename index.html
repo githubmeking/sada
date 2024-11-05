@@ -22,6 +22,7 @@
             background: linear-gradient(135deg, #83a4d4, #b6fbff);
             padding: 10px;
             position: relative;
+            overflow: hidden; /* Kaydırmayı kaldır */
         }
 
         /* Hoş Geldin Efekti */
@@ -78,6 +79,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
+            z-index: 999; /* Overlay'ın altında kalmasını sağlar */
         }
 
         .nav-button {
@@ -106,17 +108,73 @@
         }
 
         /* Ana İçerik Bölümleri */
+        .main-content {
+            flex: 1; /* Ana içeriğin mevcut alanı kaplamasını sağlar */
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 80px; /* Navigasyon çubuğu için boşluk bırak */
+        }
+
         #boost-container, #earn-container, #home-container, #friends-container {
             display: none;
             background: rgba(255, 255, 255, 0.95);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 500px;
             width: 100%;
-            margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
-            overflow-y: auto;
-            height: calc(100vh - 160px); /* Tam ekran görünümü için yükseklik ayarı */
+            max-height: 100%;
+            overflow: hidden; /* Kaydırmayı kaldır */
+        }
+
+        /* Scrollbar Stil İyileştirmesi */
+        /* Scrollbar'ı tamamen kaldırmak için aşağıdaki yorum satırlarını kullanabilirsiniz */
+        /*
+        #boost-container, #earn-container, #home-container, #friends-container {
+            scrollbar-width: none; /* Firefox için */
+            -ms-overflow-style: none;  /* IE ve Edge için */
+        }
+
+        #boost-container::-webkit-scrollbar,
+        #earn-container::-webkit-scrollbar,
+        #home-container::-webkit-scrollbar,
+        #friends-container::-webkit-scrollbar {
+            display: none; /* Webkit tarayıcılar için */
+        }
+        */
+
+        /* Eğer scrollbar'ı özelleştirmek isterseniz, aşağıdaki CSS'i kullanabilirsiniz */
+        #boost-container::-webkit-scrollbar,
+        #earn-container::-webkit-scrollbar,
+        #home-container::-webkit-scrollbar,
+        #friends-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #boost-container::-webkit-scrollbar-track,
+        #earn-container::-webkit-scrollbar-track,
+        #home-container::-webkit-scrollbar-track,
+        #friends-container::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 10px;
+        }
+
+        #boost-container::-webkit-scrollbar-thumb,
+        #earn-container::-webkit-scrollbar-thumb,
+        #home-container::-webkit-scrollbar-thumb,
+        #friends-container::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 10px;
+        }
+
+        #boost-container::-webkit-scrollbar-thumb:hover,
+        #earn-container::-webkit-scrollbar-thumb:hover,
+        #home-container::-webkit-scrollbar-thumb:hover,
+        #friends-container::-webkit-scrollbar-thumb:hover {
+            background: #555; 
         }
 
         /* Boost Container */
@@ -410,15 +468,15 @@
                 gap: 15px;
             }
 
-            #boost-container, #earn-container, #home-container, #friends-container {
-                height: calc(100vh - 160px); /* Mobil ekranlarda tam görünüm */
+            .main-content {
+                padding-bottom: 80px; /* Navigasyon çubuğu için boşluk */
             }
         }
 
         /* Masaüstü İçin Tam Ekran Görünümü */
         @media (min-width: 601px) {
-            #boost-container, #earn-container, #home-container, #friends-container {
-                height: calc(100vh - 160px); /* Tam ekran görünümü */
+            .main-content {
+                padding-bottom: 80px; /* Navigasyon çubuğu için boşluk */
             }
         }
 
@@ -433,120 +491,124 @@
     <!-- Farm Bot Bildirimi -->
     <div id="farm-bot-notification"></div>
 
-    <!-- Boost Container -->
-    <div id="boost-container">
-        <h1>Boost Bölümü</h1>
-        <div class="resource-container">
-            <div class="resource" id="coin-resource">
-                <div class="resource-title">Coin</div>
-                <div id="coin-value" class="resource-value">0</div>
+    <!-- Ana İçerik -->
+    <div class="main-content">
+        <!-- Boost Container -->
+        <div id="boost-container">
+            <h1>Boost Bölümü</h1>
+            <div class="resource-container">
+                <div class="resource" id="coin-resource">
+                    <div class="resource-title">Coin</div>
+                    <div id="coin-value" class="resource-value">0</div>
+                </div>
+                <div class="resource" id="cps-resource">
+                    <div class="resource-title">CPS</div>
+                    <div id="cps-value" class="resource-value">0</div>
+                </div>
+                <div class="resource" id="energy-resource">
+                    <div class="resource-title">Enerji</div>
+                    <div id="energy-value" class="resource-value">1000</div>
+                </div>
+                <div class="resource" id="xp-resource">
+                    <div class="resource-title">XP</div>
+                    <div id="xp-text" class="resource-value">0</div>
+                </div>
             </div>
-            <div class="resource" id="cps-resource">
-                <div class="resource-title">CPS</div>
-                <div id="cps-value" class="resource-value">0</div>
-            </div>
-            <div class="resource" id="energy-resource">
-                <div class="resource-title">Enerji</div>
-                <div id="energy-value" class="resource-value">1000</div>
-            </div>
-            <div class="resource" id="xp-resource">
-                <div class="resource-title">XP</div>
-                <div id="xp-text" class="resource-value">0</div>
-            </div>
-        </div>
 
-        <button id="farm-button">FARM</button>
+            <button id="farm-button">FARM</button>
 
-        <div class="upgrades-container">
-            <button class="upgrade-button inactive" id="click-upgrade">
-                Tıklama Güçlendirmesi
-                <span class="upgrade-cost" id="click-cost">Maliyet: 10 coin</span>
-            </button>
-            <button class="upgrade-button inactive" id="auto-upgrade">
-                CPS Arttırma
-                <span class="upgrade-cost" id="auto-cost">Maliyet: 50 coin</span>
-            </button>
-            <button class="upgrade-button inactive" id="energy-upgrade">
-                Enerji Yükseltme
-                <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
-            </button>
-            <!-- Farm Bot Butonu Eklendi -->
-            <button class="upgrade-button inactive" id="farmbot-upgrade">
-                Farm Bot 🤖
-                <span class="upgrade-cost" id="farmbot-cost">Maliyet: 5000 coin</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Earn Container -->
-    <div id="earn-container">
-        <h2>Giriş Ödülü</h2>
-        <button class="start-button" onclick="collectDailyReward()">5000 Coin Al</button>
-        <div class="cooldown-timer" id="daily-reward-timer"></div>
-        <h2>Seviye Ödülleri</h2>
-        <div class="reward">
-            <span>sv10: 1000 XP</span>
-            <button onclick="claimLevelReward(10)" id="claim-reward-10" class="disabled" disabled>Al</button>
-        </div>
-        <div class="reward">
-            <span>sv20: 2000 XP</span>
-            <button onclick="claimLevelReward(20)" id="claim-reward-20" class="disabled" disabled>Al</button>
-        </div>
-        <div class="reward">
-            <span>sv30: 5000 XP</span>
-            <button onclick="claimLevelReward(30)" id="claim-reward-30" class="disabled" disabled>Al</button>
-        </div>
-        <div class="reward">
-            <span>sv40: 7000 XP</span>
-            <button onclick="claimLevelReward(40)" id="claim-reward-40" class="disabled" disabled>Al</button>
-        </div>
-        <div class="reward">
-            <span>sv50: 10000 XP</span>
-            <button onclick="claimLevelReward(50)" id="claim-reward-50" class="disabled" disabled>Al</button>
-        </div>
-        <div class="reward">
-            <span>sv100: 50000 XP</span>
-            <button onclick="claimLevelReward(100)" id="claim-reward-100" class="disabled" disabled>Al</button>
-        </div>
-    </div>
-
-    <!-- Home Container -->
-    <div id="home-container">
-        <h1>No1Game</h1>
-
-        <h2>Oyuncu İstatistikleri</h2>
-        <div id="home-stats">
-            <div class="stat">Toplam Coin: <span id="home-coins">0</span></div>
-            <div class="stat">Seviye: <span id="home-level">1</span></div>
-            <div class="stat">XP: <span id="home-xp">0</span> / <span id="home-xp-needed">100</span></div>
-            <div class="stat">Enerji: <span id="home-energy">1000</span></div>
-        </div>
-
-        <div id="achievement-container">
-            <h2>Başarımlar</h2>
-            <div id="achievements-list">
-                <!-- Başarımlar dinamik olarak eklenecek -->
+            <div class="upgrades-container">
+                <button class="upgrade-button inactive" id="click-upgrade">
+                    Tıklama Güçlendirmesi
+                    <span class="upgrade-cost" id="click-cost">Maliyet: 10 coin</span>
+                </button>
+                <button class="upgrade-button inactive" id="auto-upgrade">
+                    CPS Arttırma
+                    <span class="upgrade-cost" id="auto-cost">Maliyet: 50 coin</span>
+                </button>
+                <button class="upgrade-button inactive" id="energy-upgrade">
+                    Enerji Yükseltme
+                    <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
+                </button>
+                <!-- Farm Bot Butonu Eklendi -->
+                <button class="upgrade-button inactive" id="farmbot-upgrade">
+                    Farm Bot 🤖
+                    <span class="upgrade-cost" id="farmbot-cost">Maliyet: 5000 coin</span>
+                </button>
             </div>
         </div>
 
-        <div id="progress-bar-container">
-            <h2>Seviye İlerlemesi</h2>
-            <div id="progress-bar">
-                <div id="progress-bar-fill"></div>
+        <!-- Earn Container -->
+        <div id="earn-container">
+            <h2>Giriş Ödülü</h2>
+            <button class="start-button" onclick="collectDailyReward()">5000 Coin Al</button>
+            <div class="cooldown-timer" id="daily-reward-timer"></div>
+            <h2>Seviye Ödülleri</h2>
+            <div class="reward">
+                <span>sv10: 1000 XP</span>
+                <button onclick="claimLevelReward(10)" id="claim-reward-10" class="disabled" disabled>Al</button>
+            </div>
+            <div class="reward">
+                <span>sv20: 2000 XP</span>
+                <button onclick="claimLevelReward(20)" id="claim-reward-20" class="disabled" disabled>Al</button>
+            </div>
+            <div class="reward">
+                <span>sv30: 5000 XP</span>
+                <button onclick="claimLevelReward(30)" id="claim-reward-30" class="disabled" disabled>Al</button>
+            </div>
+            <div class="reward">
+                <span>sv40: 7000 XP</span>
+                <button onclick="claimLevelReward(40)" id="claim-reward-40" class="disabled" disabled>Al</button>
+            </div>
+            <div class="reward">
+                <span>sv50: 10000 XP</span>
+                <button onclick="claimLevelReward(50)" id="claim-reward-50" class="disabled" disabled>Al</button>
+            </div>
+            <div class="reward">
+                <span>sv100: 50000 XP</span>
+                <button onclick="claimLevelReward(100)" id="claim-reward-100" class="disabled" disabled>Al</button>
             </div>
         </div>
 
-        <div id="daily-tip">
-            Günlük İpucu: Daha fazla enerji kazanmak için enerji yükseltmelerini tercih edin!
-        </div>
-    </div>
+        <!-- Home Container -->
+        <div id="home-container">
+            <h1>No1Game</h1>
 
-    <!-- Friends Container -->
-    <div id="friends-container">
-        <h2>Arkadaşlar</h2>
-        <p>Toplam Davet Edilen Kişi Sayısı: <span id="referral-count">0</span></p>
-        <p>Davet Linkin:</p>
-        <a href="#" id="invite-link">Davet Linki Yükleniyor...</a>
+            <h2>Oyuncu İstatistikleri</h2>
+            <div id="home-stats">
+                <div class="stat">Toplam Coin: <span id="home-coins">0</span></div>
+                <div class="stat">Seviye: <span id="home-level">1</span></div>
+                <div class="stat">XP: <span id="home-xp">0</span> / <span id="home-xp-needed">100</span></div>
+                <div class="stat">Enerji: <span id="home-energy">1000</span></div>
+                <div class="stat">Toplam Kazanılan Coin: <span id="home-total-earned-coins">0</span></div> <!-- Yeni Alan -->
+            </div>
+
+            <div id="achievement-container">
+                <h2>Başarımlar</h2>
+                <div id="achievements-list">
+                    <!-- Başarımlar dinamik olarak eklenecek -->
+                </div>
+            </div>
+
+            <div id="progress-bar-container">
+                <h2>Seviye İlerlemesi</h2>
+                <div id="progress-bar">
+                    <div id="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div id="daily-tip">
+                Günlük İpucu: Daha fazla enerji kazanmak için enerji yükseltmelerini tercih edin!
+            </div>
+        </div>
+
+        <!-- Friends Container -->
+        <div id="friends-container">
+            <h2>Arkadaşlar</h2>
+            <p>Toplam Davet Edilen Kişi Sayısı: <span id="referral-count">0</span></p>
+            <p>Davet Linkin:</p>
+            <a href="#" id="invite-link">Davet Linki Yükleniyor...</a>
+        </div>
     </div>
 
     <!-- Navigasyon Çubuğu -->
@@ -573,6 +635,7 @@
         // Oyun Durumu
         let gameState = {
             coins: 0, // Başlangıçta 0
+            totalEarnedCoins: 0, // Toplam kazanılan coin
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
@@ -728,6 +791,7 @@
             document.getElementById("home-xp").textContent = playerXP;
             document.getElementById("home-xp-needed").textContent = playerLevel * 100;
             document.getElementById("home-energy").textContent = gameState.energy;
+            document.getElementById("home-total-earned-coins").textContent = gameState.totalEarnedCoins.toLocaleString(); // Yeni Alan
         }
 
         // Zaman Formatlama Fonksiyonu
@@ -767,6 +831,7 @@
 
             if (now - lastCollected >= oneDay) {
                 gameState.coins += 5000;
+                gameState.totalEarnedCoins += 5000; // Toplam kazancı artır
                 lastCollected = now;
                 localStorage.setItem('lastCollected', lastCollected);
                 alert("5000 Coin kazandınız!");
@@ -840,6 +905,7 @@
             document.getElementById("home-xp").textContent = playerXP;
             document.getElementById("home-xp-needed").textContent = playerLevel * 100;
             document.getElementById("home-energy").textContent = gameState.energy;
+            document.getElementById("home-total-earned-coins").textContent = gameState.totalEarnedCoins.toLocaleString(); // Yeni Alan
         }
 
         // İlerleme Çubuğunu Güncelleme Fonksiyonu
@@ -948,6 +1014,7 @@
             document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
             document.getElementById('xp-text').textContent = playerXP;
+            document.getElementById('home-total-earned-coins').textContent = gameState.totalEarnedCoins.toLocaleString(); // Yeni Alan
 
             document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
             document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
@@ -958,7 +1025,12 @@
             const farmBotButton = document.getElementById('farmbot-upgrade');
             if (farmBot.level < farmBot.costs.length) {
                 farmBotButton.querySelector('.upgrade-cost').textContent = `Maliyet: ${farmBot.costs[farmBot.level].toLocaleString()} coin`;
-                farmBotButton.className = `upgrade-button ${gameState.coins >= farmBot.costs[farmBot.level] ? 'active' : 'inactive'}`;
+                // Coin miktarı maliyetle eşitse veya fazlaysa yeşil, değilse beyaz
+                if (gameState.coins >= farmBot.costs[farmBot.level]) {
+                    farmBotButton.className = `upgrade-button active`;
+                } else {
+                    farmBotButton.className = `upgrade-button inactive`;
+                }
                 farmBotButton.disabled = gameState.coins < farmBot.costs[farmBot.level];
             } else {
                 farmBotButton.querySelector('.upgrade-cost').textContent = `Maliyet: Yükseltilemez`;
@@ -978,8 +1050,13 @@
                 const button = document.getElementById(`${type}-upgrade`);
                 const cost = gameState.upgrades[type].cost;
                 const canAfford = gameState.coins >= cost;
-                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
-                button.disabled = !canAfford;
+                // Coin miktarı maliyetle eşitse veya fazlaysa yeşil, değilse beyaz
+                if (gameState.coins >= cost) {
+                    button.className = `upgrade-button active`;
+                } else {
+                    button.className = `upgrade-button inactive`;
+                }
+                button.disabled = gameState.coins < cost;
             });
         }
 
@@ -987,6 +1064,7 @@
         function handleFarmClick() {
             if (gameState.energy >= 33) {
                 gameState.coins += gameState.clickPower;
+                gameState.totalEarnedCoins += gameState.clickPower; // Toplam kazanılan coin'i artır
                 gameState.energy -= 33;
                 gameState.farmCount += 1;
                 addXP(10);
@@ -1047,6 +1125,7 @@
 
             if (gameState.coins >= cost) {
                 gameState.coins -= cost;
+                gameState.totalEarnedCoins += cost; // Harcanan coinlar toplam kazanılanlara dahil edilmiyor
                 farmBot.level += 1;
                 const now = Date.now();
                 const durationMs = durationDays * 24 * 60 * 60 * 1000;
@@ -1093,6 +1172,7 @@
                     if (gameState.energy >= 33) {
                         // Farm yap ve enerjiyi azalt
                         gameState.coins += 250; // Farm Bot her gün 250 coin üretir
+                        gameState.totalEarnedCoins += 250; // Toplam kazanılan coin'i artır
                         gameState.energy -= 33;
                         gameState.farmCount += 1;
                         gameState.upgrades.farmBot.totalFarmCoins += 250;
@@ -1176,6 +1256,7 @@
         setInterval(() => {
             if (gameState.autoCollectPower > 0) {
                 gameState.coins += gameState.autoCollectPower;
+                gameState.totalEarnedCoins += gameState.autoCollectPower; // Toplam kazanılan coin'i artır
                 updateDisplay();
                 updateAchievements(); // Coin arttıkça başarımları güncelle
                 console.log(`Otomatik Toplama: +${gameState.autoCollectPower} Coin`);
