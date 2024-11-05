@@ -7,6 +7,7 @@
     <!-- Pacifico Fontunu Ekleyin -->
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
+        /* CSS KODLARI */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -189,16 +190,8 @@
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin: 20px 0;
-        }
-        /* Yeni düzenleme: Üç butonu uygun şekilde yerleştirmek için grid-template-areas kullanıyoruz */
-        .upgrades-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: repeat(2, auto);
-            grid-gap: 15px;
             width: 100%;
         }
-        /* Upgrade Buttonlar için genel stil */
         .upgrade-button {
             padding: 15px;
             border-radius: 8px;
@@ -394,7 +387,6 @@
                 margin-bottom: 100px; /* Navigasyon çubuğu için daha fazla alt marjin */
             }
 
-            /* Upgrades Container için yeni düzenleme */
             .upgrades-container {
                 grid-template-columns: 1fr 1fr;
                 grid-template-rows: auto auto;
@@ -407,27 +399,27 @@
 <body>
     <!-- Hoş Geldin Overlay -->
     <div id="welcome-overlay">
-        <h1>Hoş Geldiniz No1Game'e!</h1>
+        <h1 id="welcome-message">Hoş Geldiniz No1Game'e!</h1>
     </div>
 
     <!-- Boost Container -->
     <div id="boost-container">
-        <h1>Boost Bölümü</h1>
+        <h1 id="boost-section-title">Boost Bölümü</h1>
         <div class="resource-container">
             <div class="resource" id="coin-resource">
-                <div class="resource-title">Coin</div>
+                <div class="resource-title" id="coin-title">Coin</div>
                 <div id="coin-value" class="resource-value">0</div>
             </div>
             <div class="resource" id="cps-resource">
-                <div class="resource-title">CPS</div>
+                <div class="resource-title" id="cps-title">CPS</div>
                 <div id="cps-value" class="resource-value">0</div>
             </div>
             <div class="resource" id="energy-resource">
-                <div class="resource-title">Enerji</div>
+                <div class="resource-title" id="energy-title">Enerji</div>
                 <div id="energy-value" class="resource-value">1000</div>
             </div>
             <div class="resource" id="xp-resource">
-                <div class="resource-title">XP</div>
+                <div class="resource-title" id="xp-title">XP</div>
                 <div id="xp-text" class="resource-value">0</div>
             </div>
         </div>
@@ -436,80 +428,79 @@
 
         <div class="upgrades-container">
             <button class="upgrade-button inactive" id="click-upgrade">
-                Tıklama Güçlendirmesi
+                <span id="click-upgrade-text">Tıklama Güçlendirmesi</span>
                 <span class="upgrade-cost" id="click-cost">Maliyet: 10 coin</span>
             </button>
             <button class="upgrade-button inactive" id="auto-upgrade">
-                CPS Arttırma
+                <span id="auto-upgrade-text">CPS Arttırma</span>
                 <span class="upgrade-cost" id="auto-cost">Maliyet: 50 coin</span>
             </button>
             <button class="upgrade-button inactive" id="energy-upgrade">
-                Enerji Yükseltme
+                <span id="energy-upgrade-text">Enerji Yükseltme</span>
                 <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
             </button>
-            <!-- XP Güçlendirme Butonu Kaldırıldı -->
-            <!--
-            <button class="upgrade-button inactive" id="xp-upgrade">
-                XP Güçlendirme
-                <span class="upgrade-cost" id="xp-cost">Maliyet: 1000 coin</span>
-            </button>
-            -->
         </div>
     </div>
 
     <!-- Earn Container -->
     <div id="earn-container">
-        <h2>Giriş Ödülü</h2>
-        <button class="start-button" onclick="collectDailyReward()">5000 Coin Al</button>
+        <h2 id="daily-reward-title">Giriş Ödülü</h2>
+        <button class="start-button" onclick="collectDailyReward()" id="collect-daily-reward-button">5000 Coin Al</button>
         <div class="cooldown-timer" id="daily-reward-timer"></div>
-        <h2>Seviye Ödülleri</h2>
+        <h2 id="level-rewards-title">Seviye Ödülleri</h2>
         <div class="reward">
-            <span>sv10: 1000 XP</span>
+            <span id="level-reward-10-text">sv10: 1000 XP</span>
             <button onclick="claimLevelReward(10)" id="claim-reward-10" class="disabled" disabled>Al</button>
         </div>
         <div class="reward">
-            <span>sv20: 2000 XP</span>
+            <span id="level-reward-20-text">sv20: 2000 XP</span>
             <button onclick="claimLevelReward(20)" id="claim-reward-20" class="disabled" disabled>Al</button>
         </div>
         <div class="reward">
-            <span>sv30: 5000 XP</span>
+            <span id="level-reward-30-text">sv30: 5000 XP</span>
             <button onclick="claimLevelReward(30)" id="claim-reward-30" class="disabled" disabled>Al</button>
         </div>
         <div class="reward">
-            <span>sv40: 7000 XP</span>
+            <span id="level-reward-40-text">sv40: 7000 XP</span>
             <button onclick="claimLevelReward(40)" id="claim-reward-40" class="disabled" disabled>Al</button>
         </div>
         <div class="reward">
-            <span>sv50: 10000 XP</span>
+            <span id="level-reward-50-text">sv50: 10000 XP</span>
             <button onclick="claimLevelReward(50)" id="claim-reward-50" class="disabled" disabled>Al</button>
         </div>
         <div class="reward">
-            <span>sv100: 50000 XP</span>
+            <span id="level-reward-100-text">sv100: 50000 XP</span>
             <button onclick="claimLevelReward(100)" id="claim-reward-100" class="disabled" disabled>Al</button>
         </div>
     </div>
 
     <!-- Home Container -->
     <div id="home-container">
-        <h1>No1Game</h1>
+        <h1 id="game-title">No1Game</h1>
 
-        <h2>Oyuncu İstatistikleri</h2>
+        <!-- Dil Seçimi -->
+        <div id="language-selection">
+            <button id="lang-tr">Türkçe</button>
+            <button id="lang-en">English</button>
+        </div>
+
+        <h2 id="player-stats-title">Oyuncu İstatistikleri</h2>
         <div id="home-stats">
-            <div class="stat">Toplam Coin: <span id="home-coins">0</span></div>
-            <div class="stat">Seviye: <span id="home-level">1</span></div>
-            <div class="stat">XP: <span id="home-xp">0</span> / <span id="home-xp-needed">100</span></div>
-            <div class="stat">Enerji: <span id="home-energy">1000</span></div>
+            <div class="stat" id="total-coins-stat">Toplam Coin: <span id="home-coins">0</span></div>
+            <div class="stat" id="level-stat">Seviye: <span id="home-level">1</span></div>
+            <div class="stat" id="xp-stat">XP: <span id="home-xp">0</span> / <span id="home-xp-needed">100</span></div>
+            <div class="stat" id="energy-stat">Enerji: <span id="home-energy">1000</span></div>
         </div>
 
         <div id="achievement-container">
-            <h2>Başarımlar</h2>
+            <h2 id="achievements-title">Başarımlar</h2>
             <div id="achievements-list">
                 <!-- Başarımlar dinamik olarak eklenecek -->
             </div>
         </div>
 
         <div id="progress-bar-container">
-            <h2>Seviye İlerlemesi</h2>
+            <h2 id="progress-title">Seviye İlerlemesi</h2>
             <div id="progress-bar">
                 <div id="progress-bar-fill"></div>
             </div>
@@ -522,9 +513,9 @@
 
     <!-- Friends Container -->
     <div id="friends-container">
-        <h2>Arkadaşlar</h2>
-        <p>Toplam Davet Edilen Kişi Sayısı: <span id="referral-count">0</span></p>
-        <p>Davet Linkin:</p>
+        <h2 id="friends-title">Arkadaşlar</h2>
+        <p id="total-referrals-text">Toplam Davet Edilen Kişi Sayısı: <span id="referral-count">0</span></p>
+        <p id="invite-link-text">Davet Linkin:</p>
         <a href="#" id="invite-link">Davet Linki Yükleniyor...</a>
     </div>
 
@@ -532,23 +523,213 @@
     <div id="nav-container">
         <div class="nav-button" id="home-nav">
             <i>🏠</i>
-            <span>Home</span>
+            <span id="nav-home-text">Ana Sayfa</span>
         </div>
         <div class="nav-button" id="earn-nav">
             <i>📋</i>
-            <span>Earn</span>
+            <span id="nav-earn-text">Kazanç</span>
         </div>
         <div class="nav-button" id="boost-nav">
             <i>🚀</i>
-            <span>Boost</span>
+            <span id="nav-boost-text">Geliştir</span>
         </div>
         <div class="nav-button" id="friends-nav">
             <i>👥</i>
-            <span>Friends</span>
+            <span id="nav-friends-text">Arkadaşlar</span>
         </div>
     </div>
 
     <script>
+        // Dil Verileri
+        const languageData = {
+            tr: {
+                welcomeMessage: "Hoş Geldiniz No1Game'e!",
+                gameTitle: "No1Game",
+                playerStatsTitle: "Oyuncu İstatistikleri",
+                totalCoinsStat: "Toplam Coin:",
+                levelStat: "Seviye:",
+                xpStat: "XP:",
+                energyStat: "Enerji:",
+                achievementsTitle: "Başarımlar",
+                progressTitle: "Seviye İlerlemesi",
+                dailyTip: "Günlük İpucu: Daha fazla enerji kazanmak için enerji yükseltmelerini tercih edin!",
+                farmButton: "FARM",
+                boostSectionTitle: "Boost Bölümü",
+                clickUpgrade: "Tıklama Güçlendirmesi",
+                autoUpgrade: "CPS Arttırma",
+                energyUpgrade: "Enerji Yükseltme",
+                upgradeCost: "Maliyet:",
+                // Başarımlar
+                achievement1: "50.000 Coin Kazandınız!",
+                achievement2: "100.000 Coin Kazandınız!",
+                achievement3: "200.000 Coin Kazandınız!",
+                achievement4: "300.000 Coin Kazandınız!",
+                achievement5: "1.000.000 Coin Kazandınız!",
+                achievement6: "500 Farm Yaptınız!",
+                // Navigasyon
+                navHome: "Ana Sayfa",
+                navEarn: "Kazanç",
+                navBoost: "Geliştir",
+                navFriends: "Arkadaşlar",
+                // Diğer Metinler
+                cpsTitle: "CPS",
+                coinTitle: "Coin",
+                energyTitle: "Enerji",
+                xpTitle: "XP",
+                dailyRewardTitle: "Giriş Ödülü",
+                collectDailyRewardButton: "5000 Coin Al",
+                levelRewardsTitle: "Seviye Ödülleri",
+                friendsTitle: "Arkadaşlar",
+                totalReferralsText: "Toplam Davet Edilen Kişi Sayısı:",
+                inviteLinkText: "Davet Linkin:",
+                levelRewardText: (level, xp) => `sv${level}: ${xp} XP`,
+                notEnoughEnergy: "Enerjiniz yeterli değil!",
+                notEnoughCoins: "Yeterli coininiz yok!",
+                rewardAlreadyClaimed: "Bu ödülü zaten aldınız!",
+                insufficientLevel: "Yeterli seviyeye ulaşmadınız!",
+                rewardCollected: (xp) => `${xp} XP kazandınız!`,
+                dailyRewardCollected: "5000 Coin kazandınız!",
+                dailyRewardCooldown: (time) => `Giriş ödülünüzü zaten aldınız. ${time} sonra tekrar deneyin.`,
+                rewardReady: "Ödül hazır!",
+                remainingTime: (time) => `Kalan süre: ${time}`,
+                levelUpMessage: (level) => `Tebrikler! ${level}. seviyeye ulaştınız!`,
+                // Diğer metinler...
+            },
+            en: {
+                welcomeMessage: "Welcome to No1Game!",
+                gameTitle: "No1Game",
+                playerStatsTitle: "Player Statistics",
+                totalCoinsStat: "Total Coins:",
+                levelStat: "Level:",
+                xpStat: "XP:",
+                energyStat: "Energy:",
+                achievementsTitle: "Achievements",
+                progressTitle: "Level Progress",
+                dailyTip: "Daily Tip: Prioritize energy upgrades to gain more energy!",
+                farmButton: "FARM",
+                boostSectionTitle: "Boost Section",
+                clickUpgrade: "Click Enhancement",
+                autoUpgrade: "Increase CPS",
+                energyUpgrade: "Energy Upgrade",
+                upgradeCost: "Cost:",
+                // Achievements
+                achievement1: "You've earned 50,000 Coins!",
+                achievement2: "You've earned 100,000 Coins!",
+                achievement3: "You've earned 200,000 Coins!",
+                achievement4: "You've earned 300,000 Coins!",
+                achievement5: "You've earned 1,000,000 Coins!",
+                achievement6: "You've farmed 500 times!",
+                // Navigation
+                navHome: "Home",
+                navEarn: "Earn",
+                navBoost: "Boost",
+                navFriends: "Friends",
+                // Other Texts
+                cpsTitle: "CPS",
+                coinTitle: "Coin",
+                energyTitle: "Energy",
+                xpTitle: "XP",
+                dailyRewardTitle: "Daily Reward",
+                collectDailyRewardButton: "Collect 5000 Coins",
+                levelRewardsTitle: "Level Rewards",
+                friendsTitle: "Friends",
+                totalReferralsText: "Total Referrals:",
+                inviteLinkText: "Your Invite Link:",
+                levelRewardText: (level, xp) => `lv${level}: ${xp} XP`,
+                notEnoughEnergy: "You don't have enough energy!",
+                notEnoughCoins: "You don't have enough coins!",
+                rewardAlreadyClaimed: "You have already claimed this reward!",
+                insufficientLevel: "You haven't reached the required level!",
+                rewardCollected: (xp) => `You gained ${xp} XP!`,
+                dailyRewardCollected: "You gained 5000 Coins!",
+                dailyRewardCooldown: (time) => `You have already collected your daily reward. Try again in ${time}.`,
+                rewardReady: "Reward is ready!",
+                remainingTime: (time) => `Time remaining: ${time}`,
+                levelUpMessage: (level) => `Congratulations! You've reached level ${level}!`,
+                // Other texts...
+            }
+        };
+
+        // Seçili Dil
+        let currentLanguage = localStorage.getItem('language') || 'tr';
+
+        // Dil Değiştirme Fonksiyonu
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            updateLanguage();
+        }
+
+        // Metinleri Güncelleme Fonksiyonu
+        function updateLanguage() {
+            const lang = languageData[currentLanguage];
+
+            // Başlıkları güncelleme
+            document.getElementById('welcome-message').textContent = lang.welcomeMessage;
+            document.getElementById('game-title').textContent = lang.gameTitle;
+            document.getElementById('player-stats-title').textContent = lang.playerStatsTitle;
+            document.getElementById('total-coins-stat').childNodes[0].textContent = `${lang.totalCoinsStat} `;
+            document.getElementById('level-stat').childNodes[0].textContent = `${lang.levelStat} `;
+            document.getElementById('xp-stat').childNodes[0].textContent = `${lang.xpStat} `;
+            document.getElementById('energy-stat').childNodes[0].textContent = `${lang.energyStat} `;
+            document.getElementById('achievements-title').textContent = lang.achievementsTitle;
+            document.getElementById('progress-title').textContent = lang.progressTitle;
+            document.getElementById('daily-tip').textContent = lang.dailyTip;
+
+            // Boost Bölümü
+            document.getElementById('farm-button').textContent = lang.farmButton;
+            document.getElementById('boost-section-title').textContent = lang.boostSectionTitle;
+            document.getElementById('click-upgrade-text').textContent = lang.clickUpgrade;
+            document.getElementById('auto-upgrade-text').textContent = lang.autoUpgrade;
+            document.getElementById('energy-upgrade-text').textContent = lang.energyUpgrade;
+            document.getElementById('click-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+
+            // Kaynak Başlıkları
+            document.getElementById('coin-title').textContent = lang.coinTitle;
+            document.getElementById('cps-title').textContent = lang.cpsTitle;
+            document.getElementById('energy-title').textContent = lang.energyTitle;
+            document.getElementById('xp-title').textContent = lang.xpTitle;
+
+            // Earn Bölümü
+            document.getElementById('daily-reward-title').textContent = lang.dailyRewardTitle;
+            document.getElementById('collect-daily-reward-button').textContent = lang.collectDailyRewardButton;
+            document.getElementById('level-rewards-title').textContent = lang.levelRewardsTitle;
+
+            // Level Rewards Texts
+            document.getElementById('level-reward-10-text').textContent = lang.levelRewardText(10, 1000);
+            document.getElementById('level-reward-20-text').textContent = lang.levelRewardText(20, 2000);
+            document.getElementById('level-reward-30-text').textContent = lang.levelRewardText(30, 5000);
+            document.getElementById('level-reward-40-text').textContent = lang.levelRewardText(40, 7000);
+            document.getElementById('level-reward-50-text').textContent = lang.levelRewardText(50, 10000);
+            document.getElementById('level-reward-100-text').textContent = lang.levelRewardText(100, 50000);
+
+            // Friends Bölümü
+            document.getElementById('friends-title').textContent = lang.friendsTitle;
+            document.getElementById('total-referrals-text').childNodes[0].textContent = `${lang.totalReferralsText} `;
+            document.getElementById('invite-link-text').textContent = lang.inviteLinkText;
+
+            // Navigasyon Çubuğu
+            document.getElementById('nav-home-text').textContent = lang.navHome;
+            document.getElementById('nav-earn-text').textContent = lang.navEarn;
+            document.getElementById('nav-boost-text').textContent = lang.navBoost;
+            document.getElementById('nav-friends-text').textContent = lang.navFriends;
+
+            // Başarımlar
+            predefinedAchievements.forEach(achievement => {
+                const achievementDiv = document.getElementById(`achievement-${achievement.id}`);
+                if (achievementDiv) {
+                    achievementDiv.querySelector('span').textContent = lang[`achievement${achievement.id}`] || achievement.description;
+                }
+            });
+
+            // Günlük Ödül Zamanlayıcısı
+            updateDailyRewardTimer();
+
+            // Diğer metinleri de benzer şekilde güncelleyin...
+        }
+
         // Oyun Durumu
         let gameState = {
             coins: 0, // Başlangıçta 0
@@ -560,7 +741,6 @@
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
                 energy: { level: 1, cost: 1000 }
-                // XP Güçlendirme kaldırıldı
             },
             xpMultiplier: 1 // Başlangıçta 1
         };
@@ -585,13 +765,12 @@
 
         // Başarımların Tanımlanması
         const predefinedAchievements = [
-            { id: 1, description: "50.000 Coin Kazandınız!", coinAmount: 50000, completed: false },
-            { id: 2, description: "100.000 Coin Kazandınız!", coinAmount: 100000, completed: false },
-            { id: 3, description: "200.000 Coin Kazandınız!", coinAmount: 200000, completed: false },
-            { id: 4, description: "300.000 Coin Kazandınız!", coinAmount: 300000, completed: false },
-            { id: 5, description: "1.000.000 Coin Kazandınız!", coinAmount: 1000000, completed: false },
-            { id: 6, description: "500 Farm Yaptınız!", farmCount: 500, completed: false }
-            // Diğer başarımlar eklenebilir
+            { id: 1, description: languageData[currentLanguage].achievement1, coinAmount: 50000, completed: false },
+            { id: 2, description: languageData[currentLanguage].achievement2, coinAmount: 100000, completed: false },
+            { id: 3, description: languageData[currentLanguage].achievement3, coinAmount: 200000, completed: false },
+            { id: 4, description: languageData[currentLanguage].achievement4, coinAmount: 300000, completed: false },
+            { id: 5, description: languageData[currentLanguage].achievement5, coinAmount: 1000000, completed: false },
+            { id: 6, description: languageData[currentLanguage].achievement6, farmCount: 500, completed: false }
         ];
 
         // Başarımların Başlangıçta Yüklenmesi
@@ -664,11 +843,12 @@
             while (playerXP >= xpNeeded) {
                 playerLevel++;
                 playerXP -= xpNeeded;
-                alert(`Tebrikler! ${playerLevel}. seviyeye ulaştınız!`);
+                alert(languageData[currentLanguage].levelUpMessage(playerLevel));
                 checkLevelRewards();
                 updateXPDisplay();
                 updateProgressBar();
                 updateAchievements(); // Başarımları güncelle
+                xpNeeded = playerLevel * 100; // Yeni seviye için XP ihtiyacı güncellendi
             }
         }
 
@@ -676,7 +856,7 @@
         function checkLevelRewards() {
             if (rewardLevels[playerLevel] && !awardedLevels[`reward_sv${playerLevel}`]) {
                 addXP(rewardLevels[playerLevel].xp);
-                alert(`sv${playerLevel} ödülü: ${rewardLevels[playerLevel].xp} XP kazandınız!`);
+                alert(languageData[currentLanguage].rewardCollected(rewardLevels[playerLevel].xp));
                 awardedLevels[`reward_sv${playerLevel}`] = true;
                 localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
                 updateDisplay();
@@ -711,10 +891,10 @@
             const startButton = document.querySelector('.start-button');
 
             if (remainingTime > 0) {
-                timerElement.textContent = `Kalan süre: ${formatTime(remainingTime)}`;
+                timerElement.textContent = languageData[currentLanguage].remainingTime(formatTime(remainingTime));
                 startButton.disabled = true;
             } else {
-                timerElement.textContent = 'Ödül hazır!';
+                timerElement.textContent = languageData[currentLanguage].rewardReady;
                 startButton.disabled = false;
             }
         }
@@ -730,7 +910,7 @@
                 gameState.coins += 5000;
                 lastCollected = now;
                 localStorage.setItem('lastCollected', lastCollected);
-                alert("5000 Coin kazandınız!");
+                alert(languageData[currentLanguage].dailyRewardCollected);
                 updateDisplay();
                 updateDailyRewardTimer();
 
@@ -740,16 +920,16 @@
                     const now = Date.now();
                     const remainingTime = Math.max(0, oneDay - (now - lastCollected));
                     if (remainingTime > 0) {
-                        document.getElementById('daily-reward-timer').textContent = `Kalan süre: ${formatTime(remainingTime)}`;
+                        document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].remainingTime(formatTime(remainingTime));
                     } else {
-                        document.getElementById('daily-reward-timer').textContent = 'Ödül hazır!';
+                        document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].rewardReady;
                         document.querySelector('.start-button').disabled = false;
                         clearInterval(countdownInterval);
                     }
                 }, 1000);
             } else {
                 const remainingTime = oneDay - (now - lastCollected);
-                alert(`Giriş ödülünüzü zaten aldınız. ${formatTime(remainingTime)} sonra tekrar deneyin.`);
+                alert(languageData[currentLanguage].dailyRewardCooldown(formatTime(remainingTime)));
             }
         }
 
@@ -760,13 +940,13 @@
                 addXP(xpAmount);
                 awardedLevels[`reward_sv${level}`] = true;
                 localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-                alert(`sv${level} ödülünüzü aldınız: ${xpAmount} XP kazandınız!`);
+                alert(languageData[currentLanguage].rewardCollected(xpAmount));
                 updateDisplay();
                 updateEarnRewards();
             } else if (awardedLevels[`reward_sv${level}`]) {
-                alert("Bu ödülü zaten aldınız!");
+                alert(languageData[currentLanguage].rewardAlreadyClaimed);
             } else {
-                alert("Yeterli seviyeye ulaşmadınız!");
+                alert(languageData[currentLanguage].insufficientLevel);
             }
         }
 
@@ -779,17 +959,17 @@
                     button.disabled = false;
                     button.classList.add('enabled');
                     button.classList.remove('disabled');
-                    button.textContent = "Al";
+                    button.textContent = currentLanguage === 'tr' ? "Al" : "Claim";
                 } else if (awardedLevels[`reward_sv${level}`]) {
                     button.disabled = true;
                     button.classList.add('disabled');
                     button.classList.remove('enabled');
-                    button.textContent = "Alındı";
+                    button.textContent = currentLanguage === 'tr' ? "Alındı" : "Claimed";
                 } else {
                     button.disabled = true;
                     button.classList.add('disabled');
                     button.classList.remove('enabled');
-                    button.textContent = "Seviye Ulaşılamadı";
+                    button.textContent = currentLanguage === 'tr' ? "Seviye Ulaşılamadı" : "Level Unreached";
                 }
             });
         }
@@ -878,11 +1058,9 @@
             document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
             document.getElementById('xp-text').textContent = playerXP;
 
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-            // XP Güçlendirme maliyeti kaldırıldı
-            // document.getElementById('xp-cost').textContent = `Maliyet: ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+            document.getElementById('click-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
 
             updateUpgradeButtons();
             updateProgressBar();
@@ -912,7 +1090,7 @@
                 updateAchievements(); // Farm sayısı arttıkça başarımları güncelle
                 console.log("Farm yapıldı. Coin:", gameState.coins, "Enerji:", gameState.energy, "Farm Sayısı:", gameState.farmCount, "XP:", playerXP);
             } else {
-                alert("Enerjiniz yeterli değil!");
+                alert(languageData[currentLanguage].notEnoughEnergy);
             }
         }
 
@@ -941,7 +1119,7 @@
                 gameState.upgrades[type].level++;
                 updateDisplay();
             } else {
-                alert("Yeterli coininiz yok!");
+                alert(languageData[currentLanguage].notEnoughCoins);
             }
         }
 
@@ -1018,9 +1196,9 @@
                     const now = Date.now();
                     const remainingTime = Math.max(0, 24 * 60 * 60 * 1000 - (now - lastCollected));
                     if (remainingTime > 0) {
-                        document.getElementById('daily-reward-timer').textContent = `Kalan süre: ${formatTime(remainingTime)}`;
+                        document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].remainingTime(formatTime(remainingTime));
                     } else {
-                        document.getElementById('daily-reward-timer').textContent = 'Ödül hazır!';
+                        document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].rewardReady;
                         document.querySelector('.start-button').disabled = false;
                         clearInterval(countdownInterval);
                     }
@@ -1036,7 +1214,14 @@
 
             // Friends Container için Davet Bilgilerini Güncelleme
             updateFriendsContainer();
+
+            // Dil Ayarını Güncelle
+            updateLanguage();
         });
+
+        // Dil Seçimi Butonları
+        document.getElementById('lang-tr').addEventListener('click', () => setLanguage('tr'));
+        document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
 
         // Oyun Kapatılırken Kaydetme
         window.addEventListener("beforeunload", saveGame);
@@ -1056,32 +1241,20 @@
 
         // Günlük İpucu Fonksiyonu
         function displayDailyTip() {
-            const dailyTips = [
+            const dailyTips = currentLanguage === 'tr' ? [
                 "Enerjinizi daha verimli kullanmak için enerji yükseltmelerini tercih edin!",
                 "Otomatik toplayıcılarınızı yükselterek daha fazla coin kazanın!",
                 "Seviye ödüllerini kaçırmayın, her seviyede büyük ödüller sizi bekliyor!",
                 "Daha fazla XP kazanmak için farm butonuna sık sık tıklayın!"
+            ] : [
+                "Prioritize energy upgrades to use your energy more efficiently!",
+                "Upgrade your auto collectors to earn more coins!",
+                "Don't miss level rewards; great prizes await at each level!",
+                "Click the farm button frequently to earn more XP!"
             ];
             const today = new Date().getDate();
             const tipIndex = today % dailyTips.length;
-            document.getElementById('daily-tip').textContent = `Günlük İpucu: ${dailyTips[tipIndex]}`;
-        }
-
-        // Boost Bölümünü Sıfırlama Fonksiyonu
-        function resetBoost() {
-            // Boost bölümünde yapılmış olabilecek tüm değişiklikleri sıfırlayın
-            // Örneğin, otomatik toplama gücünü sıfırlamak ve XP Boost'u durdurmak
-            gameState.autoCollectPower = 0;
-            // XP Boost artık multiplier üzerinden kontrol edildiği için aşağıdaki kod kaldırıldı
-            /*
-            if (gameState.upgrades.xp.interval) {
-                clearInterval(gameState.upgrades.xp.interval);
-                gameState.upgrades.xp.interval = null;
-            }
-            */
-            gameState.xpMultiplier = 1; // Multiplier'ı başlangıç değerine döndür
-            updateDisplay();
-            console.log("Boost Sıfırlandı");
+            document.getElementById('daily-tip').textContent = `${languageData[currentLanguage].dailyTip} ${dailyTips[tipIndex]}`;
         }
 
         // Friends Container için Davet Bilgilerini Güncelleme Fonksiyonu
