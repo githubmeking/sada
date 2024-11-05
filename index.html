@@ -1158,7 +1158,8 @@
                 daysLoggedIn: daysLoggedIn,
                 lastCollected: lastCollected,
                 awardedLevels: awardedLevels,
-                stats: stats
+                stats: stats,
+                tasks: tasks
             };
             localStorage.setItem("gameSave", JSON.stringify(saveData));
             console.log("Oyun kaydedildi:", saveData);
@@ -1177,6 +1178,13 @@
                 lastCollected = parseInt(data.lastCollected) || 0;
                 awardedLevels = data.awardedLevels || {};
                 stats = data.stats || stats;
+                tasks.forEach(task => {
+                    const savedTask = data.tasks?.find(t => t.id === task.id);
+                    if (savedTask) {
+                        task.progress = savedTask.progress;
+                        task.completed = savedTask.completed;
+                    }
+                });
             }
 
             // xpMultiplier'ın geçerli bir sayı olduğundan emin olun
@@ -1186,7 +1194,7 @@
             }
 
             loadAchievements(); // Başarımları yükle
-            loadTasks(); // Görevleri yükle
+            displayTasks(); // Görevleri görüntüle
             updateDisplay();
             updateXPDisplay();
             updateHomeDisplay();
@@ -1241,25 +1249,6 @@
                 console.log("Farm yapıldı. Coin:", gameState.coins, "Enerji:", gameState.energy, "Farm Sayısı:", gameState.farmCount, "XP:", playerXP);
             } else {
                 alert(languageData[currentLanguage].notEnoughEnergy);
-            }
-        }
-
-        // Yeni Yükseltme: Super Click
-        // Handle Super Click Upgrade
-        function handleSuperClickUpgrade() {
-            const type = 'superClick';
-            const cost = gameState.upgrades[type].cost;
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                totalCoinsSpent += cost;
-                gameState.upgrades[type].level++;
-                gameState.upgrades[type].cost = Math.floor(cost * 2);
-                gameState.clickPower = Math.floor(gameState.clickPower * 2); // Super Click ile tıklama gücünü 2 katına çıkar
-                stats.totalUpgradesPurchased += 1;
-                alert(languageData[currentLanguage].rewardCollected(0)); // Custom mesaj ekleyebilirsiniz
-                updateDisplay();
-            } else {
-                alert(languageData[currentLanguage].notEnoughCoins);
             }
         }
 
@@ -1424,6 +1413,11 @@
             const coinAnim = document.createElement('div');
             coinAnim.classList.add('coin-animation');
             coinAnim.textContent = '+1 coin';
+            // Rastgele bir konuma yerleştirmek için
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight / 2;
+            coinAnim.style.left = `${x}px`;
+            coinAnim.style.top = `${y}px`;
             document.body.appendChild(coinAnim);
             setTimeout(() => {
                 document.body.removeChild(coinAnim);
@@ -1575,92 +1569,6 @@
             updateDisplay();
             displayStatistics();
         }, 1000);
-
-        // Görevler
-        function loadTasks() {
-            const savedTasks = JSON.parse(localStorage.getItem('tasks')) || tasks;
-            tasks.forEach(task => {
-                const savedTask = savedTasks.find(t => t.id === task.id);
-                if (savedTask) {
-                    task.progress = savedTask.progress;
-                    task.completed = savedTask.completed;
-                }
-            });
-        }
-
-        function saveTasks() {
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
-
-        function updateTasks() {
-            tasks.forEach(task => {
-                if (!task.completed) {
-                    if (task.id === 1) {
-                        task.progress = gameState.farmCount;
-                    } else if (task.id === 2) {
-                        task.progress = gameState.coins;
-                    } else if (task.id === 3) {
-                        task.progress = gameState.upgrades.superClick.level;
-                    }
-
-                    if (task.progress >= task.goal) {
-                        task.completed = true;
-                        if (task.id === 1 || task.id === 2) {
-                            const rewardCoins = parseInt(task.reward.replace(/\D/g, ''));
-                            gameState.coins += rewardCoins;
-                            stats.totalCoinsEarned += rewardCoins;
-                            alert(`${languageData[currentLanguage].taskCompleted}${task.description}. ${task.reward}`);
-                        } else if (task.id === 3) {
-                            const rewardXP = parseInt(task.reward.replace(/\D/g, ''));
-                            addXP(rewardXP);
-                            alert(`${languageData[currentLanguage].taskCompleted}${task.description}. ${task.reward}`);
-                        }
-                        saveTasks();
-                    }
-                }
-            });
-        }
-
-        // Görevleri Görüntüleme Fonksiyonu
-        function displayTasks() {
-            const tasksList = document.getElementById('tasks-list');
-            tasksList.innerHTML = '';
-            tasks.forEach(task => {
-                const taskItem = document.createElement('li');
-                taskItem.className = 'task';
-                if (task.completed) {
-                    taskItem.classList.add('completed');
-                }
-                taskItem.innerHTML = `
-                    <span>${task.description} (${task.progress}/${task.goal})</span>
-                    <span class="checkmark">${task.completed ? "✔️" : "❌"}</span>
-                `;
-                tasksList.appendChild(taskItem);
-            });
-        }
-
-        // İstatistikler
-        function displayStatistics() {
-            const statsList = document.getElementById('statistics-list');
-            statsList.innerHTML = `
-                <li class="statistic">${languageData[currentLanguage].statTotalCoinsEarned} ${stats.totalCoinsEarned.toLocaleString()}</li>
-                <li class="statistic">${languageData[currentLanguage].statTotalFarms} ${stats.totalFarms}</li>
-                <li class="statistic">${languageData[currentLanguage].statTotalUpgradesPurchased} ${stats.totalUpgradesPurchased}</li>
-                <li class="statistic">${languageData[currentLanguage].statPlayTime} ${Math.floor(stats.playTime / 60)} dakika</li>
-            `;
-        }
-
-        // Coin Animasyonu Gösterme Fonksiyonu
-        function showCoinAnimation() {
-            const coinAnim = document.createElement('div');
-            coinAnim.classList.add('coin-animation');
-            coinAnim.textContent = '+1 coin';
-            document.body.appendChild(coinAnim);
-            setTimeout(() => {
-                document.body.removeChild(coinAnim);
-            }, 1000);
-        }
-
     </script>
 </body>
 </html>
