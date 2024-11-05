@@ -10,481 +10,481 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p1E1KZW3tW0jJgFjtBdYjInbFwFETiSg+q8AQ5+/BtV3tZ5HmuXYmUxtc5qJwnDm3p/KvB1A5RihCwHJoN+1wA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Mevcut CSS Kodunuz */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            background: linear-gradient(135deg, #83a4d4, #b6fbff);
-            padding: 10px;
-            position: relative;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+    background: linear-gradient(135deg, #83a4d4, #b6fbff);
+    padding: 10px;
+    position: relative;
+}
 
-        /* Hoş Geldin Efekti */
-        #welcome-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            animation: fadeOut 3s forwards 5s;
-        }
+/* Hoş Geldin Efekti */
+#welcome-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeOut 3s forwards 5s;
+}
 
-        #welcome-overlay h1 {
-            color: #fff;
-            font-size: 3em;
-            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8);
-            animation: zoomIn 1s;
-        }
+#welcome-overlay h1 {
+    color: #fff;
+    font-size: 3em;
+    text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8);
+    animation: zoomIn 1s;
+}
 
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                visibility: hidden;
-            }
-        }
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
 
-        @keyframes zoomIn {
-            from {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
+@keyframes zoomIn {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
 
-        /* Navigasyon Çubuğunu Alt Kısma Taşı */
-        #nav-container {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 600px;
-            background-color: #f0f0f0;
-            padding: 10px 0;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
+/* Navigasyon Çubuğunu Alt Kısma Taşı */
+#nav-container {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 600px;
+    background-color: #f0f0f0;
+    padding: 10px 0;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
 
-        .nav-button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 5px;
-            font-size: 0.8em;
-            color: #333;
-            text-decoration: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            flex: 1;
-        }
+.nav-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    font-size: 0.8em;
+    color: #333;
+    text-decoration: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex: 1;
+}
 
-        .nav-button:hover {
-            background-color: #e0e0e0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+.nav-button:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-        .nav-button i {
-            font-size: 1.5em;
-            margin-bottom: 3px;
-        }
+.nav-button i {
+    font-size: 1.5em;
+    margin-bottom: 3px;
+}
 
-        /* Ana İçerik Bölümleri */
-        #boost-container, #earn-container, #home-container, #friends-container {
-            display: none;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 500px;
-            width: 100%;
-            margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
-            overflow-y: auto;
-        }
+/* Ana İçerik Bölümleri */
+#boost-container, #earn-container, #home-container, #friends-container {
+    display: none;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 500px;
+    width: 100%;
+    margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
+    overflow-y: auto;
+}
 
-        /* Boost Container */
-        #boost-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+/* Boost Container */
+#boost-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 
-        /* Oyun Elemanları için Resource Container */
-        .resource-container {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-        .resource {
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            min-width: 120px;
-            flex: 1;
-            text-align: center;
-        }
-        .resource-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        #coin-resource { 
-            background: #FFD700; 
-            border: 2px solid #DAA520;
-        }
-        #cps-resource { 
-            background: #DDA0DD;
-            border: 2px solid #BA55D3;
-        }
-        #energy-resource { 
-            background: #87CEFA;
-            border: 2px solid #4169E1;
-        }
-        #xp-resource {
-            background: #90EE90;
-            border: 2px solid #32CD32;
-        }
+/* Oyun Elemanları için Resource Container */
+.resource-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+.resource {
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    min-width: 120px;
+    flex: 1;
+    text-align: center;
+}
+.resource-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+#coin-resource { 
+    background: #FFD700; 
+    border: 2px solid #DAA520;
+}
+#cps-resource { 
+    background: #DDA0DD;
+    border: 2px solid #BA55D3;
+}
+#energy-resource { 
+    background: #87CEFA;
+    border: 2px solid #4169E1;
+}
+#xp-resource {
+    background: #90EE90;
+    border: 2px solid #32CD32;
+}
 
-        /* Farm Button */
-        #farm-button {
-            background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            font-size: 18px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 300px;
-        }
+/* Farm Button */
+#farm-button {
+    background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    font-size: 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 10px auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 300px;
+}
 
-        #farm-button:hover {
-            background: linear-gradient(45deg, #FFC107, #DDA0DD, #00BCD4);
-        }
+#farm-button:hover {
+    background: linear-gradient(45deg, #FFC107, #DDA0DD, #00BCD4);
+}
 
-        /* Upgrades Container */
-        .upgrades-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        /* Upgrade Buttonlar için genel stil */
-        .upgrade-button {
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            min-height: 80px;
-            justify-content: center;
-            border: none;
-            font-size: 1em;
-            font-weight: bold;
-            background-color: #f9f9f9;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+/* Upgrades Container */
+.upgrades-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+}
+/* Upgrade Buttonlar için genel stil */
+.upgrade-button {
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-height: 80px;
+    justify-content: center;
+    border: none;
+    font-size: 1em;
+    font-weight: bold;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
 
-        .upgrade-button.active {
-            background-color: #4caf50;
-            color: white;
-        }
-        .upgrade-button.inactive {
-            background-color: #f9f9f9;
-            color: #333;
-        }
+.upgrade-button.active {
+    background-color: #4caf50;
+    color: white;
+}
+.upgrade-button.inactive {
+    background-color: #f9f9f9;
+    color: #333;
+}
 
-        /* Home Container */
-        #home-container h1 {
-            font-size: 2em;
-            color: #1f3f60;
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
-        }
+/* Home Container */
+#home-container h1 {
+    font-size: 2em;
+    color: #1f3f60;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
+}
 
-        #home-container h2 {
-            color: #1f3f60;
-            margin-bottom: 10px;
-        }
+#home-container h2 {
+    color: #1f3f60;
+    margin-bottom: 10px;
+}
 
-        #home-stats {
-            text-align: left;
-            margin-top: 20px;
-        }
+#home-stats {
+    text-align: left;
+    margin-top: 20px;
+}
 
-        .stat {
-            margin: 10px 0;
-            font-size: 1.1em;
-        }
+.stat {
+    margin: 10px 0;
+    font-size: 1.1em;
+}
 
-        #achievement-container {
-            margin-top: 20px;
-            text-align: left;
-        }
+#achievement-container {
+    margin-top: 20px;
+    text-align: left;
+}
 
-        .achievement {
-            background-color: #e6f7ff;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 5px 0;
-            font-size: 1em;
-            color: #005c99;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+.achievement {
+    background-color: #e6f7ff;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+    font-size: 1em;
+    color: #005c99;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
 
-        .achievement.completed {
-            background-color: #d4edda;
-            color: #155724;
-        }
+.achievement.completed {
+    background-color: #d4edda;
+    color: #155724;
+}
 
-        .achievement .checkmark {
-            font-size: 1.2em;
-            color: #28a745;
-        }
+.achievement .checkmark {
+    font-size: 1.2em;
+    color: #28a745;
+}
 
-        #progress-bar-container {
-            margin-top: 20px;
-            text-align: left;
-        }
+#progress-bar-container {
+    margin-top: 20px;
+    text-align: left;
+}
 
-        #progress-bar {
-            width: 100%;
-            background-color: #f3f3f3;
-            border-radius: 25px;
-            overflow: hidden;
-            height: 20px;
-            margin-top: 5px;
-        }
+#progress-bar {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 25px;
+    overflow: hidden;
+    height: 20px;
+    margin-top: 5px;
+}
 
-        #progress-bar-fill {
-            height: 100%;
-            background-color: #4caf50;
-            width: 0%;
-            transition: width 0.5s;
-        }
+#progress-bar-fill {
+    height: 100%;
+    background-color: #4caf50;
+    width: 0%;
+    transition: width 0.5s;
+}
 
-        #daily-tip {
-            margin-top: 20px;
-            background-color: #fff8e1;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 1em;
-            color: #ff9800;
-            border: 1px solid #ffecb3;
-        }
+#daily-tip {
+    margin-top: 20px;
+    background-color: #fff8e1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1em;
+    color: #ff9800;
+    border: 1px solid #ffecb3;
+}
 
-        /* Seviye Ödülleri Stil İyileştirmesi */
-        .reward {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 5px 0;
-            font-size: 1em;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+/* Seviye Ödülleri Stil İyileştirmesi */
+.reward {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+    font-size: 1em;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .reward button {
-            background-color: #ff4d4d; /* Başlangıçta kırmızı */
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 0.9em;
-        }
+.reward button {
+    background-color: #ff4d4d; /* Başlangıçta kırmızı */
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 0.9em;
+}
 
-        .reward button.enabled {
-            background-color: #4caf50; /* Yeşil */
-            cursor: pointer;
-        }
+.reward button.enabled {
+    background-color: #4caf50; /* Yeşil */
+    cursor: pointer;
+}
 
-        .reward button.disabled {
-            background-color: #ff4d4d; /* Kırmızı */
-            cursor: not-allowed;
-        }
+.reward button.disabled {
+    background-color: #ff4d4d; /* Kırmızı */
+    cursor: not-allowed;
+}
 
-        .reward button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+.reward button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
 
-        .start-button {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+.start-button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
 
-        .start-button:hover {
-            background-color: #45a049;
-        }
+.start-button:hover {
+    background-color: #45a049;
+}
 
-        /* Friends Container Modernizasyonu */
-        #friends-container.card {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
-            margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+/* Friends Container Modernizasyonu */
+#friends-container.card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-        #friends-container.card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-        }
+#friends-container.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+}
 
-        .card-title {
-            font-size: 1.8em;
-            color: #1f3f60;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+.card-title {
+    font-size: 1.8em;
+    color: #1f3f60;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-        .card-title i {
-            color: #ff9800;
-        }
+.card-title i {
+    color: #ff9800;
+}
 
-        .referral-info {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
+.referral-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
 
-        .referral-count {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #4caf50;
-            display: flex;
-            align-items: baseline;
-            gap: 5px;
-        }
+.referral-count {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #4caf50;
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
 
-        .referral-label {
-            font-size: 0.6em;
-            color: #333;
-        }
+.referral-label {
+    font-size: 0.6em;
+    color: #333;
+}
 
-        .invite-link-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
+.invite-link-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
 
-        .copy-button {
-            background-color: #2196f3;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.9em;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: background-color 0.3s ease;
-        }
+.copy-button {
+    background-color: #2196f3;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s ease;
+}
 
-        .copy-button:hover {
-            background-color: #1976d2;
-        }
+.copy-button:hover {
+    background-color: #1976d2;
+}
 
-        .invite-link {
-            font-size: 0.9em;
-            color: #555;
-            text-decoration: none;
-            word-break: break-all;
-            transition: color 0.3s ease;
-        }
+.invite-link {
+    font-size: 0.9em;
+    color: #555;
+    text-decoration: none;
+    word-break: break-all;
+    transition: color 0.3s ease;
+}
 
-        .invite-link:hover {
-            color: #2196f3;
-        }
+.invite-link:hover {
+    color: #2196f3;
+}
 
-        /* Responsive Tasarım */
-        @media (max-width: 600px) {
-            .card-title {
-                font-size: 1.5em;
-            }
+/* Responsive Tasarım */
+@media (max-width: 600px) {
+    .card-title {
+        font-size: 1.5em;
+    }
 
-            .referral-count {
-                font-size: 2em;
-            }
+    .referral-count {
+        font-size: 2em;
+    }
 
-            .copy-button {
-                padding: 8px 12px;
-                font-size: 0.8em;
-            }
+    .copy-button {
+        padding: 8px 12px;
+        font-size: 0.8em;
+    }
 
-            .invite-link {
-                font-size: 0.8em;
-            }
-        }
+    .invite-link {
+        font-size: 0.8em;
+    }
+}
 
-        /* Yeni Eklenecek Bildirim Stilleri */
-        #farm-bot-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #4caf50;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 1001;
-            display: none;
-        }
-    </style>
+/* Yeni Eklenecek Bildirim Stilleri */
+#farm-bot-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4caf50;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1001;
+    display: none;
+}
+</style>
 </head>
 <body>
     <!-- Hoş Geldin Overlay -->
@@ -949,11 +949,10 @@
                 totalCoinsSpent: totalCoinsSpent,
                 daysLoggedIn: daysLoggedIn,
                 lastCollected: lastCollected,
-                awardedLevels: awardedLevels,
-                lastEnergyUpdate: Date.now() // Enerji yenileme zamanını kaydet
+                awardedLevels: awardedLevels
+                // lastEnergyUpdate artık handleEnergyRegenOnLoad fonksiyonunda yönetilecek
             };
             localStorage.setItem("gameSave", JSON.stringify(saveData));
-            localStorage.setItem('lastEnergyUpdate', Date.now()); // Ayrı olarak da kaydet
             console.log("Oyun kaydedildi:", saveData);
         }
 
@@ -970,8 +969,8 @@
                 lastCollected = parseInt(data.lastCollected) || 0;
                 awardedLevels = data.awardedLevels || {};
 
-                // lastEnergyUpdate'i localStorage'a kaydet
-                localStorage.setItem('lastEnergyUpdate', data.lastEnergyUpdate || Date.now());
+                // lastEnergyUpdate'i localStorage'dan al
+                // Ancak burada set etmiyoruz, handleEnergyRegenOnLoad fonksiyonu bunu yapacak
             }
 
             // xpMultiplier'ın geçerli bir sayı olduğundan emin olun
@@ -1003,6 +1002,8 @@
             const now = Date.now();
             const elapsedSeconds = Math.floor((now - lastEnergyUpdate) / 1000);
             const energyToAdd = elapsedSeconds * 5; // 5 enerji/saniye
+
+            console.log(`Enerji Yenileme: geçen süre (saniye) = ${elapsedSeconds}, eklenen enerji = ${energyToAdd}`);
 
             if (energyToAdd > 0) {
                 gameState.energy = Math.min(gameState.energy + energyToAdd, 1000);
@@ -1364,6 +1365,7 @@
         function saveEnergyOnExit() {
             const now = Date.now();
             localStorage.setItem('lastEnergyUpdate', now);
+            console.log(`Enerji yenileme zamanı kaydedildi: ${now}`);
         }
 
     </script>
