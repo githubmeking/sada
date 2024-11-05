@@ -1004,45 +1004,39 @@
             updateEarnRewards();
             console.log("Yüklendi:", awardedLevels);
 
+            // Offline Enerji Yenilemesi
+            const lastExitTime = parseInt(localStorage.getItem('lastExitTime')) || Date.now();
+            const now = Date.now();
+            const timeElapsed = now - lastExitTime; // ms cinsinden
+            const energyRegenerated = Math.floor(timeElapsed / 1000) * 5; // 5 enerji/saniye
+            gameState.energy = Math.min(gameState.energy + energyRegenerated, 1000);
+            console.log(`Offline enerji regenerasyonu: +${energyRegenerated}, Toplam Enerji: ${gameState.energy}`);
+
             // Farm Bot Offline Clicks
             if (gameState.upgrades.farmBot.level > 0 && gameState.upgrades.farmBot.activeUntil) {
-                const lastExitTime = parseInt(localStorage.getItem('lastExitTime')) || Date.now();
-                const now = Date.now();
-                const timeElapsed = now - lastExitTime; // ms cinsinden
                 const activeUntilTime = gameState.upgrades.farmBot.activeUntil.getTime();
+                if (now < activeUntilTime) {
+                    const activeTimeElapsed = now - lastExitTime;
+                    const farmClicks = Math.floor(activeTimeElapsed / 1000); // 1 farm/saniye
+                    const energyNeeded = farmClicks * 33;
+                    const possibleClicks = gameState.energy >= energyNeeded ? farmClicks : Math.floor(gameState.energy / 33);
+                    const coinsEarned = possibleClicks * gameState.clickPower;
 
-                // Enerji Yenilemesi
-                const energyRegenerated = Math.floor(timeElapsed / 1000) * 5; // 5 enerji/saniye
-                gameState.energy = Math.min(gameState.energy + energyRegenerated, 1000);
-                console.log(`Offline enerji regenerasyonu: +${energyRegenerated}, Toplam Enerji: ${gameState.energy}`);
+                    if (possibleClicks > 0) {
+                        gameState.coins += coinsEarned;
+                        gameState.energy -= possibleClicks * 33;
+                        gameState.farmCount += possibleClicks;
+                        addXP(possibleClicks * 10);
+                        showFarmBotNotification(`${coinsEarned} coin farm yapıldı bottan.`);
+                        console.log(`Farm Bot Offline Clicks: ${possibleClicks} Clicks, Coin: ${gameState.coins}, Enerji: ${gameState.energy}`);
+                    }
 
-                // Farm Bot'un Aktif Olduğu Süre
-                let activeTimeElapsed = 0;
-                if (activeUntilTime > lastExitTime) {
-                    const effectiveEndTime = Math.min(now, activeUntilTime);
-                    activeTimeElapsed = effectiveEndTime - lastExitTime; // ms cinsinden
+                    updateDisplay();
+                    updateAchievements();
                 }
-
-                const farmClicks = Math.floor((activeTimeElapsed / 1000) / 1) * 1; // Her 1 saniyede 1 farm
-                const energyNeeded = farmClicks * 33;
-                const possibleClicks = gameState.energy >= energyNeeded ? farmClicks : Math.floor(gameState.energy / 33);
-                const coinsEarned = possibleClicks * gameState.clickPower;
-
-                if (possibleClicks > 0) {
-                    gameState.coins += coinsEarned;
-                    gameState.energy -= possibleClicks * 33;
-                    gameState.farmCount += possibleClicks;
-                    addXP(possibleClicks * 10);
-                    showFarmBotNotification(`${coinsEarned} coin farm yapıldı bottan.`);
-                    console.log(`Farm Bot Offline Clicks: ${possibleClicks} Clicks, Coin: ${gameState.coins}, Enerji: ${gameState.energy}`);
-                }
-
-                updateDisplay();
-                updateAchievements();
 
                 // Farm Bot'un hala aktif olup olmadığını kontrol et
                 if (now < activeUntilTime) {
-                    gameState.upgrades.farmBot.activeUntil = new Date(activeUntilTime);
                     startFarmBot(); // Farm Bot'u başlat
                 } else {
                     gameState.upgrades.farmBot.activeUntil = null;
@@ -1067,7 +1061,15 @@
             document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
             document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
             document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-            document.getElementById('farmbot-cost').textContent = gameState.upgrades.farmBot.level < gameState.upgrades.farmBot.costs.length ? `Maliyet: ${gameState.upgrades.farmBot.costs[gameState.upgrades.farmBot.level]} coin` : `Maliyet: Yükseltilemez`;
+
+            // Farm Bot Maliyetini Güncelle
+            const farmBot = gameState.upgrades.farmBot;
+            const farmBotButton = document.getElementById('farmbot-upgrade');
+            if (farmBot.level < farmBot.costs.length) {
+                farmBotButton.querySelector('.upgrade-cost').textContent = `Maliyet: ${farmBot.costs[farmBot.level].toLocaleString()} coin`;
+            } else {
+                farmBotButton.querySelector('.upgrade-cost').textContent = `Maliyet: Yükseltilemez`;
+            }
 
             updateUpgradeButtons();
             updateProgressBar();
@@ -1091,6 +1093,9 @@
                     button.disabled = true;
                     button.className = `upgrade-button inactive`;
                     button.innerHTML = `Farm Bot 🤖 <span class="upgrade-cost">Maliyet: Yükseltilemez</span>`;
+                } else if (type === 'farmBot') {
+                    button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                    button.disabled = !canAfford;
                 } else {
                     button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
                     button.disabled = !canAfford;
@@ -1185,129 +1190,10 @@
             }
         }
 
-        // Farm Bot'un Otomatik Farm Yapmasını Sağlayan Fonksiyon
-        function startFarmBot() {
-            if (farmBotInterval) clearInterval(farmBotInterval);
-            farmBotInterval = setInterval(() => {
-                const now = Date.now();
-                if (gameState.upgrades.farmBot.activeUntil && now < gameState.upgrades.farmBot.activeUntil.getTime()) {
-                    if (gameState.energy >= 33) {
-                        handleFarmClick();
-                    }
-                } else {
-                    stopFarmBot();
-                    gameState.upgrades.farmBot.activeUntil = null;
-                    alert("Farm Bot süresi doldu.");
-                    showFarmBotNotification("Farm Bot süresi doldu.");
-                }
-            }, 1000); // Her saniye kontrol et
-        }
-
-        function stopFarmBot() {
-            if (farmBotInterval) {
-                clearInterval(farmBotInterval);
-                farmBotInterval = null;
-            }
-        }
-
-        // Farm Bot İşlevi (Offline Durum için)
-        function handleOfflineFarmBot() {
-            const farmBot = gameState.upgrades.farmBot;
-            if (farmBot.level === 0 || !farmBot.activeUntil) return;
-
-            const lastExitTime = parseInt(localStorage.getItem('lastExitTime')) || Date.now();
-            const now = Date.now();
-            const activeUntilTime = farmBot.activeUntil.getTime();
-
-            // Sadece aktif olan süreyi hesapla
-            const effectiveEndTime = Math.min(now, activeUntilTime);
-            const activeTimeElapsed = effectiveEndTime - lastExitTime; // ms cinsinden
-
-            if (activeTimeElapsed <= 0) return; // Farm Bot süresi henüz başlamamış
-
-            const farmClicks = Math.floor(activeTimeElapsed / 1000); // 1 farm/saniye
-            const energyNeeded = farmClicks * 33;
-            const possibleClicks = gameState.energy >= energyNeeded ? farmClicks : Math.floor(gameState.energy / 33);
-            const coinsEarned = possibleClicks * gameState.clickPower;
-
-            if (possibleClicks > 0) {
-                gameState.coins += coinsEarned;
-                gameState.energy -= possibleClicks * 33;
-                gameState.farmCount += possibleClicks;
-                addXP(possibleClicks * 10);
-                showFarmBotNotification(`${coinsEarned} coin farm yapıldı bottan.`);
-                console.log(`Farm Bot Offline Clicks: ${possibleClicks} Clicks, Coin: ${gameState.coins}, Enerji: ${gameState.energy}`);
-            }
-
-            updateDisplay();
-            updateAchievements();
-        }
-
-        // Display Güncelleme Fonksiyonu
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-            document.getElementById('xp-text').textContent = playerXP;
-
-            document.getElementById('click-cost').textContent = `Maliyet: ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `Maliyet: ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `Maliyet: ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-
-            // Farm Bot Maliyetini Güncelle
-            const farmBot = gameState.upgrades.farmBot;
-            const farmBotButton = document.getElementById('farmbot-upgrade');
-            if (farmBot.level < farmBot.costs.length) {
-                farmBotButton.querySelector('.upgrade-cost').textContent = `Maliyet: ${farmBot.costs[farmBot.level].toLocaleString()} coin`;
-            } else {
-                farmBotButton.querySelector('.upgrade-cost').textContent = `Maliyet: Yükseltilemez`;
-            }
-
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeDisplay();
-            updateEarnRewards();
-        }
-
-        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
-        function updateUpgradeButtons() {
-            ['click', 'auto', 'energy', 'farmBot'].forEach(type => { // 'farmBot' ekleniyor
-                const button = document.getElementById(`${type}-upgrade`);
-                let cost;
-                if (type === 'farmBot') {
-                    cost = gameState.upgrades[type].level < gameState.upgrades[type].costs.length ? gameState.upgrades[type].costs[gameState.upgrades[type].level] : null;
-                } else {
-                    cost = gameState.upgrades[type].cost;
-                }
-
-                const canAfford = cost !== null && gameState.coins >= cost;
-                if (type === 'farmBot' && cost === null) {
-                    button.disabled = true;
-                    button.className = `upgrade-button inactive`;
-                    button.innerHTML = `Farm Bot 🤖 <span class="upgrade-cost">Maliyet: Yükseltilemez</span>`;
-                } else if (type === 'farmBot') {
-                    button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
-                    button.disabled = !canAfford;
-                } else {
-                    button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
-                    button.disabled = !canAfford;
-                }
-            });
-        }
-
-        // Farm Butonuna Tıklama Fonksiyonu
-        function handleFarmClick() {
-            if (gameState.energy >= 33) {
-                gameState.coins += gameState.clickPower;
-                gameState.energy -= 33;
-                gameState.farmCount += 1;
-                addXP(10);
-                updateDisplay();
-                updateAchievements(); // Farm sayısı arttıkça başarımları güncelle
-                console.log("Farm yapıldı. Coin:", gameState.coins, "Enerji:", gameState.energy, "Farm Sayısı:", gameState.farmCount, "XP:", playerXP);
-            } else {
-                alert("Enerjiniz yeterli değil!");
-            }
+        // Tarihi Formatlama Fonksiyonu
+        function formatDate(date) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return date.toLocaleDateString('tr-TR', options);
         }
 
         // Farm Bot'un Otomatik Farm Yapmasını Sağlayan Fonksiyon
