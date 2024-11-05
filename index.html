@@ -193,14 +193,6 @@
             gap: 15px;
             margin: 20px 0;
         }
-        /* Yeni düzenleme: Üç butonu uygun şekilde yerleştirmek için grid-template-areas kullanıyoruz */
-        .upgrades-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: repeat(2, auto);
-            grid-gap: 15px;
-            width: 100%;
-        }
         /* Upgrade Buttonlar için genel stil */
         .upgrade-button {
             padding: 15px;
@@ -545,13 +537,6 @@
                 Farm Bot 🤖
                 <span class="upgrade-cost" id="farmbot-cost">Maliyet: 5000 coin</span>
             </button>
-            <!-- XP Güçlendirme Butonu Kaldırıldı -->
-            <!--
-            <button class="upgrade-button inactive" id="xp-upgrade">
-                XP Güçlendirme
-                <span class="upgrade-cost" id="xp-cost">Maliyet: 1000 coin</span>
-            </button>
-            -->
         </div>
     </div>
 
@@ -675,7 +660,6 @@
                     durations: [2, 7, 14], // Her seviye için süreler (gün)
                     activeUntil: null // Farm Bot'un aktif olduğu son zaman
                 }
-                // XP Güçlendirme kaldırıldı
             },
             xpMultiplier: 1 // Başlangıçta 1
         };
@@ -966,9 +950,10 @@
                 daysLoggedIn: daysLoggedIn,
                 lastCollected: lastCollected,
                 awardedLevels: awardedLevels,
-                lastEnergyUpdate: Date.now()
+                lastEnergyUpdate: Date.now() // Enerji yenileme zamanını kaydet
             };
             localStorage.setItem("gameSave", JSON.stringify(saveData));
+            localStorage.setItem('lastEnergyUpdate', Date.now()); // Ayrı olarak da kaydet
             console.log("Oyun kaydedildi:", saveData);
         }
 
@@ -984,6 +969,9 @@
                 daysLoggedIn = data.daysLoggedIn || 0;
                 lastCollected = parseInt(data.lastCollected) || 0;
                 awardedLevels = data.awardedLevels || {};
+
+                // lastEnergyUpdate'i localStorage'a kaydet
+                localStorage.setItem('lastEnergyUpdate', data.lastEnergyUpdate || Date.now());
             }
 
             // xpMultiplier'ın geçerli bir sayı olduğundan emin olun
@@ -1335,13 +1323,6 @@
             // Boost bölümünde yapılmış olabilecek tüm değişiklikleri sıfırlayın
             // Örneğin, otomatik toplama gücünü sıfırlamak ve XP Boost'u durdurmak
             gameState.autoCollectPower = 0;
-            // XP Boost artık multiplier üzerinden kontrol edildiği için aşağıdaki kod kaldırıldı
-            /*
-            if (gameState.upgrades.xp.interval) {
-                clearInterval(gameState.upgrades.xp.interval);
-                gameState.upgrades.xp.interval = null;
-            }
-            */
             gameState.xpMultiplier = 1; // Multiplier'ı başlangıç değerine döndür
             updateDisplay();
             console.log("Boost Sıfırlandı");
