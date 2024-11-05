@@ -116,6 +116,7 @@
             width: 100%;
             margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
             overflow-y: auto;
+            height: calc(100vh - 160px); /* Tam ekran görünümü için yükseklik ayarı */
         }
 
         /* Boost Container */
@@ -186,7 +187,7 @@
         /* Upgrades Container */
         .upgrades-container {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr; /* Dört sütun */
+            grid-template-columns: 1fr 1fr; /* İki sütun */
             gap: 15px;
             margin: 20px 0;
             width: 100%;
@@ -404,9 +405,20 @@
 
             /* Upgrades Container için yeni düzenleme */
             .upgrades-container {
-                grid-template-columns: 1fr 1fr 1fr 1fr;
-                grid-template-rows: auto;
+                grid-template-columns: 1fr 1fr; /* İki sütun */
+                grid-template-rows: auto auto; /* İki satır */
                 gap: 15px;
+            }
+
+            #boost-container, #earn-container, #home-container, #friends-container {
+                height: calc(100vh - 160px); /* Mobil ekranlarda tam görünüm */
+            }
+        }
+
+        /* Masaüstü İçin Tam Ekran Görünümü */
+        @media (min-width: 601px) {
+            #boost-container, #earn-container, #home-container, #friends-container {
+                height: calc(100vh - 160px); /* Tam ekran görünümü */
             }
         }
 
@@ -1048,7 +1060,7 @@
                 }
 
                 // Farm Bot toplam farm edilen coin miktarını hesapla
-                const farmCoinsPerDay = 250; // Örneğin, her gün 250 coin farm yapacak
+                const farmCoinsPerDay = 250; // Her gün 250 coin farm yapacak
                 farmBot.totalFarmCoins += farmCoinsPerDay * durationDays;
 
                 alert(`Farm Bot satın alındı! 🤖 Farm süresi: ${durationDays} gün. Toplam Farm Edilen Coin: ${farmBot.totalFarmCoins} Coin`);
@@ -1069,6 +1081,8 @@
         }
 
         // Farm Bot'un Otomatik Farm Yapmasını Sağlayan Fonksiyon
+        let farmBotInterval = null; // Farm Bot Interval Değişkeni
+
         function startFarmBot() {
             if (farmBotInterval) clearInterval(farmBotInterval);
             farmBotInterval = setInterval(() => {
@@ -1288,7 +1302,6 @@
                 updateDisplay();
             }
         }
-
     </script>
 </body>
 </html>
