@@ -383,6 +383,46 @@
                 padding: 10px;
             }
 
+            #language-selection {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                display: flex;
+                gap: 10px;
+            }
+            
+            /* Dil Butonları */
+            .language-button {
+                background-color: #ffffffcc; /* Beyaz arka plan, biraz saydamlık */
+                border: 2px solid #1f3f60; /* Ana renkle uyumlu kenarlık */
+                border-radius: 50%; /* Daire şekil */
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .language-button:hover {
+                background-color: #1f3f60;
+                color: #ffffff;
+                transform: scale(1.1);
+            }
+            
+            .language-button:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(31, 63, 96, 0.5);
+            }
+            
+            /* Home Container - Relative Position */
+            #home-container {
+                position: relative; /* Language Selection için referans noktası */
+                /* Mevcut stiller... */
+            }
+            
             #home-container {
                 margin-bottom: 100px; /* Navigasyon çubuğu için daha fazla alt marjin */
             }
@@ -479,10 +519,14 @@
         <h1 id="game-title">No1Game</h1>
 
         <!-- Dil Seçimi -->
-        <div id="language-selection">
-            <button id="lang-tr">Türkçe</button>
-            <button id="lang-en">English</button>
-        </div>
+         <div id="language-selection">
+        <button id="lang-tr" class="language-button" title="Türkçe">
+            🇹🇷
+        </button>
+        <button id="lang-en" class="language-button" title="English">
+            🇺🇸
+        </button>
+    </div>
 
         <h2 id="player-stats-title">Oyuncu İstatistikleri</h2>
         <div id="home-stats">
