@@ -1134,6 +1134,8 @@
         let farmInterval = null;
 
         function handleFarmClick() {
+            console.log('Farm butonuna tıklandı'); // Debug için log ekleyin
+
             if (farmInterval) {
                 // Farm zaten çalışıyorsa durdur
                 clearInterval(farmInterval);
@@ -1190,6 +1192,7 @@
                 addXP(10);
                 clicksDone += 1;
                 coinsEarned += gameState.clickPower;
+                gameState.energy -= 33; // Her tıklama 33 enerji tüketiyor
                 updateDisplay();
                 updateAchievements();
             }, 100); // 100ms aralıkla tıklama
