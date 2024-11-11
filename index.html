@@ -23,6 +23,7 @@
             background: linear-gradient(135deg, #83a4d4, #b6fbff);
             padding: 10px;
             position: relative;
+            overflow-x: hidden; /* Taşmaları önlemek için */
         }
 
         /* Hoş Geldin Efekti */
@@ -107,7 +108,7 @@
         }
 
         /* Ana İçerik Bölümleri */
-        #boost-container, #earn-container, #home-container, #friends-container {
+        #boost-container, #earn-container, #home-container, #friends-container, #global-container {
             display: none;
             background: rgba(255, 255, 255, 0.95);
             padding: 20px;
@@ -142,6 +143,7 @@
             min-width: 120px;
             flex: 1;
             text-align: center;
+            animation: float 3s ease-in-out infinite;
         }
         .resource-title {
             font-weight: bold;
@@ -164,6 +166,18 @@
             border: 2px solid #32CD32;
         }
 
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
         /* Farm Button */
         #farm-button {
             background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
@@ -178,10 +192,24 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             width: 100%;
             max-width: 300px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            }
+            50% {
+                box-shadow: 0 0 15px rgba(0,0,0,0.4);
+            }
+            100% {
+                box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            }
         }
 
         #farm-button:hover {
             background: linear-gradient(45deg, #FFC107, #DDA0DD, #00BCD4);
+            transform: scale(1.05);
         }
 
         /* Upgrades Container */
@@ -208,6 +236,24 @@
             font-weight: bold;
             background-color: #f9f9f9;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upgrade-button::after {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            top: -25%;
+            left: -25%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .upgrade-button:hover::after {
+            opacity: 1;
         }
 
         .upgrade-button.active {
@@ -228,6 +274,25 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
+            animation: swing 2s ease-in-out infinite;
+        }
+
+        @keyframes swing {
+            0% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(5deg);
+            }
+            50% {
+                transform: rotate(0deg);
+            }
+            75% {
+                transform: rotate(-5deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
         }
 
         #home-container h2 {
@@ -243,6 +308,19 @@
         .stat {
             margin: 10px 0;
             font-size: 1.1em;
+            position: relative;
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                left: -10px;
+            }
+            to {
+                opacity: 1;
+                left: 0;
+            }
         }
 
         #achievement-container {
@@ -261,6 +339,7 @@
             align-items: center;
             gap: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            animation: slideIn 0.5s;
         }
 
         .achievement.completed {
@@ -271,6 +350,17 @@
         .achievement .checkmark {
             font-size: 1.2em;
             color: #28a745;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         #progress-bar-container {
@@ -302,6 +392,16 @@
             font-size: 1em;
             color: #ff9800;
             border: 1px solid #ffecb3;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         /* Seviye Ödülleri Stil İyileştirmesi */
@@ -359,6 +459,27 @@
 
         .start-button:hover {
             background-color: #45a049;
+        }
+
+        /* Global Container */
+        #global-container h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard th, .leaderboard td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .leaderboard tr:hover {
+            background-color: #f1f1f1;
         }
 
         /* Responsive Tasarım */
@@ -479,6 +600,10 @@
                 <span id="energy-upgrade-text">Enerji Yükseltme</span>
                 <span class="upgrade-cost" id="energy-cost">Maliyet: 1000 coin</span>
             </button>
+            <button class="upgrade-button inactive" id="bot-upgrade">
+                <span id="bot-upgrade-text">Bot</span>
+                <span class="upgrade-cost" id="bot-cost">Maliyet: 5000 coin</span>
+            </button>
         </div>
     </div>
 
@@ -563,6 +688,23 @@
         <a href="#" id="invite-link">Davet Linki Yükleniyor...</a>
     </div>
 
+    <!-- Global Container -->
+    <div id="global-container">
+        <h2 id="global-title">Global Liderlik Tablosu</h2>
+        <table class="leaderboard">
+            <thead>
+                <tr>
+                    <th>Sıra</th>
+                    <th>Oyuncu</th>
+                    <th>Toplam Coin</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <!-- Liderlik tablosu verileri dinamik olarak eklenecek -->
+            </tbody>
+        </table>
+    </div>
+
     <!-- Navigasyon Çubuğu -->
     <div id="nav-container">
         <div class="nav-button" id="home-nav">
@@ -581,6 +723,10 @@
             <i>👥</i>
             <span id="nav-friends-text">Arkadaşlar</span>
         </div>
+        <div class="nav-button" id="global-nav">
+            <i>🌐</i>
+            <span id="nav-global-text">Global</span>
+        </div>
     </div>
 
     <script>
@@ -596,12 +742,13 @@
                 energyStat: "Enerji:",
                 achievementsTitle: "Başarımlar",
                 progressTitle: "Seviye İlerlemesi",
-                dailyTip: "Günlük İpucu: Daha fazla enerji kazanmak için enerji yükseltmelerini tercih edin!",
+                dailyTip: "Günlük İpucu:",
                 farmButton: "FARM",
                 boostSectionTitle: "Boost Bölümü",
                 clickUpgrade: "Tıklama Güçlendirmesi",
                 autoUpgrade: "CPS Arttırma",
                 energyUpgrade: "Enerji Yükseltme",
+                botUpgrade: "Bot",
                 upgradeCost: "Maliyet:",
                 // Başarımlar
                 achievement1: "50.000 Coin Kazandınız!",
@@ -615,6 +762,7 @@
                 navEarn: "Kazanç",
                 navBoost: "Geliştir",
                 navFriends: "Arkadaşlar",
+                navGlobal: "Global",
                 // Diğer Metinler
                 cpsTitle: "CPS",
                 coinTitle: "Coin",
@@ -637,6 +785,17 @@
                 rewardReady: "Ödül hazır!",
                 remainingTime: (time) => `Kalan süre: ${time}`,
                 levelUpMessage: (level) => `Tebrikler! ${level}. seviyeye ulaştınız!`,
+                globalTitle: "Global Liderlik Tablosu",
+                rank: "Sıra",
+                player: "Oyuncu",
+                totalCoins: "Toplam Coin",
+                dailyTipMessages: [
+                    "Enerjinizi daha verimli kullanmak için enerji yükseltmelerini tercih edin!",
+                    "Otomatik toplayıcılarınızı yükselterek daha fazla coin kazanın!",
+                    "Seviye ödüllerini kaçırmayın, her seviyede büyük ödüller sizi bekliyor!",
+                    "Daha fazla XP kazanmak için farm butonuna sık sık tıklayın!",
+                    "Bot özelliğini kullanarak oyunu otomatikleştirin!"
+                ],
                 // Diğer metinler...
             },
             en: {
@@ -649,12 +808,13 @@
                 energyStat: "Energy:",
                 achievementsTitle: "Achievements",
                 progressTitle: "Level Progress",
-                dailyTip: "Daily Tip: Prioritize energy upgrades to gain more energy!",
+                dailyTip: "Daily Tip:",
                 farmButton: "FARM",
                 boostSectionTitle: "Boost Section",
                 clickUpgrade: "Click Enhancement",
                 autoUpgrade: "Increase CPS",
                 energyUpgrade: "Energy Upgrade",
+                botUpgrade: "Bot",
                 upgradeCost: "Cost:",
                 // Achievements
                 achievement1: "You've earned 50,000 Coins!",
@@ -668,6 +828,7 @@
                 navEarn: "Earn",
                 navBoost: "Boost",
                 navFriends: "Friends",
+                navGlobal: "Global",
                 // Other Texts
                 cpsTitle: "CPS",
                 coinTitle: "Coin",
@@ -690,6 +851,17 @@
                 rewardReady: "Reward is ready!",
                 remainingTime: (time) => `Time remaining: ${time}`,
                 levelUpMessage: (level) => `Congratulations! You've reached level ${level}!`,
+                globalTitle: "Global Leaderboard",
+                rank: "Rank",
+                player: "Player",
+                totalCoins: "Total Coins",
+                dailyTipMessages: [
+                    "Prioritize energy upgrades to use your energy more efficiently!",
+                    "Upgrade your auto collectors to earn more coins!",
+                    "Don't miss level rewards; great prizes await at each level!",
+                    "Click the farm button frequently to earn more XP!",
+                    "Use the Bot feature to automate the game!"
+                ],
                 // Other texts...
             }
         };
@@ -718,7 +890,8 @@
             document.getElementById('energy-stat').childNodes[0].textContent = `${lang.energyStat} `;
             document.getElementById('achievements-title').textContent = lang.achievementsTitle;
             document.getElementById('progress-title').textContent = lang.progressTitle;
-            document.getElementById('daily-tip').textContent = lang.dailyTip;
+            // Günlük ipucu mesajını dil değiştiğinde güncelle
+            displayDailyTip();
 
             // Boost Bölümü
             document.getElementById('farm-button').textContent = lang.farmButton;
@@ -726,9 +899,11 @@
             document.getElementById('click-upgrade-text').textContent = lang.clickUpgrade;
             document.getElementById('auto-upgrade-text').textContent = lang.autoUpgrade;
             document.getElementById('energy-upgrade-text').textContent = lang.energyUpgrade;
+            document.getElementById('bot-upgrade-text').textContent = lang.botUpgrade;
             document.getElementById('click-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
             document.getElementById('auto-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
             document.getElementById('energy-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('bot-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.bot.cost.toLocaleString()} coin`;
 
             // Kaynak Başlıkları
             document.getElementById('coin-title').textContent = lang.coinTitle;
@@ -759,6 +934,13 @@
             document.getElementById('nav-earn-text').textContent = lang.navEarn;
             document.getElementById('nav-boost-text').textContent = lang.navBoost;
             document.getElementById('nav-friends-text').textContent = lang.navFriends;
+            document.getElementById('nav-global-text').textContent = lang.navGlobal;
+
+            // Global Bölümü
+            document.getElementById('global-title').textContent = lang.globalTitle;
+            document.querySelector('.leaderboard th:nth-child(1)').textContent = lang.rank;
+            document.querySelector('.leaderboard th:nth-child(2)').textContent = lang.player;
+            document.querySelector('.leaderboard th:nth-child(3)').textContent = lang.totalCoins;
 
             // Başarımlar
             predefinedAchievements.forEach(achievement => {
@@ -784,7 +966,8 @@
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
-                energy: { level: 1, cost: 1000 }
+                energy: { level: 1, cost: 1000 },
+                bot: { level: 0, cost: 5000, duration: 0 } // Bot yükseltmesi
             },
             xpMultiplier: 1 // Başlangıçta 1
         };
@@ -1045,7 +1228,7 @@
 
         // Tüm İçerikleri Gizleme Fonksiyonu
         function hideAllContainers() {
-            const containers = ["boost-container", "earn-container", "home-container", "friends-container"];
+            const containers = ["boost-container", "earn-container", "home-container", "friends-container", "global-container"];
             containers.forEach(id => {
                 document.getElementById(id).style.display = "none";
             });
@@ -1105,6 +1288,7 @@
             document.getElementById('click-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
             document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
             document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+            document.getElementById('bot-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.bot.cost.toLocaleString()} coin`;
 
             updateUpgradeButtons();
             updateProgressBar();
@@ -1114,7 +1298,7 @@
 
         // Upgrade Butonlarının Güncellenmesi Fonksiyonu
         function updateUpgradeButtons() {
-            ['click', 'auto', 'energy'].forEach(type => {
+            ['click', 'auto', 'energy', 'bot'].forEach(type => {
                 const button = document.getElementById(`${type}-upgrade`);
                 const cost = gameState.upgrades[type].cost;
                 const canAfford = gameState.coins >= cost;
@@ -1156,6 +1340,9 @@
                     case 'energy':
                         gameState.energy += 200;
                         break;
+                    case 'bot':
+                        gameState.upgrades.bot.duration += 30; // Bot süresini 30 saniye artır
+                        break;
                 }
 
                 // Maliyetleri Güncelleme
@@ -1166,6 +1353,26 @@
                 alert(languageData[currentLanguage].notEnoughCoins);
             }
         }
+
+        // Bot Özelliği Fonksiyonu
+        function activateBot() {
+            if (gameState.upgrades.bot.duration > 0) {
+                botInterval = setInterval(() => {
+                    handleFarmClick();
+                }, 1000);
+
+                botDurationInterval = setInterval(() => {
+                    gameState.upgrades.bot.duration--;
+                    if (gameState.upgrades.bot.duration <= 0) {
+                        clearInterval(botInterval);
+                        clearInterval(botDurationInterval);
+                    }
+                }, 1000);
+            }
+        }
+
+        let botInterval;
+        let botDurationInterval;
 
         // Event Listeners
         document.getElementById("boost-nav").addEventListener("click", function() {
@@ -1188,6 +1395,12 @@
             document.getElementById("friends-container").style.display = "block";
         });
 
+        document.getElementById("global-nav").addEventListener("click", function() {
+            hideAllContainers();
+            document.getElementById("global-container").style.display = "block";
+            updateLeaderboard();
+        });
+
         document.getElementById('farm-button').addEventListener('click', handleFarmClick);
         document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
 
@@ -1201,6 +1414,11 @@
 
         document.getElementById('energy-upgrade').addEventListener('click', () => {
             handleUpgrade('energy');
+        });
+
+        document.getElementById('bot-upgrade').addEventListener('click', () => {
+            handleUpgrade('bot');
+            activateBot();
         });
 
         // Otomatik İşlemler
@@ -1285,20 +1503,11 @@
 
         // Günlük İpucu Fonksiyonu
         function displayDailyTip() {
-            const dailyTips = currentLanguage === 'tr' ? [
-                "Enerjinizi daha verimli kullanmak için enerji yükseltmelerini tercih edin!",
-                "Otomatik toplayıcılarınızı yükselterek daha fazla coin kazanın!",
-                "Seviye ödüllerini kaçırmayın, her seviyede büyük ödüller sizi bekliyor!",
-                "Daha fazla XP kazanmak için farm butonuna sık sık tıklayın!"
-            ] : [
-                "Prioritize energy upgrades to use your energy more efficiently!",
-                "Upgrade your auto collectors to earn more coins!",
-                "Don't miss level rewards; great prizes await at each level!",
-                "Click the farm button frequently to earn more XP!"
-            ];
+            const lang = languageData[currentLanguage];
+            const dailyTips = lang.dailyTipMessages;
             const today = new Date().getDate();
             const tipIndex = today % dailyTips.length;
-            document.getElementById('daily-tip').textContent = `${languageData[currentLanguage].dailyTip} ${dailyTips[tipIndex]}`;
+            document.getElementById('daily-tip').textContent = `${lang.dailyTip} ${dailyTips[tipIndex]}`;
         }
 
         // Friends Container için Davet Bilgilerini Güncelleme Fonksiyonu
@@ -1320,6 +1529,31 @@
             } else {
                 console.error("Davet bilgilerini güncellerken bir hata oluştu.");
             }
+        }
+
+        // Global Liderlik Tablosunu Güncelleme Fonksiyonu
+        function updateLeaderboard() {
+            // Örnek veri
+            const leaderboardData = [
+                { rank: 1, player: "Player1", totalCoins: 1000000 },
+                { rank: 2, player: "Player2", totalCoins: 750000 },
+                { rank: 3, player: "Player3", totalCoins: 500000 },
+                { rank: 4, player: "Player4", totalCoins: 250000 },
+                { rank: 5, player: "Player5", totalCoins: 100000 },
+            ];
+
+            const leaderboardBody = document.getElementById('leaderboard-body');
+            leaderboardBody.innerHTML = "";
+
+            leaderboardData.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.rank}</td>
+                    <td>${entry.player}</td>
+                    <td>${entry.totalCoins.toLocaleString()}</td>
+                `;
+                leaderboardBody.appendChild(row);
+            });
         }
 
     </script>
