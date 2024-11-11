@@ -603,6 +603,7 @@
             <button class="upgrade-button inactive" id="bot-upgrade">
                 <span id="bot-upgrade-text">Bot</span>
                 <span class="upgrade-cost" id="bot-cost">Maliyet: 5000 coin</span>
+                <span class="bot-duration" id="bot-duration">Kalan Süre: 0 gün</span>
             </button>
         </div>
     </div>
@@ -644,21 +645,21 @@
         <h1 id="game-title">No1Game</h1>
 
         <!-- Dil Seçimi -->
-         <div id="language-selection">
-        <button id="lang-tr" class="language-button" title="Türkçe">
-            🇹🇷
-        </button>
-        <button id="lang-en" class="language-button" title="English">
-            🇺🇸
-        </button>
-    </div>
+        <div id="language-selection">
+            <button id="lang-tr" class="language-button" title="Türkçe">
+                🇹🇷
+            </button>
+            <button id="lang-en" class="language-button" title="English">
+                🇺🇸
+            </button>
+        </div>
 
         <h2 id="player-stats-title">Oyuncu İstatistikleri</h2>
         <div id="home-stats">
             <div class="stat" id="total-coins-stat">Toplam Coin: <span id="home-coins">0</span></div>
             <div class="stat" id="level-stat">Seviye: <span id="home-level">1</span></div>
             <div class="stat" id="xp-stat">XP: <span id="home-xp">0</span> / <span id="home-xp-needed">100</span></div>
-            <div class="stat" id="energy-stat">Enerji: <span id="home-energy">1000</span></div>
+            <div class="stat" id="energy-stat">Enerji: <span id="home-energy">1000</span> / <span id="home-energy-max">1000</span></div>
         </div>
 
         <div id="achievement-container">
@@ -749,6 +750,7 @@
                 autoUpgrade: "CPS Arttırma",
                 energyUpgrade: "Enerji Yükseltme",
                 botUpgrade: "Bot",
+                botDuration: (days) => `Kalan Süre: ${days} gün`,
                 upgradeCost: "Maliyet:",
                 // Başarımlar
                 achievement1: "50.000 Coin Kazandınız!",
@@ -815,6 +817,7 @@
                 autoUpgrade: "Increase CPS",
                 energyUpgrade: "Energy Upgrade",
                 botUpgrade: "Bot",
+                botDuration: (days) => `Time Left: ${days} days`,
                 upgradeCost: "Cost:",
                 // Achievements
                 achievement1: "You've earned 50,000 Coins!",
@@ -904,6 +907,7 @@
             document.getElementById('auto-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
             document.getElementById('energy-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
             document.getElementById('bot-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.bot.cost.toLocaleString()} coin`;
+            document.getElementById('bot-duration').textContent = lang.botDuration(Math.floor(gameState.upgrades.bot.duration / (24 * 60 * 60)));
 
             // Kaynak Başlıkları
             document.getElementById('coin-title').textContent = lang.coinTitle;
@@ -962,6 +966,7 @@
             clickPower: 1,
             autoCollectPower: 0,
             energy: 1000,
+            maxEnergy: 1000,
             farmCount: 0, // Farm sayısı
             upgrades: {
                 click: { level: 1, cost: 10 },
@@ -1096,7 +1101,8 @@
             document.getElementById("home-level").textContent = playerLevel;
             document.getElementById("home-xp").textContent = playerXP;
             document.getElementById("home-xp-needed").textContent = playerLevel * 100;
-            document.getElementById("home-energy").textContent = gameState.energy;
+            document.getElementById("home-energy").textContent = Math.floor(gameState.energy);
+            document.getElementById("home-energy-max").textContent = gameState.maxEnergy;
         }
 
         // Zaman Formatlama Fonksiyonu
@@ -1207,7 +1213,8 @@
             document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
             document.getElementById("home-xp").textContent = playerXP;
             document.getElementById("home-xp-needed").textContent = playerLevel * 100;
-            document.getElementById("home-energy").textContent = gameState.energy;
+            document.getElementById("home-energy").textContent = Math.floor(gameState.energy);
+            document.getElementById("home-energy-max").textContent = gameState.maxEnergy;
         }
 
         // İlerleme Çubuğunu Güncelleme Fonksiyonu
@@ -1289,6 +1296,7 @@
             document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
             document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
             document.getElementById('bot-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.bot.cost.toLocaleString()} coin`;
+            document.getElementById('bot-duration').textContent = languageData[currentLanguage].botDuration(Math.floor(gameState.upgrades.bot.duration / (24 * 60 * 60)));
 
             updateUpgradeButtons();
             updateProgressBar();
@@ -1338,10 +1346,12 @@
                         gameState.autoCollectPower += 1;
                         break;
                     case 'energy':
-                        gameState.energy += 200;
+                        gameState.maxEnergy += 500;
+                        gameState.energy += 500; // Mevcut enerjiye de ekle
                         break;
                     case 'bot':
-                        gameState.upgrades.bot.duration += 30; // Bot süresini 30 saniye artır
+                        gameState.upgrades.bot.duration += 2 * 24 * 60 * 60; // 2 gün ekle
+                        activateBot();
                         break;
                 }
 
@@ -1357,17 +1367,24 @@
         // Bot Özelliği Fonksiyonu
         function activateBot() {
             if (gameState.upgrades.bot.duration > 0) {
-                botInterval = setInterval(() => {
-                    handleFarmClick();
-                }, 1000);
+                if (!botInterval) {
+                    botInterval = setInterval(() => {
+                        handleFarmClick();
+                    }, 1000);
+                }
 
-                botDurationInterval = setInterval(() => {
-                    gameState.upgrades.bot.duration--;
-                    if (gameState.upgrades.bot.duration <= 0) {
-                        clearInterval(botInterval);
-                        clearInterval(botDurationInterval);
-                    }
-                }, 1000);
+                if (!botDurationInterval) {
+                    botDurationInterval = setInterval(() => {
+                        gameState.upgrades.bot.duration--;
+                        if (gameState.upgrades.bot.duration <= 0) {
+                            clearInterval(botInterval);
+                            clearInterval(botDurationInterval);
+                            botInterval = null;
+                            botDurationInterval = null;
+                        }
+                        updateDisplay();
+                    }, 1000);
+                }
             }
         }
 
@@ -1418,7 +1435,6 @@
 
         document.getElementById('bot-upgrade').addEventListener('click', () => {
             handleUpgrade('bot');
-            activateBot();
         });
 
         // Otomatik İşlemler
@@ -1432,8 +1448,8 @@
         }, 1000);
 
         setInterval(() => {
-            if (gameState.energy < 1000) {
-                gameState.energy = Math.min(gameState.energy + 5, 1000);
+            if (gameState.energy < gameState.maxEnergy) {
+                gameState.energy = Math.min(gameState.energy + 5, gameState.maxEnergy);
                 updateDisplay();
                 console.log(`Enerji Yenileniyor: ${gameState.energy}`);
             }
@@ -1479,6 +1495,11 @@
 
             // Dil Ayarını Güncelle
             updateLanguage();
+
+            // Bot aktifse botu tekrar başlat
+            if (gameState.upgrades.bot.duration > 0) {
+                activateBot();
+            }
         });
 
         // Dil Seçimi Butonları
