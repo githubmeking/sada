@@ -15,7 +15,7 @@
             font-family: 'Arial', sans-serif;
         }
 
-        /* Gül stili */
+        /* Küçük Gül stili */
         .rose {
             position: absolute;
             bottom: -100px; /* Başlangıç pozisyonu (ekranın altında) */
@@ -27,7 +27,7 @@
             animation: rise 6s ease-in forwards;
         }
 
-        /* Gül yaprakları */
+        /* Küçük Gül yaprakları */
         .rose::before,
         .rose::after {
             content: '';
@@ -52,6 +52,65 @@
             box-shadow: 0 0 10px rgba(255, 150, 113, 0.5);
         }
 
+        /* Büyük Gül stili */
+        .big-rose {
+            position: absolute;
+            bottom: -100%;
+            width: 200px;
+            height: 200px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.1);
+            opacity: 0;
+            animation: bigRise 8s ease-in-out forwards;
+        }
+
+        /* Büyük Gül yaprakları */
+        .big-rose::before,
+        .big-rose::after,
+        .big-rose::nth-child(3),
+        .big-rose::nth-child(4) {
+            content: '';
+            position: absolute;
+            background: #ff6f91;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 111, 145, 0.6);
+        }
+
+        .big-rose::before {
+            width: 60px;
+            height: 60px;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+        }
+
+        .big-rose::after {
+            width: 50px;
+            height: 50px;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-45deg);
+            background: #ff9671;
+        }
+
+        .big-rose::nth-child(3) {
+            width: 40px;
+            height: 40px;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%) rotate(30deg);
+            background: #ff6f91;
+        }
+
+        .big-rose::nth-child(4) {
+            width: 30px;
+            height: 30px;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-30deg);
+            background: #ff9671;
+        }
+
         /* Animasyonlar */
         @keyframes rise {
             0% {
@@ -71,7 +130,29 @@
             }
         }
 
-        /* Ekstra Efektler için */
+        @keyframes bigRise {
+            0% {
+                bottom: -100%;
+                transform: translateX(-50%) scale(0.1);
+                opacity: 0;
+            }
+            30% {
+                bottom: 30%;
+                transform: translateX(-50%) scale(1.0);
+                opacity: 1;
+            }
+            70% {
+                bottom: 70%;
+                transform: translateX(-50%) scale(1.5);
+                opacity: 1;
+            }
+            100% {
+                bottom: 100%;
+                transform: translateX(-50%) scale(2.0);
+                opacity: 0;
+            }
+        }
+
         .sparkle {
             position: absolute;
             width: 5px;
@@ -95,7 +176,7 @@
 </head>
 <body>
     <script>
-        // Gül oluşturma fonksiyonu
+        // Küçük Gül oluşturma fonksiyonu
         function createRose() {
             const rose = document.createElement('div');
             rose.classList.add('rose');
@@ -126,8 +207,25 @@
             parent.appendChild(sparkle);
         }
 
-        // Belirli aralıklarla gül oluştur
-        setInterval(createRose, 1500); // Her 1.5 saniyede bir gül oluşturur
+        // Büyük Gül oluşturma fonksiyonu
+        function createBigRose() {
+            const bigRose = document.createElement('div');
+            bigRose.classList.add('big-rose');
+            document.body.appendChild(bigRose);
+
+            // Animasyon bittiğinde büyük gülü kaldır
+            bigRose.addEventListener('animationend', () => {
+                bigRose.remove();
+            });
+        }
+
+        // Küçük güllerin belirli aralıklarla oluşturulması
+        setInterval(createRose, 1500); // Her 1.5 saniyede bir küçük gül oluşturur
+
+        // Sayfa yüklendiğinde büyük gülü oluştur
+        window.onload = () => {
+            createBigRose();
+        };
     </script>
 </body>
 </html>
