@@ -11,221 +11,103 @@
             height: 100vh;
             overflow: hidden;
             background: linear-gradient(to top, #ffecd2, #fcb69f); /* Yumuşak pastel arka plan */
-            position: relative;
-            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
         }
 
-        /* Küçük Gül stili */
+        /* Gül ve Sap */
+        .stem {
+            width: 5px;
+            height: 300px;
+            background-color: #4d8b31;
+            position: relative;
+            animation: grow 5s ease-in-out forwards;
+            transform-origin: bottom center;
+        }
+
+        /* Yaprak */
+        .leaf {
+            position: absolute;
+            width: 20px;
+            height: 50px;
+            background-color: #4d8b31;
+            border-radius: 20px;
+            top: 50%;
+            transform-origin: left center;
+        }
+
+        .leaf.left {
+            left: -15px;
+            transform: rotate(-30deg);
+        }
+
+        .leaf.right {
+            right: -15px;
+            transform: rotate(30deg);
+        }
+
+        /* Gül Başı */
         .rose {
             position: absolute;
-            bottom: -100px; /* Başlangıç pozisyonu (ekranın altında) */
+            bottom: 290px;
             width: 50px;
             height: 50px;
-            left: 50%;
-            transform: translateX(-50%) scale(0.5);
-            opacity: 0;
-            animation: rise 6s ease-in forwards;
+            background-color: #ff4b6e;
+            border-radius: 50%;
+            animation: bloom 3s ease-in-out forwards;
+            transform-origin: center;
+            box-shadow: 0 0 20px rgba(255, 75, 110, 0.5);
         }
 
-        /* Küçük Gül yaprakları */
         .rose::before,
         .rose::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            background: #ff6f91;
+            width: 40px;
+            height: 40px;
+            background-color: #ff6f91;
             border-radius: 50%;
-            transform: translateX(-50%) rotate(45deg);
-            box-shadow: 0 0 10px rgba(255, 111, 145, 0.5);
+            top: -10px;
+        }
+
+        .rose::before {
+            left: -20px;
+            transform: rotate(-45deg);
         }
 
         .rose::after {
-            top: 10px;
-            left: 50%;
-            width: 15px;
-            height: 15px;
-            background: #ff9671;
-            transform: translateX(-50%) rotate(-45deg);
-            box-shadow: 0 0 10px rgba(255, 150, 113, 0.5);
-        }
-
-        /* Büyük Gül stili */
-        .big-rose {
-            position: absolute;
-            bottom: -100%;
-            width: 200px;
-            height: 200px;
-            left: 50%;
-            transform: translateX(-50%) scale(0.1);
-            opacity: 0;
-            animation: bigRise 8s ease-in-out forwards;
-        }
-
-        /* Büyük Gül yaprakları */
-        .big-rose::before,
-        .big-rose::after,
-        .big-rose::nth-child(3),
-        .big-rose::nth-child(4) {
-            content: '';
-            position: absolute;
-            background: #ff6f91;
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(255, 111, 145, 0.6);
-        }
-
-        .big-rose::before {
-            width: 60px;
-            height: 60px;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) rotate(45deg);
-        }
-
-        .big-rose::after {
-            width: 50px;
-            height: 50px;
-            top: 40px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-45deg);
-            background: #ff9671;
-        }
-
-        .big-rose::nth-child(3) {
-            width: 40px;
-            height: 40px;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%) rotate(30deg);
-            background: #ff6f91;
-        }
-
-        .big-rose::nth-child(4) {
-            width: 30px;
-            height: 30px;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-30deg);
-            background: #ff9671;
+            right: -20px;
+            transform: rotate(45deg);
         }
 
         /* Animasyonlar */
-        @keyframes rise {
+        @keyframes grow {
             0% {
-                bottom: -100px;
-                transform: translateX(-50%) scale(0.5);
+                height: 0;
                 opacity: 0;
-            }
-            50% {
-                bottom: 50%;
-                transform: translateX(-50%) scale(1.2);
-                opacity: 1;
             }
             100% {
-                bottom: 100%;
-                transform: translateX(-50%) scale(1);
-                opacity: 0;
+                height: 300px;
+                opacity: 1;
             }
         }
 
-        @keyframes bigRise {
+        @keyframes bloom {
             0% {
-                bottom: -100%;
-                transform: translateX(-50%) scale(0.1);
-                opacity: 0;
-            }
-            30% {
-                bottom: 30%;
-                transform: translateX(-50%) scale(1.0);
-                opacity: 1;
-            }
-            70% {
-                bottom: 70%;
-                transform: translateX(-50%) scale(1.5);
-                opacity: 1;
+                transform: scale(0);
             }
             100% {
-                bottom: 100%;
-                transform: translateX(-50%) scale(2.0);
-                opacity: 0;
-            }
-        }
-
-        .sparkle {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            animation: sparkle 2s infinite;
-        }
-
-        @keyframes sparkle {
-            0%, 100% {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            50% {
-                opacity: 1;
                 transform: scale(1);
             }
         }
     </style>
 </head>
 <body>
-    <script>
-        // Küçük Gül oluşturma fonksiyonu
-        function createRose() {
-            const rose = document.createElement('div');
-            rose.classList.add('rose');
-            // Rastgele yatay konum
-            rose.style.left = Math.random() * 100 + '%';
-            // Rastgele animasyon süresi
-            rose.style.animationDuration = (4 + Math.random() * 4) + 's';
-            document.body.appendChild(rose);
-
-            // Animasyon bittiğinde gülü kaldır
-            rose.addEventListener('animationend', () => {
-                rose.remove();
-            });
-
-            // Sparkle ekleme
-            createSparkle(rose);
-        }
-
-        // Sparkle oluşturma fonksiyonu
-        function createSparkle(parent) {
-            const sparkle = document.createElement('div');
-            sparkle.classList.add('sparkle');
-            // Rastgele pozisyon
-            sparkle.style.top = Math.random() * 100 + '%';
-            sparkle.style.left = Math.random() * 100 + '%';
-            // Rastgele animasyon gecikmesi
-            sparkle.style.animationDelay = Math.random() * 2 + 's';
-            parent.appendChild(sparkle);
-        }
-
-        // Büyük Gül oluşturma fonksiyonu
-        function createBigRose() {
-            const bigRose = document.createElement('div');
-            bigRose.classList.add('big-rose');
-            document.body.appendChild(bigRose);
-
-            // Animasyon bittiğinde büyük gülü kaldır
-            bigRose.addEventListener('animationend', () => {
-                bigRose.remove();
-            });
-        }
-
-        // Küçük güllerin belirli aralıklarla oluşturulması
-        setInterval(createRose, 1500); // Her 1.5 saniyede bir küçük gül oluşturur
-
-        // Sayfa yüklendiğinde büyük gülü oluştur
-        window.onload = () => {
-            createBigRose();
-        };
-    </script>
+    <div class="stem">
+        <div class="leaf left"></div>
+        <div class="leaf right"></div>
+        <div class="rose"></div>
+    </div>
 </body>
 </html>
