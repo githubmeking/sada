@@ -109,7 +109,6 @@
         /* Ana İçerik Bölümleri */
         #boost-container, #earn-container, #home-container, #friends-container {
             display: none;
-            background: rgba(255, 255, 255, 0.95);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -119,12 +118,29 @@
             overflow-y: auto;
         }
 
-        /* Boost Container */
+        /* Boost Container (Geliştir) */
         #boost-container {
+            background: #f8d7da; /* Soft kırmızı */
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+        }
+
+        /* Earn Container (Kazanç) */
+        #earn-container {
+            background: #d4edda; /* Soft yeşil */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Friends Container (Arkadaşlar) */
+        #friends-container {
+            background: linear-gradient(135deg, #add8e6, #ffa500); /* Mavi ve Turuncu */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* Oyun Elemanları için Resource Container */
@@ -442,9 +458,9 @@
         <h1 id="welcome-message">Hoş Geldiniz No1Game'e!</h1>
     </div>
 
-    <!-- Boost Container -->
+    <!-- Boost Container (Geliştir) -->
     <div id="boost-container">
-        <h1 id="boost-section-title">Boost Bölümü</h1>
+        <h1 id="boost-section-title">Geliştir Bölümü</h1>
         <div class="resource-container">
             <div class="resource" id="coin-resource">
                 <div class="resource-title" id="coin-title">Coin</div>
@@ -482,7 +498,7 @@
         </div>
     </div>
 
-    <!-- Earn Container -->
+    <!-- Earn Container (Kazanç) -->
     <div id="earn-container">
         <h2 id="daily-reward-title">Giriş Ödülü</h2>
         <button class="start-button" onclick="collectDailyReward()" id="collect-daily-reward-button">5000 Coin Al</button>
@@ -555,7 +571,7 @@
         </div>
     </div>
 
-    <!-- Friends Container -->
+    <!-- Friends Container (Arkadaşlar) -->
     <div id="friends-container">
         <h2 id="friends-title">Arkadaşlar</h2>
         <p id="total-referrals-text">Toplam Davet Edilen Kişi Sayısı: <span id="referral-count">0</span></p>
@@ -598,7 +614,7 @@
                 progressTitle: "Seviye İlerlemesi",
                 dailyTip: "Günlük İpucu: Daha fazla enerji kazanmak için enerji yükseltmelerini tercih edin!",
                 farmButton: "FARM",
-                boostSectionTitle: "Boost Bölümü",
+                boostSectionTitle: "Geliştir Bölümü",
                 clickUpgrade: "Tıklama Güçlendirmesi",
                 autoUpgrade: "CPS Arttırma",
                 energyUpgrade: "Enerji Yükseltme",
@@ -720,7 +736,7 @@
             document.getElementById('progress-title').textContent = lang.progressTitle;
             document.getElementById('daily-tip').textContent = lang.dailyTip;
 
-            // Boost Bölümü
+            // Boost Bölümü (Geliştir)
             document.getElementById('farm-button').textContent = lang.farmButton;
             document.getElementById('boost-section-title').textContent = lang.boostSectionTitle;
             document.getElementById('click-upgrade-text').textContent = lang.clickUpgrade;
@@ -736,7 +752,7 @@
             document.getElementById('energy-title').textContent = lang.energyTitle;
             document.getElementById('xp-title').textContent = lang.xpTitle;
 
-            // Earn Bölümü
+            // Earn Bölümü (Kazanç)
             document.getElementById('daily-reward-title').textContent = lang.dailyRewardTitle;
             document.getElementById('collect-daily-reward-button').textContent = lang.collectDailyRewardButton;
             document.getElementById('level-rewards-title').textContent = lang.levelRewardsTitle;
@@ -749,7 +765,7 @@
             document.getElementById('level-reward-50-text').textContent = lang.levelRewardText(50, 10000);
             document.getElementById('level-reward-100-text').textContent = lang.levelRewardText(100, 50000);
 
-            // Friends Bölümü
+            // Friends Bölümü (Arkadaşlar)
             document.getElementById('friends-title').textContent = lang.friendsTitle;
             document.getElementById('total-referrals-text').childNodes[0].textContent = `${lang.totalReferralsText} `;
             document.getElementById('invite-link-text').textContent = lang.inviteLinkText;
