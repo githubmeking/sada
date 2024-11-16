@@ -707,14 +707,14 @@
     <script>
         // Firebase Konfigürasyonu (Kendi projenizin bilgilerini buraya ekleyin)
         const firebaseConfig = {
-              apiKey: "AIzaSyCLjOwhgoLiZF-RXHyYrtFDrmsEAa-4aRQ",
-              authDomain: "no1game-2cfaa.firebaseapp.com",
-              projectId: "no1game-2cfaa",
-              storageBucket: "no1game-2cfaa.firebasestorage.app",
-              messagingSenderId: "490868626898",
-              appId: "1:490868626898:web:ab3a59f6366de4bef1e40b",
-              measurementId: "G-DHXZPNPEQ1"
-            };
+            apiKey: "AIzaSyCLjOwhgoLiZF-RXHyYrtFDrmsEAa-4aRQ",
+            authDomain: "no1game-2cfaa.firebaseapp.com",
+            projectId: "no1game-2cfaa",
+            storageBucket: "no1game-2cfaa.firebasestorage.app",
+            messagingSenderId: "490868626898",
+            appId: "1:490868626898:web:ab3a59f6366de4bef1e40b",
+            measurementId: "G-DHXZPNPEQ1"
+        };
 
         // Firebase'i Başlatma
         firebase.initializeApp(firebaseConfig);
@@ -843,6 +843,7 @@
         // Firebase Kullanıcı Girişi ve Kaydı
         auth.onAuthStateChanged(user => {
             if (user) {
+                console.log("Kullanıcı giriş yaptı:", user.uid);
                 // Kullanıcı giriş yaptı
                 initializeUser(user);
             } else {
@@ -883,7 +884,7 @@
             loadFriendList();
 
             // Sosyal Paylaşım Butonlarını Güncelle
-            addSocialShareButtons(); // Davet linkini oluşturmak için burada çağırıyoruz
+            addSocialShareButtons(); // Davet linkini oluşturmak için burada çağırılıyor
         }
 
         // Dil Değiştirme Fonksiyonu
@@ -1662,7 +1663,10 @@
         function generateInviteLink() {
             const user = auth.currentUser;
             if (user) {
-                return `https://your-github-username.github.io/your-repo-name/?referral=${user.uid}`;
+                // Kendi GitHub Pages URL'nizi buraya girin
+                return `https://githubmeking.github.io/sada/?referral=${user.uid}`;
+                // Örneğin, eğer repository adınız 'no1game' ise:
+                // return `https://githubmeking.github.io/no1game/?referral=${user.uid}`;
             } else {
                 console.error("Kullanıcı bilgisi mevcut değil.");
                 return "#";
@@ -1675,6 +1679,7 @@
             const user = auth.currentUser;
             if (user) {
                 const inviteLink = generateInviteLink();
+                console.log("Invite Link:", inviteLink); // Davet linkini konsola yazdır
                 inviteLinkElement.href = inviteLink;
                 inviteLinkElement.textContent = inviteLink;
             } else {
