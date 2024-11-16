@@ -697,7 +697,29 @@
         </div>
     </div>
 
+    <!-- Firebase SDK'ları -->
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <script>
+        // Firebase Konfigürasyonu (Kendi projenizin bilgilerini buraya ekleyin)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLjOwhgoLiZF-RXHyYrtFDrmsEAa-4aRQ",
+            authDomain: "no1game-2cfaa.firebaseapp.com",
+            projectId: "no1game-2cfaa",
+            storageBucket: "no1game-2cfaa.firebasestorage.app",
+            messagingSenderId: "490868626898",
+            appId: "1:490868626898:web:ab3a59f6366de4bef1e40b",
+            measurementId: "G-DHXZPNPEQ1"
+        };
+
+        // Firebase'i Başlatma
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // Dil Verileri
         const languageData = {
             tr: {
@@ -817,21 +839,47 @@
         // Seçili Dil
         let currentLanguage = localStorage.getItem('language') || 'tr';
 
-        // Kullanıcı ID'sini Oluşturma ve Saklama Fonksiyonu
-        function generateUserId() {
-            return 'user_' + Math.floor(Math.random() * 1000000);
-        }
+        // Firebase Kullanıcı Girişi ve Kaydı
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Kullanıcı giriş yaptı
+                initializeUser(user);
+            } else {
+                // Kullanıcı giriş yapmadı, anonim giriş yap
+                auth.signInAnonymously().catch(error => {
+                    console.error("Anonymous sign-in error:", error);
+                });
+            }
+        });
 
-        if (!localStorage.getItem('userId')) {
-            const userId = generateUserId();
-            localStorage.setItem('userId', userId);
-        }
+        // Kullanıcıyı Firestore'da Başlatma veya Yükleme Fonksiyonu
+        async function initializeUser(user) {
+            const userRef = db.collection('users').doc(user.uid);
+            const doc = await userRef.get();
+            if (!doc.exists) {
+                // Yeni kullanıcı, başlangıç verilerini ekle
+                await userRef.set({
+                    coins: 0,
+                    referrals: 0,
+                    farmCount: 0,
+                    upgrades: {
+                        click: { level: 1, cost: 10 },
+                        auto: { level: 0, cost: 50 },
+                        energy: { level: 1, cost: 1000 }
+                    },
+                    rewardedLevels: [],
+                    referredBy: null,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+            loadGame();
+            incrementDaysLoggedIn();
+            processReferral(); // Referansı işleme
+            updateDailyRewardTimer();
+            updateFriendsDisplay();
 
-        const userId = localStorage.getItem('userId');
-
-        // Referansları Saklamak için LocalStorage'da Bir Anahtar Oluşturma
-        if (!localStorage.getItem('referrals')) {
-            localStorage.setItem('referrals', JSON.stringify([]));
+            // Arkadaş Listesini Yükle
+            loadFriendList();
         }
 
         // Dil Değiştirme Fonksiyonu
@@ -898,12 +946,7 @@
             document.getElementById('nav-friends-text').textContent = lang.navFriends;
 
             // Başarımlar
-            predefinedAchievements.forEach(achievement => {
-                const achievementDiv = document.getElementById(`achievement-${achievement.id}`);
-                if (achievementDiv) {
-                    achievementDiv.querySelector('span').textContent = lang[`achievement${achievement.id}`] || achievement.description;
-                }
-            });
+            loadAchievements();
 
             // Günlük Ödül Zamanlayıcısı
             updateDailyRewardTimer();
@@ -1001,6 +1044,14 @@
                         }
                         awardedLevels[`achievement_${achievement.id}`] = true;
                         localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+
+                        // Firestore'da başarımları güncelle
+                        const user = auth.currentUser;
+                        if (user) {
+                            db.collection('users').doc(user.uid).update({
+                                rewardedLevels: firebase.firestore.FieldValue.arrayUnion(`achievement_${achievement.id}`)
+                            });
+                        }
                     }
                 }
             });
@@ -1034,12 +1085,21 @@
         }
 
         // Seviye Ödüllerini Kontrol Etme Fonksiyonu
-        function checkLevelRewards() {
+        async function checkLevelRewards() {
             if (rewardLevels[playerLevel] && !awardedLevels[`reward_sv${playerLevel}`]) {
                 addXP(rewardLevels[playerLevel].xp);
                 alert(languageData[currentLanguage].rewardCollected(rewardLevels[playerLevel].xp));
                 awardedLevels[`reward_sv${playerLevel}`] = true;
                 localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+
+                // Firestore'da ödülü işaretle
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).update({
+                        rewardedLevels: firebase.firestore.FieldValue.arrayUnion(`reward_sv${playerLevel}`)
+                    });
+                }
+
                 updateDisplay();
             }
         }
@@ -1083,7 +1143,7 @@
         let countdownInterval;
 
         // Günlük Ödül Toplama Fonksiyonu
-        function collectDailyReward() {
+        async function collectDailyReward() {
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
 
@@ -1091,6 +1151,15 @@
                 gameState.coins += 5000;
                 lastCollected = now;
                 localStorage.setItem('lastCollected', lastCollected);
+
+                // Firestore'da Coin güncelleme
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).update({
+                        coins: firebase.firestore.FieldValue.increment(5000)
+                    });
+                }
+
                 alert(languageData[currentLanguage].dailyRewardCollected);
                 updateDisplay();
                 updateDailyRewardTimer();
@@ -1115,12 +1184,21 @@
         }
 
         // Seviye Ödüllerini Almak için Fonksiyon
-        function claimLevelReward(level) {
+        async function claimLevelReward(level) {
             if (playerLevel >= level && !awardedLevels[`reward_sv${level}`]) {
                 const xpAmount = rewardLevels[level].xp;
                 addXP(xpAmount);
                 awardedLevels[`reward_sv${level}`] = true;
                 localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
+
+                // Firestore'da ödülü işaretle
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).update({
+                        rewardedLevels: firebase.firestore.FieldValue.arrayUnion(`reward_sv${level}`)
+                    });
+                }
+
                 alert(languageData[currentLanguage].rewardCollected(xpAmount));
                 updateDisplay();
                 updateEarnRewards();
@@ -1140,17 +1218,17 @@
                     button.disabled = false;
                     button.classList.add('enabled');
                     button.classList.remove('disabled');
-                    button.textContent = currentLanguage === 'tr' ? languageData[currentLanguage].claimButton : languageData[currentLanguage].claimButton;
+                    button.textContent = languageData[currentLanguage].claimButton;
                 } else if (awardedLevels[`reward_sv${level}`]) {
                     button.disabled = true;
                     button.classList.add('disabled');
                     button.classList.remove('enabled');
-                    button.textContent = currentLanguage === 'tr' ? languageData[currentLanguage].claimedButton : languageData[currentLanguage].claimedButton;
+                    button.textContent = languageData[currentLanguage].claimedButton;
                 } else {
                     button.disabled = true;
                     button.classList.add('disabled');
                     button.classList.remove('enabled');
-                    button.textContent = currentLanguage === 'tr' ? languageData[currentLanguage].levelUnreached : languageData[currentLanguage].levelUnreached;
+                    button.textContent = languageData[currentLanguage].levelUnreached;
                 }
             });
         }
@@ -1190,37 +1268,58 @@
 
         // Oyun Verilerini Kaydetme Fonksiyonu
         function saveGame() {
-            const saveData = {
-                gameState: gameState,
-                playerXP: playerXP,
-                playerLevel: playerLevel,
-                totalCoinsSpent: totalCoinsSpent,
-                daysLoggedIn: daysLoggedIn,
-                lastCollected: lastCollected,
-                awardedLevels: awardedLevels
-            };
-            localStorage.setItem("gameSave", JSON.stringify(saveData));
-            console.log("Oyun kaydedildi:", saveData);
+            // Firestore kullanılarak veri kaydedilecek
+            const user = auth.currentUser;
+            if (user) {
+                db.collection('users').doc(user.uid).set({
+                    coins: gameState.coins,
+                    referrals: gameState.referrals || 0,
+                    farmCount: gameState.farmCount || 0,
+                    upgrades: gameState.upgrades || {},
+                    rewardedLevels: firebase.firestore.FieldValue.arrayUnion(...Object.keys(awardedLevels).filter(key => key.startsWith('reward_')))
+                }, { merge: true }).then(() => {
+                    console.log("Oyun kaydedildi.");
+                }).catch(error => {
+                    console.error("Oyun kaydedilirken hata oluştu:", error);
+                });
+            }
         }
 
         // Oyun Verilerini Yükleme Fonksiyonu
-        function loadGame() {
-            const savedData = localStorage.getItem("gameSave");
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                gameState = data.gameState || gameState;
-                playerXP = data.playerXP || 0;
-                playerLevel = data.playerLevel || 1;
-                totalCoinsSpent = data.totalCoinsSpent || 0;
-                daysLoggedIn = data.daysLoggedIn || 0;
-                lastCollected = parseInt(data.lastCollected) || 0;
-                awardedLevels = data.awardedLevels || {};
-            }
-
-            // xpMultiplier'ın geçerli bir sayı olduğundan emin olun
-            if (typeof gameState.xpMultiplier !== 'number' || isNaN(gameState.xpMultiplier)) {
-                gameState.xpMultiplier = 1;
-                console.warn("xpMultiplier geçersizdi, varsayılan değere (1) ayarlandı.");
+        async function loadGame() {
+            const user = auth.currentUser;
+            if (user) {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const data = userDoc.data();
+                    gameState.coins = data.coins || 0;
+                    gameState.referrals = data.referrals || 0;
+                    gameState.farmCount = data.farmCount || 0;
+                    gameState.upgrades = data.upgrades || {
+                        click: { level: 1, cost: 10 },
+                        auto: { level: 0, cost: 50 },
+                        energy: { level: 1, cost: 1000 }
+                    };
+                    awardedLevels = {};
+                    if (data.rewardedLevels) {
+                        data.rewardedLevels.forEach(reward => {
+                            awardedLevels[reward] = true;
+                        });
+                    }
+                } else {
+                    // Yeni kullanıcı, verilerini başlat
+                    await db.collection('users').doc(user.uid).set({
+                        coins: 0,
+                        referrals: 0,
+                        farmCount: 0,
+                        upgrades: {
+                            click: { level: 1, cost: 10 },
+                            auto: { level: 0, cost: 50 },
+                            energy: { level: 1, cost: 1000 }
+                        },
+                        rewardedLevels: []
+                    });
+                }
             }
 
             loadAchievements(); // Başarımları yükle
@@ -1262,7 +1361,7 @@
         }
 
         // Farm Butonuna Tıklama Fonksiyonu
-        function handleFarmClick() {
+        async function handleFarmClick() {
             if (gameState.energy >= 33) {
                 gameState.coins += gameState.clickPower;
                 gameState.energy -= 33;
@@ -1271,13 +1370,23 @@
                 updateDisplay();
                 updateAchievements(); // Farm sayısı arttıkça başarımları güncelle
                 console.log("Farm yapıldı. Coin:", gameState.coins, "Enerji:", gameState.energy, "Farm Sayısı:", gameState.farmCount, "XP:", playerXP);
+
+                // Firestore'da güncelleme
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).update({
+                        coins: firebase.firestore.FieldValue.increment(gameState.clickPower),
+                        energy: gameState.energy,
+                        farmCount: firebase.firestore.FieldValue.increment(1)
+                    });
+                }
             } else {
                 alert(languageData[currentLanguage].notEnoughEnergy);
             }
         }
 
         // Upgrade Yapma Fonksiyonu
-        function handleUpgrade(type) {
+        async function handleUpgrade(type) {
             const cost = gameState.upgrades[type].cost;
             if (gameState.coins >= cost) {
                 gameState.coins -= cost;
@@ -1300,6 +1409,15 @@
                 gameState.upgrades[type].cost = Math.floor(cost * 2);
                 gameState.upgrades[type].level++;
                 updateDisplay();
+
+                // Firestore'da güncelleme
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).update({
+                        coins: firebase.firestore.FieldValue.increment(-cost),
+                        upgrades: gameState.upgrades
+                    });
+                }
             } else {
                 alert(languageData[currentLanguage].notEnoughCoins);
             }
@@ -1342,21 +1460,37 @@
         });
 
         // Otomatik İşlemler
-        setInterval(() => {
+        setInterval(async () => {
             if (gameState.autoCollectPower > 0) {
                 gameState.coins += gameState.autoCollectPower;
                 updateDisplay();
                 updateAchievements(); // Coin arttıkça başarımları güncelle
                 console.log(`Otomatik Toplama: +${gameState.autoCollectPower} Coin`);
+
+                // Firestore'da Coin güncelleme
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).update({
+                        coins: firebase.firestore.FieldValue.increment(gameState.autoCollectPower)
+                    });
+                }
             }
         }, 1000);
 
         // Enerji Yenileme Oranını Artırma (5'ten 20'ye)
-        setInterval(() => {
+        setInterval(async () => {
             if (gameState.energy < 1000) {
                 gameState.energy = Math.min(gameState.energy + 20, 1000); // 20'ye çıkarıldı
                 updateDisplay();
                 console.log(`Enerji Yenileniyor: ${gameState.energy}`);
+
+                // Firestore'da enerji güncelleme
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).update({
+                        energy: gameState.energy
+                    });
+                }
             }
         }, 1000);
 
@@ -1369,39 +1503,16 @@
 
         // Sayfa Yüklendiğinde
         window.addEventListener("load", () => {
-            loadGame();
-            incrementDaysLoggedIn();
-            processReferral(); // Referansı işleme
-            updateDailyRewardTimer();
-
-            // Countdown Başlatma
-            if (Date.now() - lastCollected < 24 * 60 * 60 * 1000) {
-                countdownInterval = setInterval(() => {
-                    const now = Date.now();
-                    const remainingTime = Math.max(0, 24 * 60 * 60 * 1000 - (now - lastCollected));
-                    if (remainingTime > 0) {
-                        document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].remainingTime(formatTime(remainingTime));
-                    } else {
-                        document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].rewardReady;
-                        document.querySelector('.start-button').disabled = false;
-                        clearInterval(countdownInterval);
-                    }
-                }, 1000);
-            }
-
-            updateProgressBar(); // İlerleme çubuğunu güncelle
-            displayDailyTip(); // Günlük ipucunu göster
-            loadFriendList(); // Arkadaş listesini yükle
-
+            // Kullanıcı zaten oturum açmışsa initializeUser zaten çağrılır
             // Başlangıçta Boost bölümünü göster
             hideAllContainers();
             document.getElementById("boost-container").style.display = "block";
 
-            // Friends Container için Davet Bilgilerini Güncelleme
-            updateFriendsDisplay();
-
             // Dil Ayarını Güncelle
             updateLanguage();
+
+            // Sosyal Paylaşım Butonlarını Güncelle
+            addSocialShareButtons();
         });
 
         // Dil Seçimi Butonları
@@ -1412,7 +1523,7 @@
         window.addEventListener("beforeunload", saveGame);
 
         // Gün Sayısını Artırma Fonksiyonu
-        function incrementDaysLoggedIn() {
+        async function incrementDaysLoggedIn() {
             const today = new Date().toDateString();
             if (lastLoginDate !== today) {
                 daysLoggedIn++;
@@ -1421,6 +1532,14 @@
                 localStorage.setItem('lastLoginDate', lastLoginDate);
                 updateHomeDisplay();
                 console.log(`Gün Sayısı Artırıldı: ${daysLoggedIn}`);
+
+                // Firestore'da güncelleme
+                const user = auth.currentUser;
+                if (user) {
+                    await db.collection('users').doc(user.uid).update({
+                        daysLoggedIn: firebase.firestore.FieldValue.increment(1)
+                    });
+                }
             }
         }
 
@@ -1443,64 +1562,64 @@
         }
 
         // Referans İşleme Fonksiyonu
-        function processReferral() {
+        async function processReferral() {
             const urlParams = new URLSearchParams(window.location.search);
             const referralId = urlParams.get('referral');
-            if (referralId && referralId !== userId) { // Kendini referans yapmayı engelle
-                let referrals = JSON.parse(localStorage.getItem('referrals')) || [];
+            if (referralId && referralId !== auth.currentUser.uid) { // Kendini referans yapmayı engelle
+                const referrerRef = db.collection('users').doc(referralId);
+                const referrerDoc = await referrerRef.get();
+                if (referrerDoc.exists) {
+                    const userRef = db.collection('users').doc(auth.currentUser.uid);
+                    const userDoc = await userRef.get();
+                    if (!userDoc.exists || !userDoc.data().referredBy) {
+                        // Referans sahibine 20,000 Coin ekle
+                        await referrerRef.update({
+                            coins: firebase.firestore.FieldValue.increment(20000),
+                            referrals: firebase.firestore.FieldValue.increment(1)
+                        });
 
-                // Aynı referansı birden fazla kez işleme
-                const existingReferral = referrals.find(r => r.referrerId === referralId && r.inviteeId === userId);
-                if (!existingReferral) {
-                    // Referans listesini güncelle
-                    referrals.push({ referrerId: referralId, inviteeId: userId, date: Date.now() });
-                    localStorage.setItem('referrals', JSON.stringify(referrals));
+                        // Davet edilen kişiye referans sahibinin ID'sini kaydet
+                        await userRef.set({
+                            referredBy: referralId
+                        }, { merge: true });
 
-                    // Referans sahibine ve davet edilen kişiye 20,000 Coin ekle
-                    // Referans sahibinin userId'si localStorage'da saklanmadığı için burada sadece davet edilen kişiye ekleme yapılabilir
-                    // Gerçek uygulamada referans sahibinin coins bilgisi backend'de tutulmalıdır
-                    // Bu örnekte sadece davet edilen kişiye Coin ekleniyor
-
-                    gameState.coins += 20000; // Davet eden kişi
-                    addXP(20); // XP ekleme (isteğe bağlı)
-                    alert(`Bir arkadaşınızı davet ettiniz ve 20,000 Coin kazandınız!`);
-                    updateDisplay();
-
-                    // Referans linkini temizle
-                    window.history.replaceState({}, document.title, window.location.pathname);
+                        alert(`Bir arkadaşınızı davet ettiniz ve 20,000 Coin kazandınız!`);
+                        updateDisplay();
+                    }
+                } else {
+                    console.error("Referans sahibinin kaydı bulunamadı.");
                 }
+
+                // Referans linkini temizle
+                window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
 
         // Referansları Görüntüleme Fonksiyonu
-        function updateFriendsDisplay() {
-            const referrals = JSON.parse(localStorage.getItem('referrals')) || [];
-            const totalReferrals = referrals.filter(r => r.referrerId === userId).length;
-            const totalReferralCoins = totalReferrals * 20000;
-
-            document.getElementById('referral-count').textContent = totalReferrals;
-            document.getElementById('referral-info').textContent = `+1 Davet = 20,000 Coin`;
-
-            // Eğer isterseniz toplam referanslardan kazanılan Coin'i de gösterebilirsiniz
-            // Örneğin, aşağıdaki gibi ekleyebilirsiniz:
-            /*
-            const referralCoinsInfo = document.createElement('div');
-            referralCoinsInfo.id = 'referral-coins-info';
-            referralCoinsInfo.textContent = `Toplam Referans Coin: ${totalReferralCoins.toLocaleString()} Coin`;
-            document.getElementById('friends-container').appendChild(referralCoinsInfo);
-            */
+        async function updateFriendsDisplay() {
+            const user = auth.currentUser;
+            if (user) {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    const data = userDoc.data();
+                    const totalReferrals = data.referrals || 0;
+                    document.getElementById('referral-count').textContent = totalReferrals;
+                    document.getElementById('referral-info').textContent = `+1 Davet = 20,000 Coin`;
+                }
+            }
         }
 
-        // Arkadaş Listesini Yükleme Fonksiyonu (Basit Örnek)
+        // Arkadaş Listesini Yükleme Fonksiyonu (Gerçek Uygulamada Arkadaş Verileri Backend'den Alınacak)
         function loadFriendList() {
             const friendsList = document.getElementById('friends-list');
             friendsList.innerHTML = ""; // Önceki arkadaşları temizle
 
-            // Örnek Arkadaş Verileri (Gerçek uygulamada backend'den alınacak)
+            // Gerçek uygulamada, arkadaş verilerini Firestore'dan almanız gerekecek
+            // Bu örnekte statik arkadaş verileri gösteriliyor
             const friends = [
-                { avatar: 'avatar1.png', name: 'Arkadaş1', level: 10 },
-                { avatar: 'avatar2.png', name: 'Arkadaş2', level: 15 },
-                { avatar: 'avatar3.png', name: 'Arkadaş3', level: 20 },
+                { avatar: 'https://i.pravatar.cc/40?img=1', name: 'Arkadaş1', level: 10 },
+                { avatar: 'https://i.pravatar.cc/40?img=2', name: 'Arkadaş2', level: 15 },
+                { avatar: 'https://i.pravatar.cc/40?img=3', name: 'Arkadaş3', level: 20 },
             ];
 
             friends.forEach(friend => {
@@ -1536,7 +1655,7 @@
 
         // Invite Link Oluşturma Fonksiyonu
         function generateInviteLink() {
-            return `https://yourgameurl.com/?referral=${userId}`;
+            return `https://githubmeking.github.io/sada/?referral=${auth.currentUser.uid}`;
         }
 
         // Sosyal Paylaşım Butonlarına Invite Link Ekleme
