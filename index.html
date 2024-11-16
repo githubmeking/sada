@@ -65,13 +65,13 @@
             }
         }
 
-        /* Navigasyon Çubuğunu Alt Kısma Taşı */
+        /* Navigasyon Çubuğunu Alt Kısma Taşı ve Renk Değişikliği */
         #nav-container {
             position: fixed;
             bottom: 0;
             width: 100%;
             max-width: 600px;
-            background-color: #f0f0f0;
+            background: linear-gradient(135deg, #ffffff, #000000, #800080); /* Beyaz, Siyah, Eflatun Karışımı */
             padding: 10px 0;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
@@ -88,7 +88,7 @@
             justify-content: center;
             padding: 5px;
             font-size: 0.8em;
-            color: #333;
+            color: #ffffff; /* Beyaz metin */
             text-decoration: none;
             border-radius: 10px;
             cursor: pointer;
@@ -97,8 +97,8 @@
         }
 
         .nav-button:hover {
-            background-color: #e0e0e0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.2); /* Hafif beyaz arka plan */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .nav-button i {
@@ -520,13 +520,13 @@
 
         <!-- Dil Seçimi -->
          <div id="language-selection">
-        <button id="lang-tr" class="language-button" title="Türkçe">
-            🇹🇷
-        </button>
-        <button id="lang-en" class="language-button" title="English">
-            🇺🇸
-        </button>
-    </div>
+            <button id="lang-tr" class="language-button" title="Türkçe">
+                🇹🇷
+            </button>
+            <button id="lang-en" class="language-button" title="English">
+                🇺🇸
+            </button>
+        </div>
 
         <h2 id="player-stats-title">Oyuncu İstatistikleri</h2>
         <div id="home-stats">
@@ -1213,9 +1213,10 @@
             }
         }, 1000);
 
+        // Enerji Yenileme Oranını Artırma (5'ten 20'ye)
         setInterval(() => {
             if (gameState.energy < 1000) {
-                gameState.energy = Math.min(gameState.energy + 5, 1000);
+                gameState.energy = Math.min(gameState.energy + 20, 1000); // 20'ye çıkarıldı
                 updateDisplay();
                 console.log(`Enerji Yenileniyor: ${gameState.energy}`);
             }
@@ -1314,7 +1315,7 @@
 
             if (referralCountElement && inviteLinkElement) {
                 referralCountElement.textContent = referralCount;
-                const inviteLink = `https://t.me/no1livebot?start`;
+                const inviteLink = `https://t.me/no1livebot?start=${userId}`;
                 inviteLinkElement.href = inviteLink;
                 inviteLinkElement.textContent = inviteLink;
             } else {
