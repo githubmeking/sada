@@ -450,6 +450,86 @@
             }
         }
 
+        /* Arkadaşlar Bölümü İçin Ek Stil */
+        #social-share {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        #social-share button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        
+        #social-share button:nth-child(1) { /* Facebook */
+            background-color: #3b5998;
+        }
+        
+        #social-share button:nth-child(1):hover {
+            background-color: #2d4373;
+        }
+        
+        #social-share button:nth-child(2) { /* Twitter */
+            background-color: #1da1f2;
+        }
+        
+        #social-share button:nth-child(2):hover {
+            background-color: #0d95e8;
+        }
+        
+        #social-share button:nth-child(3) { /* WhatsApp */
+            background-color: #25d366;
+        }
+        
+        #social-share button:nth-child(3):hover {
+            background-color: #1ebe5a;
+        }
+        
+        #friends-list .friend {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .friend-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        
+        .friend-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .friend-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .friend-level {
+            color: #555;
+        }
+
+        /* Arkadaşlar Bölümünde Referans Bilgileri */
+        #referral-info {
+            margin: 15px 0;
+            font-size: 1em;
+            color: #333;
+        }
+
     </style>
 </head>
 <body>
@@ -577,6 +657,24 @@
         <p id="total-referrals-text">Toplam Davet Edilen Kişi Sayısı: <span id="referral-count">0</span></p>
         <p id="invite-link-text">Davet Linkin:</p>
         <a href="#" id="invite-link">Davet Linki Yükleniyor...</a>
+        
+        <!-- Sosyal Paylaşım Butonları -->
+        <div id="social-share">
+            <button onclick="shareOnFacebook()">Facebook'ta Paylaş</button>
+            <button onclick="shareOnTwitter()">Twitter'da Paylaş</button>
+            <button onclick="shareOnWhatsApp()">WhatsApp'ta Paylaş</button>
+        </div>
+        
+        <!-- Referans Bilgisi -->
+        <div id="referral-info">
+            +1 Davet = 20,000 Coin
+        </div>
+
+        <!-- Arkadaş Listesi -->
+        <h3>Arkadaş Listesi</h3>
+        <div id="friends-list">
+            <!-- Arkadaşlar dinamik olarak eklenecek -->
+        </div>
     </div>
 
     <!-- Navigasyon Çubuğu -->
@@ -654,6 +752,9 @@
                 remainingTime: (time) => `Kalan süre: ${time}`,
                 levelUpMessage: (level) => `Tebrikler! ${level}. seviyeye ulaştınız!`,
                 // Diğer metinler...
+                claimButton: "Al",
+                claimedButton: "Alındı",
+                levelUnreached: "Seviye Ulaşılamadı"
             },
             en: {
                 welcomeMessage: "Welcome to No1Game!",
@@ -706,12 +807,32 @@
                 rewardReady: "Reward is ready!",
                 remainingTime: (time) => `Time remaining: ${time}`,
                 levelUpMessage: (level) => `Congratulations! You've reached level ${level}!`,
-                // Other texts...
+                // Diğer metinler...
+                claimButton: "Claim",
+                claimedButton: "Claimed",
+                levelUnreached: "Level Unreached"
             }
         };
 
         // Seçili Dil
         let currentLanguage = localStorage.getItem('language') || 'tr';
+
+        // Kullanıcı ID'sini Oluşturma ve Saklama Fonksiyonu
+        function generateUserId() {
+            return 'user_' + Math.floor(Math.random() * 1000000);
+        }
+
+        if (!localStorage.getItem('userId')) {
+            const userId = generateUserId();
+            localStorage.setItem('userId', userId);
+        }
+
+        const userId = localStorage.getItem('userId');
+
+        // Referansları Saklamak için LocalStorage'da Bir Anahtar Oluşturma
+        if (!localStorage.getItem('referrals')) {
+            localStorage.setItem('referrals', JSON.stringify([]));
+        }
 
         // Dil Değiştirme Fonksiyonu
         function setLanguage(lang) {
@@ -1019,17 +1140,17 @@
                     button.disabled = false;
                     button.classList.add('enabled');
                     button.classList.remove('disabled');
-                    button.textContent = currentLanguage === 'tr' ? "Al" : "Claim";
+                    button.textContent = currentLanguage === 'tr' ? languageData[currentLanguage].claimButton : languageData[currentLanguage].claimButton;
                 } else if (awardedLevels[`reward_sv${level}`]) {
                     button.disabled = true;
                     button.classList.add('disabled');
                     button.classList.remove('enabled');
-                    button.textContent = currentLanguage === 'tr' ? "Alındı" : "Claimed";
+                    button.textContent = currentLanguage === 'tr' ? languageData[currentLanguage].claimedButton : languageData[currentLanguage].claimedButton;
                 } else {
                     button.disabled = true;
                     button.classList.add('disabled');
                     button.classList.remove('enabled');
-                    button.textContent = currentLanguage === 'tr' ? "Seviye Ulaşılamadı" : "Level Unreached";
+                    button.textContent = currentLanguage === 'tr' ? languageData[currentLanguage].levelUnreached : languageData[currentLanguage].levelUnreached;
                 }
             });
         }
@@ -1126,6 +1247,7 @@
             updateProgressBar();
             updateHomeDisplay();
             updateEarnRewards();
+            updateFriendsDisplay();
         }
 
         // Upgrade Butonlarının Güncellenmesi Fonksiyonu
@@ -1249,6 +1371,7 @@
         window.addEventListener("load", () => {
             loadGame();
             incrementDaysLoggedIn();
+            processReferral(); // Referansı işleme
             updateDailyRewardTimer();
 
             // Countdown Başlatma
@@ -1268,13 +1391,14 @@
 
             updateProgressBar(); // İlerleme çubuğunu güncelle
             displayDailyTip(); // Günlük ipucunu göster
+            loadFriendList(); // Arkadaş listesini yükle
 
             // Başlangıçta Boost bölümünü göster
             hideAllContainers();
             document.getElementById("boost-container").style.display = "block";
 
             // Friends Container için Davet Bilgilerini Güncelleme
-            updateFriendsContainer();
+            updateFriendsDisplay();
 
             // Dil Ayarını Güncelle
             updateLanguage();
@@ -1318,25 +1442,114 @@
             document.getElementById('daily-tip').textContent = `${languageData[currentLanguage].dailyTip} ${dailyTips[tipIndex]}`;
         }
 
-        // Friends Container için Davet Bilgilerini Güncelleme Fonksiyonu
-        function updateFriendsContainer() {
-            // URL'den referral ve userId bilgilerini al
+        // Referans İşleme Fonksiyonu
+        function processReferral() {
             const urlParams = new URLSearchParams(window.location.search);
-            const referralCount = urlParams.get('referrals') || 0;
-            const userId = urlParams.get('userId') || '0'; // Varsayılan '0'
+            const referralId = urlParams.get('referral');
+            if (referralId && referralId !== userId) { // Kendini referans yapmayı engelle
+                let referrals = JSON.parse(localStorage.getItem('referrals')) || [];
 
-            // Davet bilgilerini güncelle
-            const referralCountElement = document.getElementById("referral-count");
-            const inviteLinkElement = document.getElementById("invite-link");
+                // Aynı referansı birden fazla kez işleme
+                const existingReferral = referrals.find(r => r.referrerId === referralId && r.inviteeId === userId);
+                if (!existingReferral) {
+                    // Referans listesini güncelle
+                    referrals.push({ referrerId: referralId, inviteeId: userId, date: Date.now() });
+                    localStorage.setItem('referrals', JSON.stringify(referrals));
 
-            if (referralCountElement && inviteLinkElement) {
-                referralCountElement.textContent = referralCount;
-                const inviteLink = `https://t.me/no1livebot?start=${userId}`;
-                inviteLinkElement.href = inviteLink;
-                inviteLinkElement.textContent = inviteLink;
-            } else {
-                console.error("Davet bilgilerini güncellerken bir hata oluştu.");
+                    // Referans sahibine ve davet edilen kişiye 20,000 Coin ekle
+                    // Referans sahibinin userId'si localStorage'da saklanmadığı için burada sadece davet edilen kişiye ekleme yapılabilir
+                    // Gerçek uygulamada referans sahibinin coins bilgisi backend'de tutulmalıdır
+                    // Bu örnekte sadece davet edilen kişiye Coin ekleniyor
+
+                    gameState.coins += 20000; // Davet eden kişi
+                    addXP(20); // XP ekleme (isteğe bağlı)
+                    alert(`Bir arkadaşınızı davet ettiniz ve 20,000 Coin kazandınız!`);
+                    updateDisplay();
+
+                    // Referans linkini temizle
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
             }
+        }
+
+        // Referansları Görüntüleme Fonksiyonu
+        function updateFriendsDisplay() {
+            const referrals = JSON.parse(localStorage.getItem('referrals')) || [];
+            const totalReferrals = referrals.filter(r => r.referrerId === userId).length;
+            const totalReferralCoins = totalReferrals * 20000;
+
+            document.getElementById('referral-count').textContent = totalReferrals;
+            document.getElementById('referral-info').textContent = `+1 Davet = 20,000 Coin`;
+
+            // Eğer isterseniz toplam referanslardan kazanılan Coin'i de gösterebilirsiniz
+            // Örneğin, aşağıdaki gibi ekleyebilirsiniz:
+            /*
+            const referralCoinsInfo = document.createElement('div');
+            referralCoinsInfo.id = 'referral-coins-info';
+            referralCoinsInfo.textContent = `Toplam Referans Coin: ${totalReferralCoins.toLocaleString()} Coin`;
+            document.getElementById('friends-container').appendChild(referralCoinsInfo);
+            */
+        }
+
+        // Arkadaş Listesini Yükleme Fonksiyonu (Basit Örnek)
+        function loadFriendList() {
+            const friendsList = document.getElementById('friends-list');
+            friendsList.innerHTML = ""; // Önceki arkadaşları temizle
+
+            // Örnek Arkadaş Verileri (Gerçek uygulamada backend'den alınacak)
+            const friends = [
+                { avatar: 'avatar1.png', name: 'Arkadaş1', level: 10 },
+                { avatar: 'avatar2.png', name: 'Arkadaş2', level: 15 },
+                { avatar: 'avatar3.png', name: 'Arkadaş3', level: 20 },
+            ];
+
+            friends.forEach(friend => {
+                const friendDiv = document.createElement('div');
+                friendDiv.className = 'friend';
+                friendDiv.innerHTML = `
+                    <img src="${friend.avatar}" alt="${friend.name} Avatarı" class="friend-avatar">
+                    <div class="friend-info">
+                        <span class="friend-name">${friend.name}</span>
+                        <span class="friend-level">Seviye: ${friend.level}</span>
+                    </div>
+                `;
+                friendsList.appendChild(friendDiv);
+            });
+        }
+
+        // Sosyal Paylaşım Fonksiyonları
+        function shareOnFacebook() {
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const text = encodeURIComponent("No1Game'e katılmak için bu linki kullanın!");
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function shareOnWhatsApp() {
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://api.whatsapp.com/send?text=No1Game'e katılmak için bu linki kullanın: ${url}`, '_blank');
+        }
+
+        // Invite Link Oluşturma Fonksiyonu
+        function generateInviteLink() {
+            return `https://yourgameurl.com/?referral=${userId}`;
+        }
+
+        // Sosyal Paylaşım Butonlarına Invite Link Ekleme
+        function addSocialShareButtons() {
+            // Bu fonksiyon mevcut sosyal paylaşım butonlarını günceller
+            // Eğer invite link değişirse, bu fonksiyonu çağırmanız yeterlidir
+            document.getElementById('invite-link').href = generateInviteLink();
+            document.getElementById('invite-link').textContent = generateInviteLink();
+        }
+
+        // Arkadaş Listesini Güncelleme Fonksiyonu
+        function updateFriendList() {
+            loadFriendList();
         }
 
     </script>
