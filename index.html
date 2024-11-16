@@ -707,14 +707,14 @@
     <script>
         // Firebase Konfigürasyonu (Kendi projenizin bilgilerini buraya ekleyin)
         const firebaseConfig = {
-            apiKey: "AIzaSyCLjOwhgoLiZF-RXHyYrtFDrmsEAa-4aRQ",
-            authDomain: "no1game-2cfaa.firebaseapp.com",
-            projectId: "no1game-2cfaa",
-            storageBucket: "no1game-2cfaa.firebasestorage.app",
-            messagingSenderId: "490868626898",
-            appId: "1:490868626898:web:ab3a59f6366de4bef1e40b",
-            measurementId: "G-DHXZPNPEQ1"
-        };
+              apiKey: "AIzaSyCLjOwhgoLiZF-RXHyYrtFDrmsEAa-4aRQ",
+              authDomain: "no1game-2cfaa.firebaseapp.com",
+              projectId: "no1game-2cfaa",
+              storageBucket: "no1game-2cfaa.firebasestorage.app",
+              messagingSenderId: "490868626898",
+              appId: "1:490868626898:web:ab3a59f6366de4bef1e40b",
+              measurementId: "G-DHXZPNPEQ1"
+            };
 
         // Firebase'i Başlatma
         firebase.initializeApp(firebaseConfig);
@@ -1662,7 +1662,7 @@
         function generateInviteLink() {
             const user = auth.currentUser;
             if (user) {
-                return `https://githubmeking.github.io/sada/?referral=${user.uid}`;
+                return `https://your-github-username.github.io/your-repo-name/?referral=${user.uid}`;
             } else {
                 console.error("Kullanıcı bilgisi mevcut değil.");
                 return "#";
