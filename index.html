@@ -244,6 +244,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
+            font-family: 'Pacifico', cursive; /* Pacifico fontu */
         }
 
         #home-container h2 {
@@ -706,7 +707,7 @@
     <script>
         // Firebase Konfigürasyonu (Kendi projenizin bilgilerini buraya ekleyin)
         const firebaseConfig = {
-            apiKey: "AIzaSyCLjOwhgoLiZF-RXHyYrtFDrmsEAa-4aRQ",
+            apiKey: "YOUR_API_KEY",
             authDomain: "no1game-2cfaa.firebaseapp.com",
             projectId: "no1game-2cfaa",
             storageBucket: "no1game-2cfaa.firebasestorage.app",
@@ -880,6 +881,9 @@
 
             // Arkadaş Listesini Yükle
             loadFriendList();
+
+            // Sosyal Paylaşım Butonlarını Güncelle
+            addSocialShareButtons(); // Davet linkini oluşturmak için burada çağırıyoruz
         }
 
         // Dil Değiştirme Fonksiyonu
@@ -989,12 +993,12 @@
 
         // Başarımların Tanımlanması
         const predefinedAchievements = [
-            { id: 1, description: languageData[currentLanguage].achievement1, coinAmount: 50000, completed: false },
-            { id: 2, description: languageData[currentLanguage].achievement2, coinAmount: 100000, completed: false },
-            { id: 3, description: languageData[currentLanguage].achievement3, coinAmount: 200000, completed: false },
-            { id: 4, description: languageData[currentLanguage].achievement4, coinAmount: 300000, completed: false },
-            { id: 5, description: languageData[currentLanguage].achievement5, coinAmount: 1000000, completed: false },
-            { id: 6, description: languageData[currentLanguage].achievement6, farmCount: 500, completed: false }
+            { id: 1, description: "50.000 Coin Kazandınız!", coinAmount: 50000, completed: false },
+            { id: 2, description: "100.000 Coin Kazandınız!", coinAmount: 100000, completed: false },
+            { id: 3, description: "200.000 Coin Kazandınız!", coinAmount: 200000, completed: false },
+            { id: 4, description: "300.000 Coin Kazandınız!", coinAmount: 300000, completed: false },
+            { id: 5, description: "1.000.000 Coin Kazandınız!", coinAmount: 1000000, completed: false },
+            { id: 6, description: "500 Farm Yaptınız!", farmCount: 500, completed: false }
         ];
 
         // Başarımların Başlangıçta Yüklenmesi
@@ -1512,7 +1516,7 @@
             updateLanguage();
 
             // Sosyal Paylaşım Butonlarını Güncelle
-            addSocialShareButtons();
+            // addSocialShareButtons(); // Bu satırı kaldırın çünkü artık initializeUser içinde çağırılıyor
         });
 
         // Dil Seçimi Butonları
@@ -1565,11 +1569,12 @@
         async function processReferral() {
             const urlParams = new URLSearchParams(window.location.search);
             const referralId = urlParams.get('referral');
-            if (referralId && referralId !== auth.currentUser.uid) { // Kendini referans yapmayı engelle
+            const user = auth.currentUser;
+            if (referralId && referralId !== user.uid) { // Kendini referans yapmayı engelle
                 const referrerRef = db.collection('users').doc(referralId);
                 const referrerDoc = await referrerRef.get();
                 if (referrerDoc.exists) {
-                    const userRef = db.collection('users').doc(auth.currentUser.uid);
+                    const userRef = db.collection('users').doc(user.uid);
                     const userDoc = await userRef.get();
                     if (!userDoc.exists || !userDoc.data().referredBy) {
                         // Referans sahibine 20,000 Coin ekle
@@ -1655,22 +1660,33 @@
 
         // Invite Link Oluşturma Fonksiyonu
         function generateInviteLink() {
-            return `https://githubmeking.github.io/sada/?referral=${auth.currentUser.uid}`;
+            const user = auth.currentUser;
+            if (user) {
+                return `https://githubmeking.github.io/sada/?referral=${user.uid}`;
+            } else {
+                console.error("Kullanıcı bilgisi mevcut değil.");
+                return "#";
+            }
         }
 
         // Sosyal Paylaşım Butonlarına Invite Link Ekleme
         function addSocialShareButtons() {
-            // Bu fonksiyon mevcut sosyal paylaşım butonlarını günceller
-            // Eğer invite link değişirse, bu fonksiyonu çağırmanız yeterlidir
-            document.getElementById('invite-link').href = generateInviteLink();
-            document.getElementById('invite-link').textContent = generateInviteLink();
+            const inviteLinkElement = document.getElementById('invite-link');
+            const user = auth.currentUser;
+            if (user) {
+                const inviteLink = generateInviteLink();
+                inviteLinkElement.href = inviteLink;
+                inviteLinkElement.textContent = inviteLink;
+            } else {
+                console.error("Kullanıcı henüz oturum açmamış.");
+                inviteLinkElement.textContent = "Davet Linki Yüklenemedi.";
+            }
         }
 
         // Arkadaş Listesini Güncelleme Fonksiyonu
         function updateFriendList() {
             loadFriendList();
         }
-
     </script>
 </body>
 </html>
