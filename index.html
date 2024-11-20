@@ -28,6 +28,7 @@
             align-items: center;
             z-index: 1000;
             animation: fadeIn 2s;
+            flex-direction: column;
         }
 
         #welcome-overlay h1 {
@@ -35,6 +36,22 @@
             color: #1f3f60;
             text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8);
             font-family: 'Pacifico', cursive;
+            margin-bottom: 20px;
+        }
+
+        #welcome-overlay button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #welcome-overlay button:hover {
+            background-color: #45a049;
         }
 
         @keyframes fadeIn {
@@ -465,78 +482,13 @@
             border-radius: 8px;
             padding: 5px;
         }
-
-        /* Responsive Tasarım */
-        @media (max-width: 600px) {
-            #nav-container {
-                flex-direction: row;
-                justify-content: space-around;
-                padding: 10px 0;
-            }
-
-            .nav-button {
-                font-size: 0.8em;
-            }
-
-            .resource-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .upgrade-button {
-                font-size: 0.9em;
-                padding: 10px;
-            }
-
-            #language-selection {
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                display: flex;
-                gap: 10px;
-            }
-
-            .language-button {
-                background-color: #ffffffcc;
-                border: 2px solid #1f3f60;
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                font-size: 1.2em;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .language-button:hover {
-                background-color: #1f3f60;
-                color: #ffffff;
-                transform: scale(1.1);
-            }
-
-            .language-button:focus {
-                outline: none;
-                box-shadow: 0 0 0 3px rgba(31, 63, 96, 0.5);
-            }
-
-            #home-container {
-                position: relative;
-                margin-bottom: 100px;
-            }
-
-            .upgrades-container {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-        }
     </style>
 </head>
 <body>
     <!-- Hoş Geldin Overlay -->
     <div id="welcome-overlay">
         <h1 id="welcome-message">Hoş Geldiniz No1Game'e!</h1>
+        <button id="start-button">Oyuna Başla</button>
     </div>
 
     <!-- Boost Container (Geliştir) -->
@@ -626,7 +578,7 @@
         <h1 id="game-title">No1Game</h1>
 
         <!-- Dil Seçimi -->
-         <div id="language-selection">
+        <div id="language-selection">
             <button id="lang-tr" class="language-button" title="Türkçe">
                 🇹🇷
             </button>
@@ -744,12 +696,11 @@
                 claimButton: "Al",
                 claimedButton: "Alındı",
                 levelUnreached: "Seviye Ulaşılamadı",
-                achievement1: "50.000 Coin Kazandınız!",
-                achievement2: "100.000 Coin Kazandınız!",
-                achievement3: "200.000 Coin Kazandınız!",
-                achievement4: "300.000 Coin Kazandınız!",
-                achievement5: "1.000.000 Coin Kazandınız!",
-                achievement6: "500 Farm Yaptınız!"
+                levelRewardText: (level, xp) => `sv${level}: ${xp.toLocaleString()} XP`,
+                friendsTitle: "Arkadaşlar",
+                totalReferralsText: "Toplam Davet Edilen Kişi Sayısı:",
+                inviteLinkText: "Davet Linkin:",
+                inviteLinkUnavailable: "Davet Linki Yüklenemedi.",
             },
             en: {
                 welcomeMessage: "Welcome to No1Game!",
@@ -782,12 +733,11 @@
                 claimButton: "Claim",
                 claimedButton: "Claimed",
                 levelUnreached: "Level Unreached",
-                achievement1: "You've earned 50,000 Coins!",
-                achievement2: "You've earned 100,000 Coins!",
-                achievement3: "You've earned 200,000 Coins!",
-                achievement4: "You've earned 300,000 Coins!",
-                achievement5: "You've earned 1,000,000 Coins!",
-                achievement6: "You've farmed 500 times!"
+                levelRewardText: (level, xp) => `sv${level}: ${xp.toLocaleString()} XP`,
+                friendsTitle: "Friends",
+                totalReferralsText: "Total Referrals:",
+                inviteLinkText: "Your Invite Link:",
+                inviteLinkUnavailable: "Invite Link Unavailable.",
             }
         };
 
@@ -848,7 +798,7 @@
                 this.displayDailyTip();
                 this.processReferral();
                 this.incrementDaysLoggedIn();
-                this.showBoostContainer(); // Başlangıçta Geliştir Bölümünü Göster
+                this.updateEarnRewards();
             },
 
             // Load Game Data
@@ -870,7 +820,6 @@
                 this.updateDisplay();
                 this.updateXPDisplay();
                 this.styleNo1Game();
-                this.updateEarnRewards();
             },
 
             // Save Game Data
@@ -935,8 +884,7 @@
                             this.awardedLevels[`achievement_${achievement.id}`] = true;
                             localStorage.setItem('awardedLevels', JSON.stringify(this.awardedLevels));
 
-                            // Seviye ödüllerini güncelle
-                            // Firestore olmadığı için bu kısmı kaldırıyoruz
+                            // Level rewards can be handled here if needed
                         }
                     }
                 });
@@ -983,10 +931,10 @@
 
             // Update XP Display
             updateXPDisplay: function() {
-                document.getElementById("xp-text").textContent = this.playerXP;
+                document.getElementById("xp-text").textContent = this.playerXP.toLocaleString();
                 document.getElementById("home-level").textContent = this.playerLevel;
-                document.getElementById("home-xp").textContent = this.playerXP;
-                document.getElementById("home-xp-needed").textContent = this.playerLevel * 100;
+                document.getElementById("home-xp").textContent = this.playerXP.toLocaleString();
+                document.getElementById("home-xp-needed").textContent = (this.playerLevel * 100).toLocaleString();
                 document.getElementById("home-energy").textContent = this.state.energy;
             },
 
@@ -1097,8 +1045,8 @@
             updateHomeDisplay: function() {
                 document.getElementById("home-level").textContent = this.playerLevel;
                 document.getElementById("home-coins").textContent = Math.floor(this.state.coins).toLocaleString();
-                document.getElementById("home-xp").textContent = this.playerXP;
-                document.getElementById("home-xp-needed").textContent = this.playerLevel * 100;
+                document.getElementById("home-xp").textContent = this.playerXP.toLocaleString();
+                document.getElementById("home-xp-needed").textContent = (this.playerLevel * 100).toLocaleString();
                 document.getElementById("home-energy").textContent = this.state.energy;
             },
 
@@ -1208,6 +1156,12 @@
                 // Günlük ödül butonu
                 document.getElementById('collect-daily-reward-button').addEventListener('click', () => this.collectDailyReward());
 
+                // Start Game Button (Hoş Geldin Ekranını Kaldırma)
+                document.getElementById('start-button').addEventListener('click', () => {
+                    document.getElementById('welcome-overlay').style.display = 'none';
+                    this.showBoostContainer();
+                });
+
                 // Sayfa kapatılmadan önce kaydetme
                 window.addEventListener('beforeunload', () => this.saveGame());
             },
@@ -1311,7 +1265,7 @@
                 // Başarımlar
                 this.loadAchievements();
 
-                // Günlük Ödül Zamanlayıcısı
+                // Günlük ödül zamanlayıcısı
                 this.updateDailyRewardTimer();
             },
 
@@ -1320,7 +1274,7 @@
                 document.getElementById('coin-value').textContent = Math.floor(this.state.coins).toLocaleString();
                 document.getElementById('cps-value').textContent = this.state.autoCollectPower.toFixed(1);
                 document.getElementById('energy-value').textContent = Math.floor(this.state.energy).toLocaleString();
-                document.getElementById('xp-text').textContent = this.playerXP;
+                document.getElementById('xp-text').textContent = this.playerXP.toLocaleString();
 
                 // Yeni XP Multiplier
                 document.getElementById('xp-value').textContent = `${this.state.xpMultiplier.toFixed(1)}x`;
@@ -1424,7 +1378,7 @@
                     inviteLinkElement.textContent = inviteLink;
                 } else {
                     console.error("Kullanıcı henüz oluşturulmamış.");
-                    inviteLinkElement.textContent = "Davet Linki Yüklenemedi.";
+                    inviteLinkElement.textContent = languageData[currentLanguage].inviteLinkUnavailable;
                 }
             },
 
@@ -1475,13 +1429,6 @@
                 }
             },
 
-            // Update Friends Display
-            updateFriendsDisplay: function() {
-                const referrals = this.state.referrals || 0;
-                document.getElementById('referral-count').textContent = referrals;
-                document.getElementById('referral-info').textContent = `+1 Davet = 20.000 Coin`;
-            },
-
             // Display Daily Tip
             displayDailyTip: function() {
                 const dailyTips = currentLanguage === 'tr' ? [
@@ -1518,18 +1465,14 @@
         window.addEventListener('load', () => {
             Game.init();
 
-            // Başlangıçta Boost bölümünü göster
-            Game.hideAllContainers();
-            document.getElementById("boost-container").style.display = "block";
-
-            // Dil Ayarını Güncelle
-            Game.updateLanguage();
-
             // Arkadaş Listesini Yükle
             Game.loadFriendList();
 
             // Sosyal Paylaşım Butonlarını Güncelle
             Game.addSocialShareButtons();
+
+            // Update Language
+            Game.updateLanguage();
         });
 
     </script>
