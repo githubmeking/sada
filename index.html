@@ -25,56 +25,6 @@
             position: relative;
         }
 
-        /* Hoş Geldin Efekti */
-        #welcome-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        #welcome-overlay h1 {
-            color: #fff;
-            font-size: 3em;
-            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8);
-            animation: zoomIn 1s;
-        }
-
-        @keyframes zoomIn {
-            from {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Start Button */
-        .start-button {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-
-        .start-button:hover {
-            background-color: #45a049;
-        }
-
         /* Navigasyon Çubuğunu Alt Kısma Taşı ve Renk Değişikliği */
         #nav-container {
             position: fixed;
@@ -213,7 +163,7 @@
         /* Upgrades Container */
         .upgrades-container {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr; /* Dört sütun */
+            grid-template-columns: repeat(4, 1fr); /* Dört sütun */
             gap: 15px;
             margin: 20px 0;
             width: 100%;
@@ -439,7 +389,7 @@
             }
 
             .upgrades-container {
-                grid-template-columns: 1fr 1fr 1fr 1fr; /* Dört sütun */
+                grid-template-columns: repeat(4, 1fr); /* Dört sütun */
                 grid-template-rows: auto auto;
                 gap: 15px;
             }
@@ -527,16 +477,8 @@
     </style>
 </head>
 <body>
-    <!-- Hoş Geldin Overlay -->
-    <div id="welcome-overlay">
-        <div>
-            <h1 id="welcome-message">Hoş Geldiniz No1Game'e!</h1>
-            <button class="start-button" id="start-button">Oyuna Başla</button>
-        </div>
-    </div>
-
     <!-- Boost Container (Geliştir) -->
-    <div id="boost-container">
+    <div id="boost-container" style="display: block;">
         <h1 id="boost-section-title">Geliştir Bölümü</h1>
         <div class="resource-container">
             <div class="resource" id="coin-resource">
@@ -1207,7 +1149,7 @@
             }
         }
 
-        // Setup Event Listeners
+        // Event Listeners
         function setupEventListeners() {
             // Navigasyon butonları
             document.getElementById('nav-container').addEventListener('click', (event) => {
@@ -1234,13 +1176,6 @@
 
             // Günlük ödül butonu
             document.getElementById('collect-daily-reward-button').addEventListener('click', () => collectDailyReward());
-
-            // Start Game Button (Hoş Geldin Ekranını Kapatma)
-            document.getElementById('start-button').addEventListener('click', () => {
-                document.getElementById('welcome-overlay').style.display = 'none';
-                hideAllContainers();
-                document.getElementById("boost-container").style.display = "block";
-            });
 
             // Sayfa kapatılmadan önce kaydetme
             window.addEventListener('beforeunload', () => saveGame());
@@ -1290,7 +1225,6 @@
             const lang = languageData[currentLanguage];
 
             // Başlıkları güncelleme
-            document.getElementById('welcome-message').textContent = lang.welcomeMessage;
             document.getElementById('game-title').textContent = lang.gameTitle;
             document.getElementById('player-stats-title').textContent = lang.playerStatsTitle;
             document.getElementById('total-coins-stat').childNodes[0].textContent = `${lang.totalCoinsStat} `;
@@ -1348,6 +1282,9 @@
 
             // Günlük Ödül Zamanlayıcısı
             updateDailyRewardTimer();
+
+            // Günlük İpucu
+            displayDailyTip();
         }
 
         // Display Güncelleme Fonksiyonu
@@ -1497,31 +1434,7 @@
         }
 
         // Dil Değiştirme Fonksiyonu
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            localStorage.setItem('language', lang);
-            updateLanguage();
-        }
-
-        // Initialize Game on Load
-        window.addEventListener('load', () => {
-            loadGame();
-
-            // Arkadaş Listesini Yükle
-            loadFriendList();
-
-            // Sosyal Paylaşım Butonlarını Güncelle
-            addSocialShareButtons();
-
-            // Event Listeners
-            setupEventListeners();
-
-            // Start Intervals
-            startIntervals();
-
-            // Gün Sayısını Artır
-            incrementDaysLoggedIn();
-        });
+        // (Function already defined above)
 
         // Gün Sayısını Artırma Fonksiyonu
         function incrementDaysLoggedIn() {
@@ -1554,25 +1467,32 @@
             document.getElementById('daily-tip').textContent = `${languageData[currentLanguage].dailyTip} ${dailyTips[tipIndex]}`;
         }
 
+        // Initialize Game on Load
+        window.addEventListener('load', () => {
+            loadGame();
+
+            // Arkadaş Listesini Yükle
+            loadFriendList();
+
+            // Sosyal Paylaşım Butonlarını Güncelle
+            addSocialShareButtons();
+
+            // Event Listeners
+            setupEventListeners();
+
+            // Start Intervals
+            startIntervals();
+
+            // Referans işleme
+            processReferral();
+
+            // Gün Sayısını Artır
+            incrementDaysLoggedIn();
+        });
+
         // Display Güncelleme Fonksiyonu
-        // (Bu fonksiyon yalnızca bir kez tanımlandı, tekrar tanımlanmadı)
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-            document.getElementById('xp-text').textContent = playerXP.toLocaleString();
+        // (Function already defined above)
 
-            document.getElementById('click-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-            document.getElementById('xp-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
-
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeDisplay();
-            updateEarnRewards();
-            updateFriendsDisplay();
-        }
     </script>
 </body>
 </html>
