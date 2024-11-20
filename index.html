@@ -25,6 +25,46 @@
             position: relative;
         }
 
+        /* Hoş Geldin Efekti */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeOut 3s forwards 5s;
+        }
+
+        #welcome-overlay h1 {
+            color: #fff;
+            font-size: 3em;
+            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8);
+            animation: zoomIn 1s;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         /* Navigasyon Çubuğunu Alt Kısma Taşı ve Renk Değişikliği */
         #nav-container {
             position: fixed;
@@ -163,7 +203,7 @@
         /* Upgrades Container */
         .upgrades-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* Dört sütun */
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin: 20px 0;
             width: 100%;
@@ -322,6 +362,22 @@
             cursor: not-allowed;
         }
 
+        .start-button {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .start-button:hover {
+            background-color: #45a049;
+        }
+
         /* Responsive Tasarım */
         @media (max-width: 600px) {
             #nav-container {
@@ -389,7 +445,7 @@
             }
 
             .upgrades-container {
-                grid-template-columns: repeat(4, 1fr); /* Dört sütun */
+                grid-template-columns: 1fr 1fr;
                 grid-template-rows: auto auto;
                 gap: 15px;
             }
@@ -474,11 +530,17 @@
             font-size: 1em;
             color: #333;
         }
+
     </style>
 </head>
 <body>
+    <!-- Hoş Geldin Overlay -->
+    <div id="welcome-overlay">
+        <h1 id="welcome-message">Hoş Geldiniz No1Game'e!</h1>
+    </div>
+
     <!-- Boost Container (Geliştir) -->
-    <div id="boost-container" style="display: block;">
+    <div id="boost-container">
         <h1 id="boost-section-title">Geliştir Bölümü</h1>
         <div class="resource-container">
             <div class="resource" id="coin-resource">
@@ -513,10 +575,6 @@
             <button class="upgrade-button inactive" id="energy-upgrade">
                 <span id="energy-upgrade-text">Enerji Yükseltme</span>
                 <span class="upgrade-cost" id="energy-cost">Maliyet: 1.000 coin</span>
-            </button>
-            <button class="upgrade-button inactive" id="xp-upgrade">
-                <span id="xp-upgrade-text">XP Çoğaltıcı</span>
-                <span class="upgrade-cost" id="xp-cost">Maliyet: 500 coin</span>
             </button>
         </div>
     </div>
@@ -558,7 +616,7 @@
         <h1 id="game-title">No1Game</h1>
 
         <!-- Dil Seçimi -->
-        <div id="language-selection">
+         <div id="language-selection">
             <button id="lang-tr" class="language-button" title="Türkçe">
                 🇹🇷
             </button>
@@ -641,8 +699,6 @@
     </div>
 
     <script>
-        'use strict';
-
         // Dil Verileri
         const languageData = {
             tr: {
@@ -661,7 +717,6 @@
                 clickUpgrade: "Tıklama Güçlendirmesi",
                 autoUpgrade: "CPS Arttırma",
                 energyUpgrade: "Enerji Yükseltme",
-                xpUpgrade: "XP Çoğaltıcı",
                 upgradeCost: "Maliyet:",
                 // Başarımlar
                 achievement1: "50.000 Coin Kazandınız!",
@@ -718,7 +773,6 @@
                 clickUpgrade: "Click Enhancement",
                 autoUpgrade: "Increase CPS",
                 energyUpgrade: "Energy Upgrade",
-                xpUpgrade: "XP Multiplier",
                 upgradeCost: "Cost:",
                 // Achievements
                 achievement1: "You've earned 50,000 Coins!",
@@ -774,8 +828,7 @@
             upgrades: {
                 click: { level: 1, cost: 10 },
                 auto: { level: 0, cost: 50 },
-                energy: { level: 1, cost: 1000 },
-                xp: { level: 0, cost: 500 } // Yeni XP Çoğaltıcı
+                energy: { level: 1, cost: 1000 }
             },
             xpMultiplier: 1 // Başlangıçta 1
         };
@@ -869,8 +922,8 @@
                 console.error(`Geçersiz XP miktarı: ${amount}`);
                 return;
             }
-            playerXP += amount * gameState.xpMultiplier; // XP multiplier uygulama
-            console.log(`XP Eklendi: +${amount * gameState.xpMultiplier}, Toplam XP: ${playerXP}`);
+            playerXP += amount;
+            console.log(`XP Eklendi: +${amount}, Toplam XP: ${playerXP}`);
             updateXPDisplay();
             checkLevelUp();
         }
@@ -904,10 +957,10 @@
 
         // XP Display Güncelleme Fonksiyonu
         function updateXPDisplay() {
-            document.getElementById("xp-text").textContent = playerXP.toLocaleString();
+            document.getElementById("xp-text").textContent = playerXP;
             document.getElementById("home-level").textContent = playerLevel;
-            document.getElementById("home-xp").textContent = playerXP.toLocaleString();
-            document.getElementById("home-xp-needed").textContent = (playerLevel * 100).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
             document.getElementById("home-energy").textContent = gameState.energy;
         }
 
@@ -941,7 +994,7 @@
         let countdownInterval;
 
         // Günlük Ödül Toplama Fonksiyonu
-        function collectDailyReward() {
+        async function collectDailyReward() {
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
 
@@ -1020,8 +1073,8 @@
         function updateHomeDisplay() {
             document.getElementById("home-level").textContent = playerLevel;
             document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById("home-xp").textContent = playerXP.toLocaleString();
-            document.getElementById("home-xp-needed").textContent = (playerLevel * 100).toLocaleString();
+            document.getElementById("home-xp").textContent = playerXP;
+            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
             document.getElementById("home-energy").textContent = gameState.energy;
         }
 
@@ -1091,7 +1144,7 @@
 
         // Upgrade Butonlarının Güncellenmesi Fonksiyonu
         function updateUpgradeButtons() {
-            ['click', 'auto', 'energy', 'xp'].forEach(type => {
+            ['click', 'auto', 'energy'].forEach(type => {
                 const button = document.getElementById(`${type}-upgrade`);
                 const cost = gameState.upgrades[type].cost;
                 const canAfford = gameState.coins >= cost;
@@ -1134,9 +1187,6 @@
                     case 'energy':
                         gameState.energy += 200;
                         break;
-                    case 'xp':
-                        gameState.xpMultiplier += 0.5; // XP Multiplier Artırma
-                        break;
                 }
 
                 // Maliyetleri Güncelleme
@@ -1150,160 +1200,187 @@
         }
 
         // Event Listeners
-        function setupEventListeners() {
-            // Navigasyon butonları
-            document.getElementById('nav-container').addEventListener('click', (event) => {
-                const navButton = event.target.closest('.nav-button');
-                if(navButton) {
-                    hideAllContainers();
-                    const containerId = navButton.id.replace('-nav', '-container');
-                    document.getElementById(containerId).style.display = 'block';
-                }
-            });
+        document.getElementById("boost-nav").addEventListener("click", function() {
+            hideAllContainers();
+            document.getElementById("boost-container").style.display = "block";
+        });
 
-            // Farm butonu
-            document.getElementById('farm-button').addEventListener('click', handleFarmClick);
-            document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
+        document.getElementById("home-nav").addEventListener("click", function() {
+            hideAllContainers();
+            document.getElementById("home-container").style.display = "block";
+        });
 
-            // Upgrade butonları
-            ['click', 'auto', 'energy', 'xp'].forEach(type => {
-                document.getElementById(`${type}-upgrade`).addEventListener('click', () => handleUpgrade(type));
-            });
+        document.getElementById("earn-nav").addEventListener("click", function() {
+            hideAllContainers();
+            document.getElementById("earn-container").style.display = "block";
+        });
 
-            // Dil butonları
-            document.getElementById('lang-tr').addEventListener('click', () => setLanguage('tr'));
-            document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+        document.getElementById("friends-nav").addEventListener("click", function() {
+            hideAllContainers();
+            document.getElementById("friends-container").style.display = "block";
+        });
 
-            // Günlük ödül butonu
-            document.getElementById('collect-daily-reward-button').addEventListener('click', () => collectDailyReward());
+        document.getElementById('farm-button').addEventListener('click', handleFarmClick);
+        document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
 
-            // Sayfa kapatılmadan önce kaydetme
-            window.addEventListener('beforeunload', () => saveGame());
-        }
+        document.getElementById('click-upgrade').addEventListener('click', () => {
+            handleUpgrade('click');
+        });
 
-        // Start Intervals
-        function startIntervals() {
-            // Otomatik toplama
-            setInterval(() => {
-                if (gameState.autoCollectPower > 0) {
-                    gameState.coins += gameState.autoCollectPower;
-                    updateDisplay();
-                    updateAchievements(); // Coin arttıkça başarımları güncelle
-                    console.log(`Otomatik Toplama: +${gameState.autoCollectPower} Coin`);
-                    saveGame();
-                }
-            }, 1000);
+        document.getElementById('auto-upgrade').addEventListener('click', () => {
+            handleUpgrade('auto');
+        });
 
-            // Enerji yenileme
-            setInterval(() => {
-                if (gameState.energy < 1000) {
-                    gameState.energy = Math.min(gameState.energy + 20, 1000);
-                    updateDisplay();
-                    console.log(`Enerji Yenileniyor: ${gameState.energy}`);
-                    saveGame();
-                }
-            }, 1000);
+        document.getElementById('energy-upgrade').addEventListener('click', () => {
+            handleUpgrade('energy');
+        });
 
-            // XP ekleme
-            setInterval(() => {
-                addXP(1); // XP multiplier uygulanmış şekilde ekleniyor
-                updateDailyRewardTimer();
-                console.log(`Her saniye +${1 * gameState.xpMultiplier} XP`);
+        // Otomatik İşlemler
+        setInterval(() => {
+            if (gameState.autoCollectPower > 0) {
+                gameState.coins += gameState.autoCollectPower;
+                updateDisplay();
+                updateAchievements(); // Coin arttıkça başarımları güncelle
+                console.log(`Otomatik Toplama: +${gameState.autoCollectPower} Coin`);
                 saveGame();
-            }, 1000);
-        }
+            }
+        }, 1000);
 
-        // Set Language
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            localStorage.setItem('language', lang);
-            updateLanguage();
-        }
+        // Enerji Yenileme Oranını Artırma (5'ten 20'ye)
+        setInterval(() => {
+            if (gameState.energy < 1000) {
+                gameState.energy = Math.min(gameState.energy + 20, 1000); // 20'ye çıkarıldı
+                updateDisplay();
+                console.log(`Enerji Yenileniyor: ${gameState.energy}`);
+                saveGame();
+            }
+        }, 1000);
 
-        // Update Language
-        function updateLanguage() {
-            const lang = languageData[currentLanguage];
-
-            // Başlıkları güncelleme
-            document.getElementById('game-title').textContent = lang.gameTitle;
-            document.getElementById('player-stats-title').textContent = lang.playerStatsTitle;
-            document.getElementById('total-coins-stat').childNodes[0].textContent = `${lang.totalCoinsStat} `;
-            document.getElementById('level-stat').childNodes[0].textContent = `${lang.levelStat} `;
-            document.getElementById('xp-stat').childNodes[0].textContent = `${lang.xpStat} `;
-            document.getElementById('energy-stat').childNodes[0].textContent = `${lang.energyStat} `;
-            document.getElementById('achievements-title').textContent = lang.achievementsTitle;
-            document.getElementById('progress-title').textContent = lang.progressTitle;
-            document.getElementById('daily-tip').textContent = lang.dailyTip;
-
-            // Boost Bölümü (Geliştir)
-            document.getElementById('farm-button').textContent = lang.farmButton;
-            document.getElementById('boost-section-title').textContent = lang.boostSectionTitle;
-            document.getElementById('click-upgrade-text').textContent = lang.clickUpgrade;
-            document.getElementById('auto-upgrade-text').textContent = lang.autoUpgrade;
-            document.getElementById('energy-upgrade-text').textContent = lang.energyUpgrade;
-            document.getElementById('xp-upgrade-text').textContent = lang.xpUpgrade;
-            document.getElementById('click-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-            document.getElementById('xp-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
-
-            // Kaynak Başlıkları
-            document.getElementById('coin-title').textContent = lang.coinTitle;
-            document.getElementById('cps-title').textContent = lang.cpsTitle;
-            document.getElementById('energy-title').textContent = lang.energyTitle;
-            document.getElementById('xp-title').textContent = lang.xpTitle;
-
-            // Earn Bölümü (Kazanç)
-            document.getElementById('daily-reward-title').textContent = lang.dailyRewardTitle;
-            document.getElementById('collect-daily-reward-button').textContent = lang.collectDailyRewardButton;
-            document.getElementById('level-rewards-title').textContent = lang.levelRewardsTitle;
-
-            // Level Rewards Texts
-            document.getElementById('level-reward-10-text').textContent = lang.levelRewardText(10, 1000);
-            document.getElementById('level-reward-20-text').textContent = lang.levelRewardText(20, 2000);
-            document.getElementById('level-reward-30-text').textContent = lang.levelRewardText(30, 5000);
-            document.getElementById('level-reward-40-text').textContent = lang.levelRewardText(40, 7000);
-            document.getElementById('level-reward-50-text').textContent = lang.levelRewardText(50, 10000);
-            document.getElementById('level-reward-100-text').textContent = lang.levelRewardText(100, 50000);
-
-            // Friends Bölümü (Arkadaşlar)
-            document.getElementById('friends-title').textContent = lang.friendsTitle;
-            document.getElementById('total-referrals-text').childNodes[0].textContent = `${lang.totalReferralsText} `;
-            document.getElementById('invite-link-text').textContent = lang.inviteLinkText;
-
-            // Navigasyon Çubuğu
-            document.getElementById('nav-home-text').textContent = lang.navHome;
-            document.getElementById('nav-earn-text').textContent = lang.navEarn;
-            document.getElementById('nav-boost-text').textContent = lang.navBoost;
-            document.getElementById('nav-friends-text').textContent = lang.navFriends;
-
-            // Başarımlar
-            loadAchievements();
-
-            // Günlük Ödül Zamanlayıcısı
+        // XP Ekleyen setInterval
+        setInterval(() => {
+            addXP(gameState.xpMultiplier);
             updateDailyRewardTimer();
+            console.log(`Her saniye +${gameState.xpMultiplier} XP`);
+            saveGame();
+        }, 1000);
 
-            // Günlük İpucu
+        // Sayfa Yüklendiğinde
+        window.addEventListener("load", () => {
+            loadGame();
+
+            // Başlangıçta Boost bölümünü göster
+            hideAllContainers();
+            document.getElementById("boost-container").style.display = "block";
+
+            // Dil Ayarını Güncelle
+            updateLanguage();
+
+            // Günlük İpucu Gösterme
             displayDailyTip();
+
+            // Referans işleme
+            processReferral();
+
+            // Countdown Başlatma
+            if (lastCollected) {
+                const oneDay = 24 * 60 * 60 * 1000;
+                const now = Date.now();
+                const remainingTime = Math.max(0, oneDay - (now - lastCollected));
+                if (remainingTime > 0) {
+                    document.querySelector('.start-button').disabled = true;
+                    countdownInterval = setInterval(() => {
+                        const now = Date.now();
+                        const remainingTime = Math.max(0, oneDay - (now - lastCollected));
+                        if (remainingTime > 0) {
+                            document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].remainingTime(formatTime(remainingTime));
+                        } else {
+                            document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].rewardReady;
+                            document.querySelector('.start-button').disabled = false;
+                            clearInterval(countdownInterval);
+                        }
+                    }, 1000);
+                }
+            }
+
+            // Arkadaş Listesini Yükle
+            loadFriendList();
+
+            // Sosyal Paylaşım Butonlarını Güncelle
+            addSocialShareButtons();
+
+            // Gün Sayısını Artır
+            incrementDaysLoggedIn();
+        });
+
+        // Dil Seçimi Butonları
+        document.getElementById('lang-tr').addEventListener('click', () => setLanguage('tr'));
+        document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+
+        // Oyun Kapatılırken Kaydetme
+        window.addEventListener("beforeunload", saveGame);
+
+        // Gün Sayısını Artırma Fonksiyonu
+        function incrementDaysLoggedIn() {
+            const today = new Date().toDateString();
+            if (lastLoginDate !== today) {
+                daysLoggedIn++;
+                lastLoginDate = today;
+                localStorage.setItem('daysLoggedIn', daysLoggedIn);
+                localStorage.setItem('lastLoginDate', lastLoginDate);
+                updateHomeDisplay();
+                console.log(`Gün Sayısı Artırıldı: ${daysLoggedIn}`);
+            }
         }
 
-        // Display Güncelleme Fonksiyonu
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-            document.getElementById('xp-text').textContent = playerXP.toLocaleString();
+        // Günlük İpucu Fonksiyonu
+        function displayDailyTip() {
+            const dailyTips = currentLanguage === 'tr' ? [
+                "Enerjinizi daha verimli kullanmak için enerji yükseltmelerini tercih edin!",
+                "Otomatik toplayıcılarınızı yükselterek daha fazla coin kazanın!",
+                "Seviye ödüllerini kaçırmayın, her seviyede büyük ödüller sizi bekliyor!",
+                "Daha fazla XP kazanmak için farm butonuna sık sık tıklayın!"
+            ] : [
+                "Prioritize energy upgrades to use your energy more efficiently!",
+                "Upgrade your auto collectors to earn more coins!",
+                "Don't miss level rewards; great prizes await at each level!",
+                "Click the farm button frequently to earn more XP!"
+            ];
+            const today = new Date().getDate();
+            const tipIndex = today % dailyTips.length;
+            document.getElementById('daily-tip').textContent = `${languageData[currentLanguage].dailyTip} ${dailyTips[tipIndex]}`;
+        }
 
-            document.getElementById('click-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-            document.getElementById('xp-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.xp.cost.toLocaleString()} coin`;
+        // Referans İşleme Fonksiyonu
+        function processReferral() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const referralId = urlParams.get('referral');
 
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeDisplay();
-            updateEarnRewards();
-            updateFriendsDisplay();
+            if (referralId) { // Referans kontrolü yap
+                // Kendi kullanıcı ID'nizi alın ya da oluşturun
+                let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) {
+                    currentUser = createNewUser();
+                }
+
+                if (referralId !== currentUser.id) { // Kendini referans yapmayı engelle
+                    let referrerData = JSON.parse(localStorage.getItem(`user_${referralId}`));
+                    if (referrerData && !referrerData.referralsMade) {
+                        referrerData.coins += 20000;
+                        referrerData.referrals += 1;
+                        referrerData.referralsMade = true; // Aynı referansın tekrar kullanılmasını engelle
+                        localStorage.setItem(`user_${referralId}`, JSON.stringify(referrerData));
+
+                        alert(`Bir arkadaşınızı davet ettiniz ve 20.000 Coin kazandınız!`);
+                        // Kendi referans bilgilerinizi güncelle
+                        gameState.referrals += 1;
+                        saveGame();
+                        updateDisplay();
+                    }
+                }
+
+                // Referans linkini temizle
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
 
         // Referansları Görüntüleme Fonksiyonu
@@ -1400,6 +1477,765 @@
             return userData;
         }
 
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const gameData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                awardedLevels: awardedLevels,
+                lastCollected: lastCollected,
+                daysLoggedIn: daysLoggedIn,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem('no1gameData', JSON.stringify(gameData));
+            console.log("Oyun kaydedildi.");
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = JSON.parse(localStorage.getItem('no1gameData'));
+            if (savedData) {
+                gameState = savedData.gameState || gameState;
+                playerXP = savedData.playerXP || playerXP;
+                playerLevel = savedData.playerLevel || playerLevel;
+                awardedLevels = savedData.awardedLevels || awardedLevels;
+                lastCollected = savedData.lastCollected || lastCollected;
+                daysLoggedIn = savedData.daysLoggedIn || daysLoggedIn;
+                lastLoginDate = savedData.lastLoginDate || lastLoginDate;
+                console.log("Oyun yüklendi:", savedData);
+            } else {
+                console.log("Yeni oyun başlatılıyor.");
+                saveGame(); // İlk başlatmada veriyi kaydet
+            }
+
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            styleNo1Game();
+            updateEarnRewards();
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+
+            document.getElementById('click-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewards();
+            updateFriendsDisplay();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Referansları Görüntüleme Fonksiyonu
+        function updateFriendsDisplay() {
+            const referrals = gameState.referrals || 0;
+            document.getElementById('referral-count').textContent = referrals;
+            document.getElementById('referral-info').textContent = `+1 Davet = 20.000 Coin`;
+        }
+
+        // Arkadaş Listesini Yükleme Fonksiyonu (Gerçek Uygulamada Arkadaş Verileri Backend'den Alınacak)
+        function loadFriendList() {
+            const friendsList = document.getElementById('friends-list');
+            friendsList.innerHTML = ""; // Önceki arkadaşları temizle
+
+            // Gerçek uygulamada, arkadaş verilerini başka bir kaynaktan almanız gerekecek
+            // Bu örnekte statik arkadaş verileri gösteriliyor
+            const friends = [
+                { avatar: 'https://i.pravatar.cc/40?img=1', name: 'Arkadaş1', level: 10 },
+                { avatar: 'https://i.pravatar.cc/40?img=2', name: 'Arkadaş2', level: 15 },
+                { avatar: 'https://i.pravatar.cc/40?img=3', name: 'Arkadaş3', level: 20 },
+            ];
+
+            friends.forEach(friend => {
+                const friendDiv = document.createElement('div');
+                friendDiv.className = 'friend';
+                friendDiv.innerHTML = `
+                    <img src="${friend.avatar}" alt="${friend.name} Avatarı" class="friend-avatar">
+                    <div class="friend-info">
+                        <span class="friend-name">${friend.name}</span>
+                        <span class="friend-level">Seviye: ${friend.level}</span>
+                    </div>
+                `;
+                friendsList.appendChild(friendDiv);
+            });
+        }
+
+        // Sosyal Paylaşım Fonksiyonları
+        function shareOnFacebook() {
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const text = encodeURIComponent("No1Game'e katılmak için bu linki kullanın!");
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function shareOnWhatsApp() {
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://api.whatsapp.com/send?text=No1Game'e katılmak için bu linki kullanın: ${url}`, '_blank');
+        }
+
+        // Invite Link Oluşturma Fonksiyonu
+        function generateInviteLink() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                return `${window.location.origin}${window.location.pathname}?referral=${currentUser.id}`;
+            } else {
+                console.error("Kullanıcı henüz oluşturulmamış.");
+                return "#";
+            }
+        }
+
+        // Sosyal Paylaşım Butonlarına Invite Link Ekleme
+        function addSocialShareButtons() {
+            const inviteLinkElement = document.getElementById('invite-link');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                const inviteLink = generateInviteLink();
+                console.log("Invite Link:", inviteLink); // Davet linkini konsola yazdır
+                inviteLinkElement.href = inviteLink;
+                inviteLinkElement.textContent = inviteLink;
+            } else {
+                console.error("Kullanıcı henüz oluşturulmamış.");
+                inviteLinkElement.textContent = "Davet Linki Yüklenemedi.";
+            }
+        }
+
+        // Kullanıcı Oluşturma Fonksiyonu
+        function createNewUser() {
+            const userId = 'user_' + Math.random().toString(36).substr(2, 9); // Benzersiz bir kullanıcı ID'si oluştur
+            const userData = {
+                id: userId,
+                coins: gameState.coins,
+                referrals: gameState.referrals || 0,
+                farmCount: gameState.farmCount || 0,
+                upgrades: gameState.upgrades || {},
+                awardedLevels: awardedLevels || {},
+                referralsMade: false
+            };
+            localStorage.setItem(`user_${userId}`, JSON.stringify(userData));
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            return userData;
+        }
+
+        // Referansları Görüntüleme Fonksiyonu
+        function updateFriendsDisplay() {
+            const referrals = gameState.referrals || 0;
+            document.getElementById('referral-count').textContent = referrals;
+            document.getElementById('referral-info').textContent = `+1 Davet = 20.000 Coin`;
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const gameData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                awardedLevels: awardedLevels,
+                lastCollected: lastCollected,
+                daysLoggedIn: daysLoggedIn,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem('no1gameData', JSON.stringify(gameData));
+            console.log("Oyun kaydedildi.");
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = JSON.parse(localStorage.getItem('no1gameData'));
+            if (savedData) {
+                gameState = savedData.gameState || gameState;
+                playerXP = savedData.playerXP || playerXP;
+                playerLevel = savedData.playerLevel || playerLevel;
+                awardedLevels = savedData.awardedLevels || awardedLevels;
+                lastCollected = savedData.lastCollected || lastCollected;
+                daysLoggedIn = savedData.daysLoggedIn || daysLoggedIn;
+                lastLoginDate = savedData.lastLoginDate || lastLoginDate;
+                console.log("Oyun yüklendi:", savedData);
+            } else {
+                console.log("Yeni oyun başlatılıyor.");
+                saveGame(); // İlk başlatmada veriyi kaydet
+            }
+
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            styleNo1Game();
+            updateEarnRewards();
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+
+            document.getElementById('click-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewards();
+            updateFriendsDisplay();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Referansları Görüntüleme Fonksiyonu
+        function updateFriendsDisplay() {
+            const referrals = gameState.referrals || 0;
+            document.getElementById('referral-count').textContent = referrals;
+            document.getElementById('referral-info').textContent = `+1 Davet = 20.000 Coin`;
+        }
+
+        // Arkadaş Listesini Yükleme Fonksiyonu (Gerçek Uygulamada Arkadaş Verileri Backend'den Alınacak)
+        function loadFriendList() {
+            const friendsList = document.getElementById('friends-list');
+            friendsList.innerHTML = ""; // Önceki arkadaşları temizle
+
+            // Gerçek uygulamada, arkadaş verilerini başka bir kaynaktan almanız gerekecek
+            // Bu örnekte statik arkadaş verileri gösteriliyor
+            const friends = [
+                { avatar: 'https://i.pravatar.cc/40?img=1', name: 'Arkadaş1', level: 10 },
+                { avatar: 'https://i.pravatar.cc/40?img=2', name: 'Arkadaş2', level: 15 },
+                { avatar: 'https://i.pravatar.cc/40?img=3', name: 'Arkadaş3', level: 20 },
+            ];
+
+            friends.forEach(friend => {
+                const friendDiv = document.createElement('div');
+                friendDiv.className = 'friend';
+                friendDiv.innerHTML = `
+                    <img src="${friend.avatar}" alt="${friend.name} Avatarı" class="friend-avatar">
+                    <div class="friend-info">
+                        <span class="friend-name">${friend.name}</span>
+                        <span class="friend-level">Seviye: ${friend.level}</span>
+                    </div>
+                `;
+                friendsList.appendChild(friendDiv);
+            });
+        }
+
+        // Sosyal Paylaşım Fonksiyonları
+        function shareOnFacebook() {
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const text = encodeURIComponent("No1Game'e katılmak için bu linki kullanın!");
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function shareOnWhatsApp() {
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://api.whatsapp.com/send?text=No1Game'e katılmak için bu linki kullanın: ${url}`, '_blank');
+        }
+
+        // Invite Link Oluşturma Fonksiyonu
+        function generateInviteLink() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                return `${window.location.origin}${window.location.pathname}?referral=${currentUser.id}`;
+            } else {
+                console.error("Kullanıcı henüz oluşturulmamış.");
+                return "#";
+            }
+        }
+
+        // Sosyal Paylaşım Butonlarına Invite Link Ekleme
+        function addSocialShareButtons() {
+            const inviteLinkElement = document.getElementById('invite-link');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                const inviteLink = generateInviteLink();
+                console.log("Invite Link:", inviteLink); // Davet linkini konsola yazdır
+                inviteLinkElement.href = inviteLink;
+                inviteLinkElement.textContent = inviteLink;
+            } else {
+                console.error("Kullanıcı henüz oluşturulmamış.");
+                inviteLinkElement.textContent = "Davet Linki Yüklenemedi.";
+            }
+        }
+
+        // Kullanıcı Oluşturma Fonksiyonu
+        function createNewUser() {
+            const userId = 'user_' + Math.random().toString(36).substr(2, 9); // Benzersiz bir kullanıcı ID'si oluştur
+            const userData = {
+                id: userId,
+                coins: gameState.coins,
+                referrals: gameState.referrals || 0,
+                farmCount: gameState.farmCount || 0,
+                upgrades: gameState.upgrades || {},
+                awardedLevels: awardedLevels || {},
+                referralsMade: false
+            };
+            localStorage.setItem(`user_${userId}`, JSON.stringify(userData));
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            return userData;
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const gameData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                awardedLevels: awardedLevels,
+                lastCollected: lastCollected,
+                daysLoggedIn: daysLoggedIn,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem('no1gameData', JSON.stringify(gameData));
+            console.log("Oyun kaydedildi.");
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = JSON.parse(localStorage.getItem('no1gameData'));
+            if (savedData) {
+                gameState = savedData.gameState || gameState;
+                playerXP = savedData.playerXP || playerXP;
+                playerLevel = savedData.playerLevel || playerLevel;
+                awardedLevels = savedData.awardedLevels || awardedLevels;
+                lastCollected = savedData.lastCollected || lastCollected;
+                daysLoggedIn = savedData.daysLoggedIn || daysLoggedIn;
+                lastLoginDate = savedData.lastLoginDate || lastLoginDate;
+                console.log("Oyun yüklendi:", savedData);
+            } else {
+                console.log("Yeni oyun başlatılıyor.");
+                saveGame(); // İlk başlatmada veriyi kaydet
+            }
+
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            styleNo1Game();
+            updateEarnRewards();
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+
+            document.getElementById('click-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewards();
+            updateFriendsDisplay();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Referansları Görüntüleme Fonksiyonu
+        function updateFriendsDisplay() {
+            const referrals = gameState.referrals || 0;
+            document.getElementById('referral-count').textContent = referrals;
+            document.getElementById('referral-info').textContent = `+1 Davet = 20.000 Coin`;
+        }
+
+        // Arkadaş Listesini Yükleme Fonksiyonu (Gerçek Uygulamada Arkadaş Verileri Backend'den Alınacak)
+        function loadFriendList() {
+            const friendsList = document.getElementById('friends-list');
+            friendsList.innerHTML = ""; // Önceki arkadaşları temizle
+
+            // Gerçek uygulamada, arkadaş verilerini başka bir kaynaktan almanız gerekecek
+            // Bu örnekte statik arkadaş verileri gösteriliyor
+            const friends = [
+                { avatar: 'https://i.pravatar.cc/40?img=1', name: 'Arkadaş1', level: 10 },
+                { avatar: 'https://i.pravatar.cc/40?img=2', name: 'Arkadaş2', level: 15 },
+                { avatar: 'https://i.pravatar.cc/40?img=3', name: 'Arkadaş3', level: 20 },
+            ];
+
+            friends.forEach(friend => {
+                const friendDiv = document.createElement('div');
+                friendDiv.className = 'friend';
+                friendDiv.innerHTML = `
+                    <img src="${friend.avatar}" alt="${friend.name} Avatarı" class="friend-avatar">
+                    <div class="friend-info">
+                        <span class="friend-name">${friend.name}</span>
+                        <span class="friend-level">Seviye: ${friend.level}</span>
+                    </div>
+                `;
+                friendsList.appendChild(friendDiv);
+            });
+        }
+
+        // Sosyal Paylaşım Fonksiyonları
+        function shareOnFacebook() {
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const text = encodeURIComponent("No1Game'e katılmak için bu linki kullanın!");
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function shareOnWhatsApp() {
+            const url = encodeURIComponent(generateInviteLink());
+            window.open(`https://api.whatsapp.com/send?text=No1Game'e katılmak için bu linki kullanın: ${url}`, '_blank');
+        }
+
+        // Invite Link Oluşturma Fonksiyonu
+        function generateInviteLink() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                return `${window.location.origin}${window.location.pathname}?referral=${currentUser.id}`;
+            } else {
+                console.error("Kullanıcı henüz oluşturulmamış.");
+                return "#";
+            }
+        }
+
+        // Sosyal Paylaşım Butonlarına Invite Link Ekleme
+        function addSocialShareButtons() {
+            const inviteLinkElement = document.getElementById('invite-link');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                const inviteLink = generateInviteLink();
+                console.log("Invite Link:", inviteLink); // Davet linkini konsola yazdır
+                inviteLinkElement.href = inviteLink;
+                inviteLinkElement.textContent = inviteLink;
+            } else {
+                console.error("Kullanıcı henüz oluşturulmamış.");
+                inviteLinkElement.textContent = "Davet Linki Yüklenemedi.";
+            }
+        }
+
+        // Kullanıcı Oluşturma Fonksiyonu
+        function createNewUser() {
+            const userId = 'user_' + Math.random().toString(36).substr(2, 9); // Benzersiz bir kullanıcı ID'si oluştur
+            const userData = {
+                id: userId,
+                coins: gameState.coins,
+                referrals: gameState.referrals || 0,
+                farmCount: gameState.farmCount || 0,
+                upgrades: gameState.upgrades || {},
+                awardedLevels: awardedLevels || {},
+                referralsMade: false
+            };
+            localStorage.setItem(`user_${userId}`, JSON.stringify(userData));
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            return userData;
+        }
+
+        // Oyun Verilerini Kaydetme Fonksiyonu
+        function saveGame() {
+            const gameData = {
+                gameState: gameState,
+                playerXP: playerXP,
+                playerLevel: playerLevel,
+                awardedLevels: awardedLevels,
+                lastCollected: lastCollected,
+                daysLoggedIn: daysLoggedIn,
+                lastLoginDate: lastLoginDate
+            };
+            localStorage.setItem('no1gameData', JSON.stringify(gameData));
+            console.log("Oyun kaydedildi.");
+        }
+
+        // Oyun Verilerini Yükleme Fonksiyonu
+        function loadGame() {
+            const savedData = JSON.parse(localStorage.getItem('no1gameData'));
+            if (savedData) {
+                gameState = savedData.gameState || gameState;
+                playerXP = savedData.playerXP || playerXP;
+                playerLevel = savedData.playerLevel || playerLevel;
+                awardedLevels = savedData.awardedLevels || awardedLevels;
+                lastCollected = savedData.lastCollected || lastCollected;
+                daysLoggedIn = savedData.daysLoggedIn || daysLoggedIn;
+                lastLoginDate = savedData.lastLoginDate || lastLoginDate;
+                console.log("Oyun yüklendi:", savedData);
+            } else {
+                console.log("Yeni oyun başlatılıyor.");
+                saveGame(); // İlk başlatmada veriyi kaydet
+            }
+
+            loadAchievements(); // Başarımları yükle
+            updateDisplay();
+            updateXPDisplay();
+            updateHomeDisplay();
+            styleNo1Game();
+            updateEarnRewards();
+        }
+
+        // Display Güncelleme Fonksiyonu
+        function updateDisplay() {
+            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
+            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
+            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
+            document.getElementById('xp-text').textContent = playerXP;
+
+            document.getElementById('click-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+
+            updateUpgradeButtons();
+            updateProgressBar();
+            updateHomeDisplay();
+            updateEarnRewards();
+            updateFriendsDisplay();
+        }
+
+        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
+        function updateUpgradeButtons() {
+            ['click', 'auto', 'energy'].forEach(type => {
+                const button = document.getElementById(`${type}-upgrade`);
+                const cost = gameState.upgrades[type].cost;
+                const canAfford = gameState.coins >= cost;
+                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
+                button.disabled = !canAfford;
+            });
+        }
+
+        // Farm Butonuna Tıklama Fonksiyonu
+        function handleFarmClick() {
+            if (gameState.energy >= 33) {
+                gameState.coins += gameState.clickPower;
+                gameState.energy -= 33;
+                gameState.farmCount += 1;
+                addXP(10);
+                updateDisplay();
+                updateAchievements(); // Farm sayısı arttıkça başarımları güncelle
+                console.log("Farm yapıldı. Coin:", gameState.coins, "Enerji:", gameState.energy, "Farm Sayısı:", gameState.farmCount, "XP:", playerXP);
+                saveGame();
+            } else {
+                alert(languageData[currentLanguage].notEnoughEnergy);
+            }
+        }
+
+        // Upgrade Yapma Fonksiyonu
+        function handleUpgrade(type) {
+            const cost = gameState.upgrades[type].cost;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                totalCoinsSpent += cost;
+                console.log(`Upgrade Yapıldı: ${type}, Maliyet: ${cost}, Kalan Coin: ${gameState.coins}`);
+
+                switch(type) {
+                    case 'click':
+                        gameState.clickPower = Math.floor(gameState.clickPower * 1.5);
+                        break;
+                    case 'auto':
+                        gameState.autoCollectPower += 1;
+                        break;
+                    case 'energy':
+                        gameState.energy += 200;
+                        break;
+                }
+
+                // Maliyetleri Güncelleme
+                gameState.upgrades[type].cost = Math.floor(cost * 2);
+                gameState.upgrades[type].level++;
+                updateDisplay();
+                saveGame();
+            } else {
+                alert(languageData[currentLanguage].notEnoughCoins);
+            }
+        }
+
+        // Event Listeners
+        document.getElementById("boost-nav").addEventListener("click", function() {
+            hideAllContainers();
+            document.getElementById("boost-container").style.display = "block";
+        });
+
+        document.getElementById("home-nav").addEventListener("click", function() {
+            hideAllContainers();
+            document.getElementById("home-container").style.display = "block";
+        });
+
+        document.getElementById("earn-nav").addEventListener("click", function() {
+            hideAllContainers();
+            document.getElementById("earn-container").style.display = "block";
+        });
+
+        document.getElementById("friends-nav").addEventListener("click", function() {
+            hideAllContainers();
+            document.getElementById("friends-container").style.display = "block";
+        });
+
+        document.getElementById('farm-button').addEventListener('click', handleFarmClick);
+        document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
+
+        document.getElementById('click-upgrade').addEventListener('click', () => {
+            handleUpgrade('click');
+        });
+
+        document.getElementById('auto-upgrade').addEventListener('click', () => {
+            handleUpgrade('auto');
+        });
+
+        document.getElementById('energy-upgrade').addEventListener('click', () => {
+            handleUpgrade('energy');
+        });
+
+        // Otomatik İşlemler
+        setInterval(() => {
+            if (gameState.autoCollectPower > 0) {
+                gameState.coins += gameState.autoCollectPower;
+                updateDisplay();
+                updateAchievements(); // Coin arttıkça başarımları güncelle
+                console.log(`Otomatik Toplama: +${gameState.autoCollectPower} Coin`);
+                saveGame();
+            }
+        }, 1000);
+
+        // Enerji Yenileme Oranını Artırma (5'ten 20'ye)
+        setInterval(() => {
+            if (gameState.energy < 1000) {
+                gameState.energy = Math.min(gameState.energy + 20, 1000); // 20'ye çıkarıldı
+                updateDisplay();
+                console.log(`Enerji Yenileniyor: ${gameState.energy}`);
+                saveGame();
+            }
+        }, 1000);
+
+        // XP Ekleyen setInterval
+        setInterval(() => {
+            addXP(gameState.xpMultiplier);
+            updateDailyRewardTimer();
+            console.log(`Her saniye +${gameState.xpMultiplier} XP`);
+            saveGame();
+        }, 1000);
+
+        // Sayfa Yüklendiğinde
+        window.addEventListener("load", () => {
+            loadGame();
+
+            // Başlangıçta Boost bölümünü göster
+            hideAllContainers();
+            document.getElementById("boost-container").style.display = "block";
+
+            // Dil Ayarını Güncelle
+            updateLanguage();
+
+            // Günlük İpucu Gösterme
+            displayDailyTip();
+
+            // Referans işleme
+            processReferral();
+
+            // Countdown Başlatma
+            if (lastCollected) {
+                const oneDay = 24 * 60 * 60 * 1000;
+                const now = Date.now();
+                const remainingTime = Math.max(0, oneDay - (now - lastCollected));
+                if (remainingTime > 0) {
+                    document.querySelector('.start-button').disabled = true;
+                    countdownInterval = setInterval(() => {
+                        const now = Date.now();
+                        const remainingTime = Math.max(0, oneDay - (now - lastCollected));
+                        if (remainingTime > 0) {
+                            document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].remainingTime(formatTime(remainingTime));
+                        } else {
+                            document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].rewardReady;
+                            document.querySelector('.start-button').disabled = false;
+                            clearInterval(countdownInterval);
+                        }
+                    }, 1000);
+                }
+            }
+
+            // Arkadaş Listesini Yükle
+            loadFriendList();
+
+            // Sosyal Paylaşım Butonlarını Güncelle
+            addSocialShareButtons();
+
+            // Gün Sayısını Artır
+            incrementDaysLoggedIn();
+        });
+
+        // Dil Seçimi Butonları
+        document.getElementById('lang-tr').addEventListener('click', () => setLanguage('tr'));
+        document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+
+        // Gün Sayısını Artırma Fonksiyonu
+        function incrementDaysLoggedIn() {
+            const today = new Date().toDateString();
+            if (lastLoginDate !== today) {
+                daysLoggedIn++;
+                lastLoginDate = today;
+                localStorage.setItem('daysLoggedIn', daysLoggedIn);
+                localStorage.setItem('lastLoginDate', lastLoginDate);
+                updateHomeDisplay();
+                console.log(`Gün Sayısı Artırıldı: ${daysLoggedIn}`);
+            }
+        }
+
+        // Günlük İpucu Fonksiyonu
+        function displayDailyTip() {
+            const dailyTips = currentLanguage === 'tr' ? [
+                "Enerjinizi daha verimli kullanmak için enerji yükseltmelerini tercih edin!",
+                "Otomatik toplayıcılarınızı yükselterek daha fazla coin kazanın!",
+                "Seviye ödüllerini kaçırmayın, her seviyede büyük ödüller sizi bekliyor!",
+                "Daha fazla XP kazanmak için farm butonuna sık sık tıklayın!"
+            ] : [
+                "Prioritize energy upgrades to use your energy more efficiently!",
+                "Upgrade your auto collectors to earn more coins!",
+                "Don't miss level rewards; great prizes await at each level!",
+                "Click the farm button frequently to earn more XP!"
+            ];
+            const today = new Date().getDate();
+            const tipIndex = today % dailyTips.length;
+            document.getElementById('daily-tip').textContent = `${languageData[currentLanguage].dailyTip} ${dailyTips[tipIndex]}`;
+        }
+
         // Referans İşleme Fonksiyonu
         function processReferral() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -1434,64 +2270,74 @@
         }
 
         // Dil Değiştirme Fonksiyonu
-        // (Function already defined above)
-
-        // Gün Sayısını Artırma Fonksiyonu
-        function incrementDaysLoggedIn() {
-            const today = new Date().toDateString();
-            if (lastLoginDate !== today) {
-                daysLoggedIn++;
-                lastLoginDate = today;
-                localStorage.setItem('daysLoggedIn', daysLoggedIn);
-                localStorage.setItem('lastLoginDate', lastLoginDate);
-                updateHomeDisplay();
-                console.log(`Gün Sayısı Artırıldı: ${daysLoggedIn}`);
-            }
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            updateLanguage();
         }
 
-        // Günlük İpucu Fonksiyonu
-        function displayDailyTip() {
-            const dailyTips = currentLanguage === 'tr' ? [
-                "Enerjinizi daha verimli kullanmak için enerji yükseltmelerini tercih edin!",
-                "Otomatik toplayıcılarınızı yükselterek daha fazla coin kazanın!",
-                "Seviye ödüllerini kaçırmayın, her seviyede büyük ödüller sizi bekliyor!",
-                "Daha fazla XP kazanmak için farm butonuna sık sık tıklayın!"
-            ] : [
-                "Prioritize energy upgrades to use your energy more efficiently!",
-                "Upgrade your auto collectors to earn more coins!",
-                "Don't miss level rewards; great prizes await at each level!",
-                "Click the farm button frequently to earn more XP!"
-            ];
-            const today = new Date().getDate();
-            const tipIndex = today % dailyTips.length;
-            document.getElementById('daily-tip').textContent = `${languageData[currentLanguage].dailyTip} ${dailyTips[tipIndex]}`;
+        // Metinleri Güncelleme Fonksiyonu
+        function updateLanguage() {
+            const lang = languageData[currentLanguage];
+
+            // Başlıkları güncelleme
+            document.getElementById('welcome-message').textContent = lang.welcomeMessage;
+            document.getElementById('game-title').textContent = lang.gameTitle;
+            document.getElementById('player-stats-title').textContent = lang.playerStatsTitle;
+            document.getElementById('total-coins-stat').childNodes[0].textContent = `${lang.totalCoinsStat} `;
+            document.getElementById('level-stat').childNodes[0].textContent = `${lang.levelStat} `;
+            document.getElementById('xp-stat').childNodes[0].textContent = `${lang.xpStat} `;
+            document.getElementById('energy-stat').childNodes[0].textContent = `${lang.energyStat} `;
+            document.getElementById('achievements-title').textContent = lang.achievementsTitle;
+            document.getElementById('progress-title').textContent = lang.progressTitle;
+            document.getElementById('daily-tip').textContent = lang.dailyTip;
+
+            // Boost Bölümü (Geliştir)
+            document.getElementById('farm-button').textContent = lang.farmButton;
+            document.getElementById('boost-section-title').textContent = lang.boostSectionTitle;
+            document.getElementById('click-upgrade-text').textContent = lang.clickUpgrade;
+            document.getElementById('auto-upgrade-text').textContent = lang.autoUpgrade;
+            document.getElementById('energy-upgrade-text').textContent = lang.energyUpgrade;
+            document.getElementById('click-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
+            document.getElementById('auto-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
+            document.getElementById('energy-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
+
+            // Kaynak Başlıkları
+            document.getElementById('coin-title').textContent = lang.coinTitle;
+            document.getElementById('cps-title').textContent = lang.cpsTitle;
+            document.getElementById('energy-title').textContent = lang.energyTitle;
+            document.getElementById('xp-title').textContent = lang.xpTitle;
+
+            // Earn Bölümü (Kazanç)
+            document.getElementById('daily-reward-title').textContent = lang.dailyRewardTitle;
+            document.getElementById('collect-daily-reward-button').textContent = lang.collectDailyRewardButton;
+            document.getElementById('level-rewards-title').textContent = lang.levelRewardsTitle;
+
+            // Level Rewards Texts
+            document.getElementById('level-reward-10-text').textContent = lang.levelRewardText(10, 1000);
+            document.getElementById('level-reward-20-text').textContent = lang.levelRewardText(20, 2000);
+            document.getElementById('level-reward-30-text').textContent = lang.levelRewardText(30, 5000);
+            document.getElementById('level-reward-40-text').textContent = lang.levelRewardText(40, 7000);
+            document.getElementById('level-reward-50-text').textContent = lang.levelRewardText(50, 10000);
+            document.getElementById('level-reward-100-text').textContent = lang.levelRewardText(100, 50000);
+
+            // Friends Bölümü (Arkadaşlar)
+            document.getElementById('friends-title').textContent = lang.friendsTitle;
+            document.getElementById('total-referrals-text').childNodes[0].textContent = `${lang.totalReferralsText} `;
+            document.getElementById('invite-link-text').textContent = lang.inviteLinkText;
+
+            // Navigasyon Çubuğu
+            document.getElementById('nav-home-text').textContent = lang.navHome;
+            document.getElementById('nav-earn-text').textContent = lang.navEarn;
+            document.getElementById('nav-boost-text').textContent = lang.navBoost;
+            document.getElementById('nav-friends-text').textContent = lang.navFriends;
+
+            // Başarımlar
+            loadAchievements();
+
+            // Günlük Ödül Zamanlayıcısı
+            updateDailyRewardTimer();
         }
-
-        // Initialize Game on Load
-        window.addEventListener('load', () => {
-            loadGame();
-
-            // Arkadaş Listesini Yükle
-            loadFriendList();
-
-            // Sosyal Paylaşım Butonlarını Güncelle
-            addSocialShareButtons();
-
-            // Event Listeners
-            setupEventListeners();
-
-            // Start Intervals
-            startIntervals();
-
-            // Referans işleme
-            processReferral();
-
-            // Gün Sayısını Artır
-            incrementDaysLoggedIn();
-        });
-
-        // Display Güncelleme Fonksiyonu
-        // (Function already defined above)
 
     </script>
 </body>
