@@ -696,9 +696,105 @@
             <i>👥</i>
             <span id="nav-friends-text">Arkadaşlar</span>
         </div>
+        <div id="farm-bot-container" style="display: none;">
+    <h1>Farm Botu</h1>
+    <p>Farm Botu alımı sonrası 30 dakika sonra aktifleşir ve otomatik farm yapmaya başlar!</p>
+    <p>Başlangıç Maliyeti: 2000 Coin</p>
+    <button id="purchase-farm-bot">Farm Botu Satın Al</button>
+    <p id="farm-bot-status">Durum: Henüz alınmadı.</p>
+</div>
     </div>
 
     <script>
+
+
+        const farmBot = {
+        active: false,
+        cost: 2000,
+        duration: 3 * 24 * 60 * 60 * 1000, // 3 gün
+        startTime: null,
+        interval: null,
+    };
+
+    // Farm Botu Satın Alma İşlemi
+    document.getElementById('purchase-farm-bot').addEventListener('click', () => {
+        if (gameState.coins >= farmBot.cost) {
+            gameState.coins -= farmBot.cost;
+            farmBot.startTime = Date.now() + 30 * 60 * 1000; // 30 dakika sonra başlar
+            farmBot.active = true;
+            saveGame();
+
+            alert('Farm Botu satın alındı! 30 dakika sonra çalışmaya başlayacak.');
+            updateFarmBotStatus();
+            updateDisplay();
+        } else {
+            alert('Yeterli coininiz yok!');
+        }
+    });
+
+    // Farm Botu Durumunu Güncelleme
+    function updateFarmBotStatus() {
+        const statusElement = document.getElementById('farm-bot-status');
+        if (farmBot.active) {
+            const now = Date.now();
+            if (now >= farmBot.startTime && now < farmBot.startTime + farmBot.duration) {
+                statusElement.textContent = 'Durum: Çalışıyor.';
+                if (!farmBot.interval) {
+                    startFarmBot();
+                }
+            } else if (now >= farmBot.startTime + farmBot.duration) {
+                farmBot.active = false;
+                clearInterval(farmBot.interval);
+                farmBot.interval = null;
+                statusElement.textContent = 'Durum: Süresi doldu.';
+            } else {
+                const remainingTime = Math.max(0, farmBot.startTime - now);
+                statusElement.textContent = `Durum: ${formatTime(remainingTime)} sonra başlayacak.`;
+            }
+        } else {
+            statusElement.textContent = 'Durum: Henüz alınmadı.';
+        }
+    }
+
+    // Farm Botu Çalıştırma
+    function startFarmBot() {
+        farmBot.interval = setInterval(() => {
+            if (gameState.energy > 0) {
+                gameState.coins += gameState.clickPower * 2; // Çift kazanç sağlar
+                gameState.energy -= 50; // Enerji kullanımı
+                addXP(20);
+                updateDisplay();
+                console.log('Farm Botu otomatik farm yaptı.');
+            } else {
+                console.log('Farm Botu durdu. Enerji dolana kadar bekliyor.');
+            }
+        }, 1000); // Her saniye çalışır
+    }
+
+    // Sayfa Yüklendiğinde Farm Botu Durumunu Kontrol Et
+    window.addEventListener('load', () => {
+        const savedFarmBot = JSON.parse(localStorage.getItem('farmBot'));
+        if (savedFarmBot) {
+            Object.assign(farmBot, savedFarmBot);
+        }
+        updateFarmBotStatus();
+    });
+
+    // Oyun Kaydetme İşlemi
+    function saveGame() {
+        const gameData = {
+            gameState: gameState,
+            farmBot: farmBot,
+            playerXP: playerXP,
+            playerLevel: playerLevel,
+            awardedLevels: awardedLevels,
+            lastCollected: lastCollected,
+            daysLoggedIn: daysLoggedIn,
+            lastLoginDate: lastLoginDate
+        };
+        localStorage.setItem('no1gameData', JSON.stringify(gameData));
+        console.log("Oyun kaydedildi.");
+    }
         // Dil Verileri
         const languageData = {
             tr: {
