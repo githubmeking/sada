@@ -1,1965 +1,271 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>No1Game - Gelişmiş Farm Oyunu</title>
-    <!-- Pacifico Fontunu Ekleyin -->
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Animate.css for Animations -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <style>
-        /* CSS KODLARI */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            background: linear-gradient(135deg, #83a4d4, #b6fbff);
-            padding: 10px;
-            position: relative;
-            overflow-x: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Güvenilir Bahis Siteleri | Güncel Giriş Adresleri</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0a0e27 0%,#1a1f3a 100%);color:#fff;min-height:100vh;overflow-x:hidden}
+    .bg-animation{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;overflow:hidden}
+    .bg-animation::before{content:'';position:absolute;width:200%;height:200%;background:radial-gradient(circle,rgba(255,215,0,.1) 1px,transparent 1px);background-size:50px 50px;animation:moveGrid 20s linear infinite}
+    @keyframes moveGrid{0%{transform:translate(0,0)}100%{transform:translate(50px,50px)}}
+    .container{max-width:1400px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+    header{padding:20px 0;backdrop-filter:blur(10px);background:rgba(10,14,39,.8);border-bottom:1px solid rgba(255,215,0,.2);position:sticky;top:0;z-index:100}
+    .header-content{display:flex;justify-content:space-between;align-items:center}
+    .logo{font-size:28px;font-weight:800;background:linear-gradient(135deg,#ffd700 0%,#ffed4e 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:10px}
+    .social-links{display:flex;gap:15px}
+    .social-links a{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);border-radius:50%;color:#fff;transition:.3s;border:1px solid rgba(255,215,0,.3)}
+    .social-links a:hover{background:linear-gradient(135deg,#ffd700 0%,#ffed4e 100%);transform:translateY(-3px);box-shadow:0 5px 15px rgba(255,215,0,.4)}
 
-        /* Hoş Geldin Efekti */
-        #welcome-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            animation: fadeOut 3s forwards 5s;
-        }
+    /* MARQUEE */
+    .marquee-section{background:linear-gradient(135deg,#ffd700 0%,#ffed4e 100%);padding:15px 0;margin:30px 0;overflow:hidden;position:relative}
+    .marquee-section h2{text-align:center;color:#0a0e27;font-size:20px;font-weight:700;margin-bottom:15px}
+    .marquee{display:flex;gap:20px;animation:scroll 30s linear infinite;will-change:transform}
+    @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .marquee-item{background:rgba(10,14,39,.9);padding:12px 18px;border-radius:12px;display:flex;align-items:center;gap:12px;white-space:nowrap;border:2px solid rgba(255,215,0,.3);min-width:290px}
+    .marquee-item .logo-wrap{width:80px;height:42px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);border-radius:8px;overflow:hidden;border:1px solid rgba(255,215,0,.25)}
+    .marquee-item img{width:100%;height:100%;object-fit:contain}
+    .marquee-item .name{font-weight:700;letter-spacing:.2px}
+    .marquee-item .btn-mini{background:#ffd700;color:#0a0e27;padding:8px 14px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;transition:.25s;text-decoration:none;display:inline-block}
+    .marquee-item .btn-mini:hover{transform:scale(1.05);box-shadow:0 3px 10px rgba(255,215,0,.5)}
 
-        #welcome-overlay h1 {
-            color: #fff;
-            font-size: 3em;
-            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8);
-            animation: zoomIn 1s;
-        }
+    .section-title{text-align:center;margin:50px 0 30px}
+    .section-title h2{font-size:32px;font-weight:700;margin-bottom:10px;background:linear-gradient(135deg,#ffd700 0%,#ffed4e 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .section-title p{color:rgba(255,255,255,.7);font-size:16px}
 
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                visibility: hidden;
-            }
-        }
+    .sites-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:25px;margin:40px 0}
+    .site-card{background:rgba(26,31,58,.6);backdrop-filter:blur(10px);border-radius:16px;padding:25px;border:1px solid rgba(255,215,0,.2);transition:.3s;position:relative;overflow:hidden}
+    .site-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,215,0,.1) 0%,transparent 70%);opacity:0;transition:.3s;z-index:0;pointer-events:none}
+    .site-card:hover::before{opacity:1}
+    .site-card:hover{transform:translateY(-5px);border-color:#ffd700;box-shadow:0 10px 30px rgba(255,215,0,.3)}
+    .site-header{display:flex;align-items:center;gap:15px;margin-bottom:20px;position:relative;z-index:1}
+    .site-logo{width:100px;height:100px;background:rgba(255,255,255,.1);border-radius:12px;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,215,0,.3);overflow:hidden}
+    .site-logo img{width:100%;height:100%;object-fit:contain;padding:10px}
+    .site-logo img[src=""],.site-logo img:not([src]),.site-logo img[src="#"]{display:none}
+    .site-logo i{font-size:48px}
+    .site-info h3{font-size:20px;font-weight:700;margin-bottom:5px}
+    .site-info .bonus{color:#ffd700;font-size:14px;font-weight:600}
+    .site-features{margin:20px 0;position:relative;z-index:1}
+    .feature{display:flex;align-items:center;gap:10px;margin:10px 0;font-size:14px;color:rgba(255,255,255,.8)}
+    .feature i{color:#ffd700;font-size:16px}
+    .site-actions{display:flex;gap:10px;margin-top:20px;position:relative;z-index:2}
+    .btn{flex:1;padding:12px 24px;border-radius:10px;font-weight:600;text-align:center;cursor:pointer;transition:.3s;border:none;font-size:14px;text-decoration:none;display:inline-block}
+    .btn-primary{background:linear-gradient(135deg,#ffd700 0%,#ffed4e 100%);color:#0a0e27}
+    .btn-primary:hover{transform:scale(1.05);box-shadow:0 5px 20px rgba(255,215,0,.5)}
+    .btn-secondary{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,215,0,.3)}
+    .btn-secondary:hover{background:rgba(255,255,255,.2)}
+    .btn[disabled]{opacity:.5;pointer-events:none}
 
-        @keyframes zoomIn {
-            from {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
+    .vip-section{background:linear-gradient(135deg,rgba(255,215,0,.1) 0%,rgba(255,237,78,.05) 100%);border-radius:20px;padding:40px;margin:60px 0;border:2px solid rgba(255,215,0,.3)}
+    footer{background:rgba(10,14,39,.8);backdrop-filter:blur(10px);padding:40px 0 20px;margin-top:80px;border-top:1px solid rgba(255,215,0,.2)}
+    .footer-content{text-align:center}
+    .footer-links{display:flex;justify-content:center;gap:30px;margin:20px 0;flex-wrap:wrap}
+    .footer-links a{color:rgba(255,255,255,.7);text-decoration:none;transition:.3s}
+    .footer-links a:hover{color:#ffd700}
+    .copyright{color:rgba(255,255,255,.5);font-size:14px;margin-top:20px}
 
-        /* Navigasyon Çubuğunu Alt Kısma Taşı ve Renk Değişikliği */
-        #nav-container {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 600px;
-            background: linear-gradient(135deg, #ffffff, #000000, #800080); /* Beyaz, Siyah, Eflatun Karışımı */
-            padding: 10px 0;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 500;
-        }
-
-        .nav-button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 5px;
-            font-size: 0.8em;
-            color: #ffffff; /* Beyaz metin */
-            text-decoration: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            flex: 1;
-            position: relative;
-        }
-
-        .nav-button:hover {
-            background-color: rgba(255, 255, 255, 0.2); /* Hafif beyaz arka plan */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            transform: scale(1.05);
-        }
-
-        .nav-button i {
-            font-size: 1.5em;
-            margin-bottom: 3px;
-            transition: transform 0.3s;
-        }
-
-        .nav-button:hover i {
-            transform: rotate(360deg);
-        }
-
-        /* Ana İçerik Bölümleri */
-        #boost-container, #earn-container, #home-container, #friends-container {
-            display: none;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 500px;
-            width: 100%;
-            margin: 20px auto 80px; /* Alt marjin navigasyon çubuğu için */
-            overflow-y: auto;
-            position: relative;
-        }
-
-        /* Rozetler */
-        .badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 50px;
-            height: 50px;
-            background: url('https://i.imgur.com/5N8Q4hU.png') no-repeat center center / cover; /* Örnek rozet resmi */
-            display: none;
-            animation: fadeIn 1s forwards;
-        }
-
-        .badge.visible {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Boost Container (Geliştir) */
-        #boost-container {
-            background: #f8d7da; /* Soft kırmızı */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        /* Earn Container (Kazanç) */
-        #earn-container {
-            background: #d4edda; /* Soft yeşil */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Friends Container (Arkadaşlar) */
-        #friends-container {
-            background: linear-gradient(135deg, #add8e6, #ffa500); /* Mavi ve Turuncu */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Oyun Elemanları için Resource Container */
-        .resource-container {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-        .resource {
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            min-width: 120px;
-            flex: 1;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        .resource:hover {
-            transform: scale(1.05);
-        }
-        .resource-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        #coin-resource { 
-            background: #FFD700; 
-            border: 2px solid #DAA520;
-        }
-        #cps-resource { 
-            background: #DDA0DD;
-            border: 2px solid #BA55D3;
-        }
-        #energy-resource { 
-            background: #87CEFA;
-            border: 2px solid #4169E1;
-        }
-        #xp-resource {
-            background: #90EE90;
-            border: 2px solid #32CD32;
-        }
-
-        /* Farm Button */
-        #farm-button {
-            background: linear-gradient(45deg, #FFD700, #DDA0DD, #87CEFA);
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            font-size: 18px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 300px;
-            position: relative;
-        }
-
-        #farm-button:hover {
-            background: linear-gradient(45deg, #FFC107, #DDA0DD, #00BCD4);
-            transform: scale(1.05);
-        }
-
-        /* Upgrades Container */
-        .upgrades-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-            width: 100%;
-        }
-        .upgrade-button {
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            min-height: 80px;
-            justify-content: center;
-            border: none;
-            font-size: 1em;
-            font-weight: bold;
-            background-color: #f9f9f9;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .upgrade-button.active {
-            background-color: #4caf50;
-            color: white;
-            transform: scale(1.05);
-        }
-        .upgrade-button.inactive {
-            background-color: #f9f9f9;
-            color: #333;
-        }
-
-        /* Home Container */
-        #home-container h1 {
-            font-size: 2em;
-            color: #1f3f60;
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 8px rgba(255, 165, 0, 0.8); /* Turuncu gölge eklendi */
-            font-family: 'Pacifico', cursive; /* Pacifico fontu */
-        }
-
-        #home-container h2 {
-            color: #1f3f60;
-            margin-bottom: 10px;
-        }
-
-        #home-stats {
-            text-align: left;
-            margin-top: 20px;
-        }
-
-        .stat {
-            margin: 10px 0;
-            font-size: 1.1em;
-            transition: color 0.3s;
-        }
-
-        .stat:hover {
-            color: #ff9800;
-        }
-
-        #achievement-container {
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .achievement {
-            background-color: #e6f7ff;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 5px 0;
-            font-size: 1em;
-            color: #005c99;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .achievement.completed {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .achievement .checkmark {
-            font-size: 1.2em;
-            color: #28a745;
-        }
-
-        #progress-bar-container {
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        #progress-bar {
-            width: 100%;
-            background-color: #f3f3f3;
-            border-radius: 25px;
-            overflow: hidden;
-            height: 20px;
-            margin-top: 5px;
-        }
-
-        #progress-bar-fill {
-            height: 100%;
-            background-color: #4caf50;
-            width: 0%;
-            transition: width 0.5s;
-        }
-
-        #daily-tip {
-            margin-top: 20px;
-            background-color: #fff8e1;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 1em;
-            color: #ff9800;
-            border: 1px solid #ffecb3;
-            animation: fadeIn 2s;
-        }
-
-        /* Seviye Ödülleri Stil İyileştirmesi */
-        .reward {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 5px 0;
-            font-size: 1em;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .reward button {
-            background-color: #ff4d4d; /* Başlangıçta kırmızı */
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 0.9em;
-        }
-
-        .reward button.enabled {
-            background-color: #4caf50; /* Yeşil */
-            cursor: pointer;
-        }
-
-        .reward button.disabled {
-            background-color: #ff4d4d; /* Kırmızı */
-            cursor: not-allowed;
-        }
-
-        .reward button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .start-button {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            animation: bounceIn 1s;
-        }
-
-        .start-button:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
-
-        /* Responsive Tasarım */
-        @media (max-width: 600px) {
-            #nav-container {
-                flex-direction: row;
-                justify-content: space-around;
-                padding: 10px 0;
-            }
-
-            .nav-button {
-                font-size: 0.8em;
-            }
-
-            .resource-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .upgrade-button {
-                font-size: 0.9em;
-                padding: 10px;
-            }
-
-            #language-selection {
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                display: flex;
-                gap: 10px;
-            }
-            
-            /* Dil Butonları */
-            .language-button {
-                background-color: #ffffffcc; /* Beyaz arka plan, biraz saydamlık */
-                border: 2px solid #1f3f60; /* Ana renkle uyumlu kenarlık */
-                border-radius: 50%; /* Daire şekil */
-                width: 40px;
-                height: 40px;
-                font-size: 1.2em;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .language-button:hover {
-                background-color: #1f3f60;
-                color: #ffffff;
-                transform: scale(1.1);
-            }
-            
-            .language-button:focus {
-                outline: none;
-                box-shadow: 0 0 0 3px rgba(31, 63, 96, 0.5);
-            }
-            
-            /* Home Container - Relative Position */
-            #home-container {
-                position: relative; /* Language Selection için referans noktası */
-                /* Mevcut stiller... */
-            }
-            
-            #home-container {
-                margin-bottom: 100px; /* Navigasyon çubuğu için daha fazla alt marjin */
-            }
-
-            .upgrades-container {
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: auto auto;
-                gap: 15px;
-            }
-        }
-
-        /* Arkadaşlar Bölümü İçin Ek Stil */
-        #social-share {
-            margin: 15px 0;
-            display: flex;
-            gap: 10px;
-        }
-        
-        #social-share button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        #social-share button:nth-child(1) { /* Facebook */
-            background-color: #3b5998;
-        }
-        
-        #social-share button:nth-child(1):hover {
-            background-color: #2d4373;
-        }
-        
-        #social-share button:nth-child(2) { /* Twitter */
-            background-color: #1da1f2;
-        }
-        
-        #social-share button:nth-child(2):hover {
-            background-color: #0d95e8;
-        }
-        
-        #social-share button:nth-child(3) { /* WhatsApp */
-            background-color: #25d366;
-        }
-        
-        #social-share button:nth-child(3):hover {
-            background-color: #1ebe5a;
-        }
-        
-        #friends-list .friend {
-            display: flex;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 5px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        #friends-list .friend:hover {
-            transform: scale(1.02);
-        }
-        
-        .friend-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            object-fit: cover;
-        }
-        
-        .friend-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .friend-name {
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .friend-level {
-            color: #555;
-        }
-
-        /* Ödül Çarkı Modal */
-        #reward-wheel-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        #reward-wheel-content {
-            background: #fff;
-            padding: 20px;
-            border-radius: 15px;
-            position: relative;
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        #reward-wheel {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            border: 10px solid #ff9800;
-            position: relative;
-            margin: 0 auto 20px;
-            overflow: hidden;
-            transform: rotate(0deg);
-            transition: transform 5s ease-out;
-        }
-
-        .wheel-segment {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            background: transparent;
-            top: 50%;
-            left: 50%;
-            transform-origin: 0% 0%;
-            clip-path: polygon(100% 0%, 100% 100%, 0% 100%);
-        }
-
-        /* Segment Colors */
-        .segment1 { background-color: #FFD700; }
-        .segment2 { background-color: #DDA0DD; }
-        .segment3 { background-color: #87CEFA; }
-        .segment4 { background-color: #90EE90; }
-        .segment5 { background-color: #FF6347; }
-        .segment6 { background-color: #FFA500; }
-
-        /* Reward Labels */
-        .reward-label {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            transform: rotate(0deg);
-            padding-right: 10px;
-            box-sizing: border-box;
-        }
-
-        .reward-label span {
-            transform: rotate(-60deg);
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 1px 1px 2px #000;
-        }
-
-        #spin-button {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        #spin-button:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
-
-        #close-modal {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #333;
-        }
-
-        /* Animasyonlar */
-        @keyframes bounceIn {
-            0%, 20%, 40%, 60%, 80%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        /* Responsive Reward Wheel */
-        @media (max-width: 600px) {
-            #reward-wheel {
-                width: 200px;
-                height: 200px;
-            }
-
-            .reward-label span {
-                font-size: 0.8em;
-            }
-        }
-
-    </style>
+    @media (max-width:768px){
+      .sites-grid{grid-template-columns:1fr}
+      .logo{font-size:22px}
+      .section-title h2{font-size:24px}
+      .vip-section{padding:20px}
+    }
+  </style>
 </head>
 <body>
-    <!-- Hoş Geldin Overlay -->
-    <div id="welcome-overlay">
-        <h1 id="welcome-message">Hoş Geldiniz No1Game'e!</h1>
+  <div class="bg-animation"></div>
+
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo"><i class="fas fa-crown"></i> GüvenilirBahis</div>
+        <div class="social-links">
+    <a href="https://t.me/bankoarena" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+        <i class="fab fa-telegram"></i>
+    </a>
+    <a href="https://www.instagram.com/bankoarenax" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <i class="fab fa-instagram"></i>
+    </a>
+    <a href="https://x.com/bankoarena?s=11" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+        <i class="fab fa-twitter"></i>
+    </a>
+</div>
+
+      </div>
+    </div>
+  </header>
+
+  <div class="marquee-section">
+    <div class="container">
+      <h2><i class="fas fa-star"></i> ÖZEL SİTELER <i class="fas fa-star"></i></h2>
+    </div>
+    <div class="marquee" id="marqueeRow"></div>
+  </div>
+
+  <div class="container">
+    <div class="section-title">
+      <h2>Ana Sponsorlar</h2>
+      <p>Güvenilir ve lisanslı bahis siteleri</p>
     </div>
 
-    <!-- Boost Container (Geliştir) -->
-    <div id="boost-container">
-        <div class="badge" id="level-badge"></div>
-        <h1 id="boost-section-title">Geliştir Bölümü</h1>
-        <div class="resource-container">
-            <div class="resource" id="coin-resource">
-                <div class="resource-title" id="coin-title">Coin</div>
-                <div id="coin-value" class="resource-value">0</div>
-            </div>
-            <div class="resource" id="cps-resource">
-                <div class="resource-title" id="cps-title">CPS</div>
-                <div id="cps-value" class="resource-value">0</div>
-            </div>
-            <div class="resource" id="energy-resource">
-                <div class="resource-title" id="energy-title">Enerji</div>
-                <div id="energy-value" class="resource-value">1000</div>
-            </div>
-            <div class="resource" id="xp-resource">
-                <div class="resource-title" id="xp-title">XP</div>
-                <div id="xp-text" class="resource-value">0</div>
-            </div>
-        </div>
+    <div class="sites-grid" id="sitesGrid"></div>
 
-        <button id="farm-button">FARM</button>
-
-        <div class="upgrades-container">
-            <button class="upgrade-button inactive" id="click-upgrade">
-                <span id="click-upgrade-text">Tıklama Güçlendirmesi</span>
-                <span class="upgrade-cost" id="click-cost">Maliyet: 10 coin</span>
-            </button>
-            <button class="upgrade-button inactive" id="auto-upgrade">
-                <span id="auto-upgrade-text">CPS Arttırma</span>
-                <span class="upgrade-cost" id="auto-cost">Maliyet: 50 coin</span>
-            </button>
-            <button class="upgrade-button inactive" id="energy-upgrade">
-                <span id="energy-upgrade-text">Enerji Yükseltme</span>
-                <span class="upgrade-cost" id="energy-cost">Maliyet: 1.000 coin</span>
-            </button>
-        </div>
-
-        <!-- Rozetler için Placeholder -->
-        <div class="badge" id="achievement-badge"></div>
+    <div class="vip-section">
+      <div class="section-title">
+        <h2>VIP Özel Siteler</h2>
+        <p>Yüksek bonus oranları ve özel avantajlar</p>
+      </div>
+      <div class="sites-grid" id="vipGrid"></div>
     </div>
+  </div>
 
-    <!-- Earn Container (Kazanç) -->
-    <div id="earn-container">
-        <h2 id="daily-reward-title">Giriş Ödülü</h2>
-        <button class="start-button" onclick="collectDailyReward()" id="collect-daily-reward-button">5000 Coin Al</button>
-        <div class="cooldown-timer" id="daily-reward-timer"></div>
-        <h2 id="level-rewards-title">Seviye Ödülleri</h2>
-        <div class="reward">
-            <span id="level-reward-10-text">sv10: 1.000 XP</span>
-            <button onclick="claimLevelReward(10)" id="claim-reward-10" class="disabled" disabled>Al</button>
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="#">Hakkımızda</a>
+          <a href="#">İletişim</a>
+          <a href="#">Gizlilik Politikası</a>
+          <a href="#">Kullanım Şartları</a>
+          <a href="#">Sorumlu Bahis</a>
         </div>
-        <div class="reward">
-            <span id="level-reward-20-text">sv20: 2.000 XP</span>
-            <button onclick="claimLevelReward(20)" id="claim-reward-20" class="disabled" disabled>Al</button>
+        <div class="copyright">
+          © 2024 GüvenilirBahis - Tüm hakları saklıdır. 18+ Sorumlu Bahis Oynayın.
         </div>
-        <div class="reward">
-            <span id="level-reward-30-text">sv30: 5.000 XP</span>
-            <button onclick="claimLevelReward(30)" id="claim-reward-30" class="disabled" disabled>Al</button>
-        </div>
-        <div class="reward">
-            <span id="level-reward-40-text">sv40: 7.000 XP</span>
-            <button onclick="claimLevelReward(40)" id="claim-reward-40" class="disabled" disabled>Al</button>
-        </div>
-        <div class="reward">
-            <span id="level-reward-50-text">sv50: 10.000 XP</span>
-            <button onclick="claimLevelReward(50)" id="claim-reward-50" class="disabled" disabled>Al</button>
-        </div>
-        <div class="reward">
-            <span id="level-reward-100-text">sv100: 50.000 XP</span>
-            <button onclick="claimLevelReward(100)" id="claim-reward-100" class="disabled" disabled>Al</button>
-        </div>
-
-        <!-- Günlük Ödül Çarkı Butonu -->
-        <button class="start-button" onclick="openRewardWheel()" id="open-reward-wheel-button">Günlük Ödül Çarkını Döndür</button>
+      </div>
     </div>
+  </footer>
 
-    <!-- Home Container -->
-    <div id="home-container">
-        <h1 id="game-title">No1Game</h1>
+  <script>
+    /* Ana Sponsorlar — Sıra sabit: Mariobet → Betsat → Superbetin → Turkbet */
+    const mainSponsors = [
+      {
+        name: 'Mariobet',
+        bonus: 'Özel Karşılama Bonusu',
+        features: ['Hızlı Çekim','Canlı Destek','7/24 Hizmet'],
+        url: 'https://urllink.me/mariobet',
+        detailUrl: 'https://urllink.me/mariobet',
+        color: '#e91e63',
+        logo: 'https://i.ibb.co/Wp34cgBR/768654465654645465.png'
+      },
+      {
+        name: 'Betsat',
+        bonus: 'Hoş Geldin Bonusu',
+        features: ['Yüksek Oranlar','Mobil Uyum','Güvenli Ödeme'],
+        url: 'https://urllink.me/betsat',
+        detailUrl: 'https://urllink.me/betsat',
+        color: '#ffd700',
+        logo: 'https://i.ibb.co/B500YwRh/images-2.png'
+      },
+      {
+        name: 'Superbetin',
+        bonus: 'Casino + Spor Kampanyaları',
+        features: ['VIP Program','Free Spin','Canlı Bahis'],
+        url: 'https://urllink.me/süperbetin',
+        detailUrl: 'https://urllink.me/süperbetin',
+        color: '#00bcd4',
+        logo: 'https://i.ibb.co/HpDSK9mH/MG-20251105-134325-598.jpg' // Geçici
+      },
+      {
+        name: 'Turkbet',
+        bonus: 'Türk Kullanıcılara Özel',
+        features: ['TR Destek','Hızlı Kayıt','Bonus Yağmuru'],
+        url: 'https://urllink.me/turkbet',
+        detailUrl: 'https://urllink.me/turkbet',
+        color: '#4caf50',
+        logo: 'https://i.ibb.co/gZGVHyJx/images-6.jpg'
+      }
+    ];
 
-        <!-- Dil Seçimi -->
-         <div id="language-selection">
-            <button id="lang-tr" class="language-button" title="Türkçe">
-                🇹🇷
-            </button>
-            <button id="lang-en" class="language-button" title="English">
-                🇺🇸
-            </button>
+    /* VIP — Gönderdiğin tüm logolar işlendi */
+    const vipSites = [
+      { name:'Fixbet',      logo:'https://i.ibb.co/x8tC0568/MG-20251105-133610-100.jpg', url:'https://urllink.me/fixbet',     color:'#1B3F8B' },
+      { name:'Bankobet',    logo:'https://i.ibb.co/C5KzrWJM/MG-20251105-133616-501.jpg', url:'https://urllink.me/bankobet',   color:'#3f51b5' },
+      { name:'Antikbet',    logo:'https://i.ibb.co/Tx4HQrLQ/MG-20251105-133620-577.jpg', url:'https://urllink.me/antikbet',   color:'#9c27b0' },
+      { name:'Betmatik',    logo: 'https://i.ibb.co/mVDpx9tB/MG-20251105-133634-738.jpg', url:'https://urllink.me/betmatik',   color:'#9c1b10' },
+      { name:'Casivera',    logo: 'https://i.ibb.co/6Rg3pG4w/MG-20251105-134554-167.jpg', url:'https://urllink.me/casivera',   color:'#83F52C' },
+      { name:'Betewin',     logo: 'https://i.ibb.co/3ygmsFxh/MG-20251105-134603-044.jpg', url:'https://urllink.me/betewin',    color:'#33cc10' },
+      { name:'Gobahis',     logo: 'https://i.ibb.co/Kpc860Zm/MG-20251105-135344-408.jpg', url:'#',                             color:'#607d8b' },
+      { name:'Tarafbet',    logo:'https://i.ibb.co/6cmSq7W2/MG-20251105-135447-134.jpg', url:'#',                             color:'#795548' },
+      { name:'Redfoxbet',   logo: 'https://i.ibb.co/ynnvSBw0/MG-20251105-135600-243.jpg', url:'#',                             color:'#f44336' },
+      { name:'1King',     logo:'https://i.ibb.co/YT2VH4d2/MG-20251105-135624-828.jpg', url:'#',                             color:'#009688' },
+      { name:'Padişahbet',  logo:'https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg', url:'#',                             color:'#cddc39' },
+      { name:'Pusulabet',   logo:'https://i.ibb.co/v48NGR8X/images-5.jpg',               url:'https://urllink.me/pusulabet',  color:'#ff9800' },
+      { name:'Hiltonbet',   logo: 'https://i.ibb.co/LhRMSnLG/images-4.jpg',               url:'https://urllink.me/hiltonbet',  color:'#9c27b0' },
+      { name:'Kavbet',      logo:'https://i.ibb.co/7tKPYQRb/images-3.jpg',               url:'https://urllink.me/kavbet',     color:'#4caf50' }
+      // Diğerlerini eklemek istersen linkleri ver, anında eklerim.
+    ];
+
+    /* Kart üretici (sayfa içi gridler) */
+    function createSiteCard(site){
+      const logoContent = site.logo && site.logo.trim() !== ''
+        ? `<img src="${site.logo}" alt="${site.name}" onerror="this.remove();">`
+        : '';
+      const hasUrl = site.url && site.url !== '#';
+      return `
+      <div class="site-card">
+        <div class="site-header">
+          <div class="site-logo" style="border-color:${site.color}">
+            ${logoContent || `<i class="fas fa-gem" style="color:${site.color};font-size:48px"></i>`}
+          </div>
+          <div class="site-info">
+            <h3>${site.name}</h3>
+            <div class="bonus">${site.bonus ? site.bonus : 'Özel Kampanyalar'}</div>
+          </div>
         </div>
-
-        <h2 id="player-stats-title">Oyuncu İstatistikleri</h2>
-        <div id="home-stats">
-            <div class="stat" id="total-coins-stat">Toplam Coin: <span id="home-coins">0</span></div>
-            <div class="stat" id="level-stat">Seviye: <span id="home-level">1</span></div>
-            <div class="stat" id="xp-stat">XP: <span id="home-xp">0</span> / <span id="home-xp-needed">100</span></div>
-            <div class="stat" id="energy-stat">Enerji: <span id="home-energy">1000</span></div>
+        <div class="site-features">
+          ${(site.features && site.features.length ? site.features : ['Hızlı Kayıt','Güvenli Ödeme','Canlı Destek'])
+            .map(f=>`<div class="feature"><i class="fas fa-check-circle"></i><span>${f}</span></div>`).join('')}
         </div>
-
-        <div id="achievement-container">
-            <h2 id="achievements-title">Başarımlar</h2>
-            <div id="achievements-list">
-                <!-- Başarımlar dinamik olarak eklenecek -->
-            </div>
+        <div class="site-actions">
+          <a class="btn btn-primary" ${hasUrl ? `href="${site.url}" target="_blank" rel="noopener noreferrer"` : 'href="#" disabled'}>
+            <i class="fas fa-sign-in-alt"></i> GİRİŞ YAP
+          </a>
+          <a class="btn btn-secondary" ${site.detailUrl ? `href="${site.detailUrl}" target="_blank" rel="noopener noreferrer"` : 'href="#"'}>
+            <i class="fas fa-info-circle"></i> Detay
+          </a>
         </div>
-
-        <div id="progress-bar-container">
-            <h2 id="progress-title">Seviye İlerlemesi</h2>
-            <div id="progress-bar">
-                <div id="progress-bar-fill"></div>
-            </div>
-        </div>
-
-        <div id="daily-tip">
-            Günlük İpucu: Daha fazla enerji kazanmak için enerji yükseltmelerini tercih edin!
-        </div>
-    </div>
-
-    <!-- Friends Container (Arkadaşlar) -->
-    <div id="friends-container">
-        <h2 id="friends-title">Arkadaşlar</h2>
-        <p id="total-referrals-text">Toplam Davet Edilen Kişi Sayısı: <span id="referral-count">0</span></p>
-        <p id="invite-link-text">Davet Linkin:</p>
-        <a href="#" id="invite-link">Davet Linki Yükleniyor...</a>
-        
-        <!-- Sosyal Paylaşım Butonları -->
-        <div id="social-share">
-            <button onclick="shareOnFacebook()"><i class="fab fa-facebook-f"></i> Facebook'ta Paylaş</button>
-            <button onclick="shareOnTwitter()"><i class="fab fa-twitter"></i> Twitter'da Paylaş</button>
-            <button onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp'ta Paylaş</button>
-        </div>
-        
-        <!-- Referans Bilgisi -->
-        <div id="referral-info">
-            +1 Davet = 20.000 Coin
-        </div>
-
-        <!-- Arkadaş Listesi -->
-        <h3>Arkadaş Listesi</h3>
-        <div id="friends-list">
-            <!-- Arkadaşlar dinamik olarak eklenecek -->
-        </div>
-    </div>
-
-    <!-- Navigasyon Çubuğu -->
-    <div id="nav-container">
-        <div class="nav-button" id="home-nav">
-            <i class="fas fa-home"></i>
-            <span id="nav-home-text">Ana Sayfa</span>
-        </div>
-        <div class="nav-button" id="earn-nav">
-            <i class="fas fa-clipboard-list"></i>
-            <span id="nav-earn-text">Kazanç</span>
-        </div>
-        <div class="nav-button" id="boost-nav">
-            <i class="fas fa-rocket"></i>
-            <span id="nav-boost-text">Geliştir</span>
-        </div>
-        <div class="nav-button" id="friends-nav">
-            <i class="fas fa-users"></i>
-            <span id="nav-friends-text">Arkadaşlar</span>
-        </div>
-    </div>
-
-    <!-- Ödül Çarkı Modal -->
-    <div id="reward-wheel-modal">
-        <div id="reward-wheel-content">
-            <button id="close-modal">&times;</button>
-            <h2>Günlük Ödül Çarkı</h2>
-            <div id="reward-wheel">
-                <div class="wheel-segment segment1">
-                    <div class="reward-label" style="transform: rotate(0deg);">
-                        <span>+500 Coin</span>
-                    </div>
-                </div>
-                <div class="wheel-segment segment2">
-                    <div class="reward-label" style="transform: rotate(60deg);">
-                        <span>+1000 XP</span>
-                    </div>
-                </div>
-                <div class="wheel-segment segment3">
-                    <div class="reward-label" style="transform: rotate(120deg);">
-                        <span>+50 Enerji</span>
-                    </div>
-                </div>
-                <div class="wheel-segment segment4">
-                    <div class="reward-label" style="transform: rotate(180deg);">
-                        <span>+1 CPS</span>
-                    </div>
-                </div>
-                <div class="wheel-segment segment5">
-                    <div class="reward-label" style="transform: rotate(240deg);">
-                        <span>+200 Coin</span>
-                    </div>
-                </div>
-                <div class="wheel-segment segment6">
-                    <div class="reward-label" style="transform: rotate(300deg);">
-                        <span>+500 XP</span>
-                    </div>
-                </div>
-            </div>
-            <button id="spin-button">Çarkı Döndür</button>
-        </div>
-    </div>
-
-    <script>
-        const farmBot = {
-            active: false,
-            cost: 2000,
-            duration: 3 * 24 * 60 * 60 * 1000, // 3 gün
-            startTime: null,
-            interval: null,
-        };
-
-        // Kullanıcı ve Oyun Durumu
-        let currentLanguage = localStorage.getItem('language') || 'tr';
-        let gameState = {
-            coins: 0, // Başlangıçta 0
-            clickPower: 1,
-            autoCollectPower: 0,
-            energy: 1000,
-            farmCount: 0, // Farm sayısı
-            upgrades: {
-                click: { level: 1, cost: 10 },
-                auto: { level: 0, cost: 50 },
-                energy: { level: 1, cost: 1000 }
-            },
-            xpMultiplier: 1, // Başlangıçta 1
-            referrals: 0 // Referans sayısı
-        };
-
-        let playerXP = 0;
-        let playerLevel = 1;
-        let totalCoinsSpent = 0;
-        let lastCollected = parseInt(localStorage.getItem('lastCollected')) || 0;
-        let daysLoggedIn = parseInt(localStorage.getItem('daysLoggedIn')) || 0;
-        let lastLoginDate = localStorage.getItem('lastLoginDate') || null;
-        let awardedLevels = JSON.parse(localStorage.getItem('awardedLevels')) || {};
-
-        // Seviye Ödülleri ve XP Yükseltmeleri
-        const rewardLevels = {
-            10: { xp: 1000 },
-            20: { xp: 2000 },
-            30: { xp: 5000 },
-            40: { xp: 7000 },
-            50: { xp: 10000 },
-            100: { xp: 50000 }
-        };
-
-        // Başarımların Tanımlanması
-        const predefinedAchievements = [
-            { id: 1, description: "50.000 Coin Kazandınız!", coinAmount: 50000, completed: false },
-            { id: 2, description: "100.000 Coin Kazandınız!", coinAmount: 100000, completed: false },
-            { id: 3, description: "200.000 Coin Kazandınız!", coinAmount: 200000, completed: false },
-            { id: 4, description: "300.000 Coin Kazandınız!", coinAmount: 300000, completed: false },
-            { id: 5, description: "1.000.000 Coin Kazandınız!", coinAmount: 1000000, completed: false },
-            { id: 6, description: "500 Farm Yaptınız!", farmCount: 500, completed: false }
-        ];
-
-        // Başarımların Başlangıçta Yüklenmesi
-        function loadAchievements() {
-            const achievementsList = document.getElementById('achievements-list');
-            achievementsList.innerHTML = ""; // Önceki başarımları temizle
-
-            predefinedAchievements.forEach(achievement => {
-                // Başarımları daha önce tamamlandıysa işaretle
-                if (awardedLevels[`achievement_${achievement.id}`]) {
-                    achievement.completed = true;
-                }
-
-                const achievementDiv = document.createElement('div');
-                achievementDiv.className = 'achievement';
-                achievementDiv.id = `achievement-${achievement.id}`;
-                achievementDiv.innerHTML = `
-                    <span>${achievement.description}</span>
-                    <span class="checkmark">${achievement.completed ? "✔️" : "❌"}</span>
-                `;
-                if (achievement.completed) {
-                    achievementDiv.classList.add('completed');
-                }
-                achievementsList.appendChild(achievementDiv);
-            });
-        }
-
-        // Başarımların Güncellenmesi
-        function updateAchievements() {
-            predefinedAchievements.forEach(achievement => {
-                if (!achievement.completed) {
-                    let achieved = false;
-                    if (achievement.coinAmount && gameState.coins >= achievement.coinAmount) {
-                        achieved = true;
-                    }
-                    if (achievement.farmCount && gameState.farmCount >= achievement.farmCount) {
-                        achieved = true;
-                    }
-
-                    if (achieved) {
-                        achievement.completed = true;
-                        // Başarımlar işaretlendi
-                        const achievementDiv = document.getElementById(`achievement-${achievement.id}`);
-                        if (achievementDiv) {
-                            achievementDiv.classList.add('completed');
-                            achievementDiv.querySelector('.checkmark').textContent = "✔️";
-                        }
-                        awardedLevels[`achievement_${achievement.id}`] = true;
-                        localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-
-                        // Rozet Gösterme
-                        showBadge();
-
-                        // Seviye ödülleri güncelle
-                    }
-                }
-            });
-        }
-
-        // Rozet Gösterme Fonksiyonu
-        function showBadge() {
-            const badge = document.getElementById('level-badge');
-            badge.classList.add('visible');
-            setTimeout(() => {
-                badge.classList.remove('visible');
-            }, 3000);
-        }
-
-        // XP Ekleme Fonksiyonu
-        function addXP(amount) {
-            if (isNaN(amount)) {
-                console.error(`Geçersiz XP miktarı: ${amount}`);
-                return;
-            }
-            playerXP += amount;
-            console.log(`XP Eklendi: +${amount}, Toplam XP: ${playerXP}`);
-            updateXPDisplay();
-            checkLevelUp();
-        }
-
-        // Seviye Atlama Fonksiyonu
-        function checkLevelUp() {
-            let xpNeeded = playerLevel * 100;
-            while (playerXP >= xpNeeded) {
-                playerLevel++;
-                playerXP -= xpNeeded;
-                alert(languageData[currentLanguage].levelUpMessage(playerLevel));
-                checkLevelRewards();
-                updateXPDisplay();
-                updateProgressBar();
-                updateAchievements(); // Başarımları güncelle
-                xpNeeded = playerLevel * 100; // Yeni seviye için XP ihtiyacı güncellendi
-            }
-        }
-
-        // Seviye Ödüllerini Kontrol Etme Fonksiyonu
-        function checkLevelRewards() {
-            if (rewardLevels[playerLevel] && !awardedLevels[`reward_sv${playerLevel}`]) {
-                addXP(rewardLevels[playerLevel].xp);
-                alert(languageData[currentLanguage].rewardCollected(rewardLevels[playerLevel].xp));
-                awardedLevels[`reward_sv${playerLevel}`] = true;
-                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-
-                updateDisplay();
-            }
-        }
-
-        // XP Display Güncelleme Fonksiyonu
-        function updateXPDisplay() {
-            document.getElementById("xp-text").textContent = playerXP;
-            document.getElementById("home-level").textContent = playerLevel;
-            document.getElementById("home-xp").textContent = playerXP;
-            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
-            document.getElementById("home-energy").textContent = gameState.energy;
-        }
-
-        // Zaman Formatlama Fonksiyonu
-        function formatTime(ms) {
-            const totalSeconds = Math.floor(ms / 1000);
-            const hours = Math.floor((totalSeconds / 3600) % 24);
-            const minutes = Math.floor((totalSeconds / 60) % 60);
-            const seconds = totalSeconds % 60;
-            return `${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        // Günlük Ödül Zamanlayıcı Güncelleme Fonksiyonu
-        function updateDailyRewardTimer() {
-            const now = Date.now();
-            const lastCollectedTime = lastCollected;
-            const oneDay = 24 * 60 * 60 * 1000;
-            const remainingTime = Math.max(0, oneDay - (now - lastCollectedTime));
-
-            const timerElement = document.getElementById('daily-reward-timer');
-            const startButton = document.querySelector('.start-button');
-
-            if (remainingTime > 0) {
-                timerElement.textContent = languageData[currentLanguage].remainingTime(formatTime(remainingTime));
-                startButton.disabled = true;
-            } else {
-                timerElement.textContent = languageData[currentLanguage].rewardReady;
-                startButton.disabled = false;
-            }
-        }
-
-        let countdownInterval;
-
-        // Günlük Ödül Toplama Fonksiyonu
-        async function collectDailyReward() {
-            const now = Date.now();
-            const oneDay = 24 * 60 * 60 * 1000;
-
-            if (now - lastCollected >= oneDay) {
-                gameState.coins += 5000;
-                lastCollected = now;
-                localStorage.setItem('lastCollected', lastCollected);
-                saveGame();
-
-                alert(languageData[currentLanguage].dailyRewardCollected);
-                updateDisplay();
-                updateDailyRewardTimer();
-
-                // Countdown Başlat
-                if (countdownInterval) clearInterval(countdownInterval);
-                countdownInterval = setInterval(() => {
-                    const now = Date.now();
-                    const remainingTime = Math.max(0, oneDay - (now - lastCollected));
-                    if (remainingTime > 0) {
-                        document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].remainingTime(formatTime(remainingTime));
-                    } else {
-                        document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].rewardReady;
-                        document.querySelector('.start-button').disabled = false;
-                        clearInterval(countdownInterval);
-                    }
-                }, 1000);
-            } else {
-                const remainingTime = oneDay - (now - lastCollected);
-                alert(languageData[currentLanguage].dailyRewardCooldown(formatTime(remainingTime)));
-            }
-        }
-
-        // Seviye Ödüllerini Almak için Fonksiyon
-        function claimLevelReward(level) {
-            if (playerLevel >= level && !awardedLevels[`reward_sv${level}`]) {
-                const xpAmount = rewardLevels[level].xp;
-                addXP(xpAmount);
-                awardedLevels[`reward_sv${level}`] = true;
-                localStorage.setItem('awardedLevels', JSON.stringify(awardedLevels));
-
-                alert(languageData[currentLanguage].rewardCollected(xpAmount));
-                updateDisplay();
-                updateEarnRewards();
-            } else if (awardedLevels[`reward_sv${level}`]) {
-                alert(languageData[currentLanguage].rewardAlreadyClaimed);
-            } else {
-                alert(languageData[currentLanguage].insufficientLevel);
-            }
-        }
-
-        // Earn Bölümündeki Ödülleri Güncelleme Fonksiyonu
-        function updateEarnRewards() {
-            const levels = [10, 20, 30, 40, 50, 100];
-            levels.forEach(level => {
-                const button = document.getElementById(`claim-reward-${level}`);
-                if (playerLevel >= level && !awardedLevels[`reward_sv${level}`]) {
-                    button.disabled = false;
-                    button.classList.add('enabled');
-                    button.classList.remove('disabled');
-                    button.textContent = languageData[currentLanguage].claimButton;
-                } else if (awardedLevels[`reward_sv${level}`]) {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                    button.classList.remove('enabled');
-                    button.textContent = languageData[currentLanguage].claimedButton;
-                } else {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                    button.classList.remove('enabled');
-                    button.textContent = languageData[currentLanguage].levelUnreached;
-                }
-            });
-        }
-
-        // Home İstatistiklerini Güncelleme Fonksiyonu
-        function updateHomeDisplay() {
-            document.getElementById("home-level").textContent = playerLevel;
-            document.getElementById("home-coins").textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById("home-xp").textContent = playerXP;
-            document.getElementById("home-xp-needed").textContent = playerLevel * 100;
-            document.getElementById("home-energy").textContent = gameState.energy;
-        }
-
-        // İlerleme Çubuğunu Güncelleme Fonksiyonu
-        function updateProgressBar() {
-            const progressBarFill = document.getElementById('progress-bar-fill');
-            const progressPercentage = (playerXP / (playerLevel * 100)) * 100;
-            progressBarFill.style.width = `${progressPercentage}%`;
-        }
-
-        // "No1Game" Yazısını Stilize Etme Fonksiyonu
-        function styleNo1Game() {
-            const homeContainer = document.getElementById('home-container');
-            const no1GameHeader = homeContainer.querySelector('h1');
-            no1GameHeader.style.fontFamily = "'Pacifico', cursive";
-            no1GameHeader.style.color = "#1f3f60";
-            no1GameHeader.style.textShadow = "2px 2px 8px rgba(255, 165, 0, 0.8)"; /* Turuncu gölge eklendi */
-        }
-
-        // Tüm İçerikleri Gizleme Fonksiyonu
-        function hideAllContainers() {
-            const containers = ["boost-container", "earn-container", "home-container", "friends-container"];
-            containers.forEach(id => {
-                document.getElementById(id).style.display = "none";
-            });
-        }
-
-        // Oyun Kaydetme İşlemi
-        function saveGame() {
-            const gameData = {
-                gameState: gameState,
-                farmBot: farmBot,
-                playerXP: playerXP,
-                playerLevel: playerLevel,
-                awardedLevels: awardedLevels,
-                lastCollected: lastCollected,
-                daysLoggedIn: daysLoggedIn,
-                lastLoginDate: lastLoginDate
-            };
-            localStorage.setItem('no1gameData', JSON.stringify(gameData));
-            console.log("Oyun kaydedildi.");
-        }
-
-        // Oyun Verilerini Yükleme Fonksiyonu
-        function loadGame() {
-            const savedData = JSON.parse(localStorage.getItem('no1gameData'));
-            if (savedData) {
-                gameState = savedData.gameState || gameState;
-                playerXP = savedData.playerXP || playerXP;
-                playerLevel = savedData.playerLevel || playerLevel;
-                awardedLevels = savedData.awardedLevels || awardedLevels;
-                lastCollected = savedData.lastCollected || lastCollected;
-                daysLoggedIn = savedData.daysLoggedIn || daysLoggedIn;
-                lastLoginDate = savedData.lastLoginDate || lastLoginDate;
-                console.log("Oyun yüklendi:", savedData);
-            } else {
-                console.log("Yeni oyun başlatılıyor.");
-                saveGame(); // İlk başlatmada veriyi kaydet
-            }
-
-            loadAchievements(); // Başarımları yükle
-            updateDisplay();
-            updateXPDisplay();
-            updateHomeDisplay();
-            styleNo1Game();
-            updateEarnRewards();
-        }
-
-        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
-        function updateUpgradeButtons() {
-            ['click', 'auto', 'energy'].forEach(type => {
-                const button = document.getElementById(`${type}-upgrade`);
-                const cost = gameState.upgrades[type].cost;
-                const canAfford = gameState.coins >= cost;
-                button.className = `upgrade-button ${canAfford ? 'active' : 'inactive'}`;
-                button.disabled = !canAfford;
-            });
-        }
-
-        // Referansları Görüntüleme Fonksiyonu
-        function updateFriendsDisplay() {
-            const referrals = gameState.referrals || 0;
-            document.getElementById('referral-count').textContent = referrals;
-            document.getElementById('referral-info').textContent = `+1 Davet = 20.000 Coin`;
-        }
-
-        // Arkadaş Listesini Yükleme Fonksiyonu (Gerçek Uygulamada Arkadaş Verileri Backend'den Alınacak)
-        function loadFriendList() {
-            const friendsList = document.getElementById('friends-list');
-            friendsList.innerHTML = ""; // Önceki arkadaşları temizle
-
-            // Gerçek uygulamada, arkadaş verilerini başka bir kaynaktan almanız gerekecek
-            // Bu örnekte statik arkadaş verileri gösteriliyor
-            const friends = [
-                { avatar: 'https://i.pravatar.cc/40?img=1', name: 'Arkadaş1', level: 10 },
-                { avatar: 'https://i.pravatar.cc/40?img=2', name: 'Arkadaş2', level: 15 },
-                { avatar: 'https://i.pravatar.cc/40?img=3', name: 'Arkadaş3', level: 20 },
-            ];
-
-            friends.forEach(friend => {
-                const friendDiv = document.createElement('div');
-                friendDiv.className = 'friend';
-                friendDiv.innerHTML = `
-                    <img src="${friend.avatar}" alt="${friend.name} Avatarı" class="friend-avatar">
-                    <div class="friend-info">
-                        <span class="friend-name">${friend.name}</span>
-                        <span class="friend-level">Seviye: ${friend.level}</span>
-                    </div>
-                `;
-                friendsList.appendChild(friendDiv);
-            });
-        }
-
-        // Sosyal Paylaşım Fonksiyonları
-        function shareOnFacebook() {
-            const url = encodeURIComponent(generateInviteLink());
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
-        }
-
-        function shareOnTwitter() {
-            const text = encodeURIComponent("No1Game'e katılmak için bu linki kullanın!");
-            const url = encodeURIComponent(generateInviteLink());
-            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-        }
-
-        function shareOnWhatsApp() {
-            const url = encodeURIComponent(generateInviteLink());
-            window.open(`https://api.whatsapp.com/send?text=No1Game'e katılmak için bu linki kullanın: ${url}`, '_blank');
-        }
-
-        // Invite Link Oluşturma Fonksiyonu
-        function generateInviteLink() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (currentUser) {
-                return `${window.location.origin}${window.location.pathname}?referral=${currentUser.id}`;
-            } else {
-                console.error("Kullanıcı henüz oluşturulmamış.");
-                return "#";
-            }
-        }
-
-        // Sosyal Paylaşım Butonlarına Invite Link Ekleme
-        function addSocialShareButtons() {
-            const inviteLinkElement = document.getElementById('invite-link');
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (currentUser) {
-                const inviteLink = generateInviteLink();
-                console.log("Invite Link:", inviteLink); // Davet linkini konsola yazdır
-                inviteLinkElement.href = inviteLink;
-                inviteLinkElement.textContent = inviteLink;
-            } else {
-                console.error("Kullanıcı henüz oluşturulmamış.");
-                inviteLinkElement.textContent = "Davet Linki Yüklenemedi.";
-            }
-        }
-
-        // Kullanıcı Oluşturma Fonksiyonu
-        function createNewUser() {
-            const userId = 'user_' + Math.random().toString(36).substr(2, 9); // Benzersiz bir kullanıcı ID'si oluştur
-            const userData = {
-                id: userId,
-                coins: gameState.coins,
-                referrals: gameState.referrals || 0,
-                farmCount: gameState.farmCount || 0,
-                upgrades: gameState.upgrades || {},
-                awardedLevels: awardedLevels || {},
-                referralsMade: false
-            };
-            localStorage.setItem(`user_${userId}`, JSON.stringify(userData));
-            localStorage.setItem('currentUser', JSON.stringify(userData));
-            return userData;
-        }
-
-        // Display Güncelleme Fonksiyonu
-        function updateDisplay() {
-            document.getElementById('coin-value').textContent = Math.floor(gameState.coins).toLocaleString();
-            document.getElementById('cps-value').textContent = gameState.autoCollectPower.toFixed(1);
-            document.getElementById('energy-value').textContent = Math.floor(gameState.energy).toLocaleString();
-            document.getElementById('xp-text').textContent = playerXP;
-
-            document.getElementById('click-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `${languageData[currentLanguage].upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-
-            updateUpgradeButtons();
-            updateProgressBar();
-            updateHomeDisplay();
-            updateEarnRewards();
-            updateFriendsDisplay();
-        }
-
-        // Farm Butonuna Tıklama Fonksiyonu
-        function handleFarmClick() {
-            if (gameState.energy >= 33) {
-                gameState.coins += gameState.clickPower;
-                gameState.energy -= 33;
-                gameState.farmCount += 1;
-                addXP(10);
-                updateDisplay();
-                updateAchievements(); // Farm sayısı arttıkça başarımları güncelle
-                console.log("Farm yapıldı. Coin:", gameState.coins, "Enerji:", gameState.energy, "Farm Sayısı:", gameState.farmCount, "XP:", playerXP);
-                saveGame();
-            } else {
-                alert(languageData[currentLanguage].notEnoughEnergy);
-            }
-        }
-
-        // Upgrade Yapma Fonksiyonu
-        function handleUpgrade(type) {
-            const cost = gameState.upgrades[type].cost;
-            if (gameState.coins >= cost) {
-                gameState.coins -= cost;
-                totalCoinsSpent += cost;
-                console.log(`Upgrade Yapıldı: ${type}, Maliyet: ${cost}, Kalan Coin: ${gameState.coins}`);
-
-                switch(type) {
-                    case 'click':
-                        gameState.clickPower = Math.floor(gameState.clickPower * 1.5);
-                        break;
-                    case 'auto':
-                        gameState.autoCollectPower += 1;
-                        break;
-                    case 'energy':
-                        gameState.energy += 200;
-                        break;
-                }
-
-                // Maliyetleri Güncelleme
-                gameState.upgrades[type].cost = Math.floor(cost * 2);
-                gameState.upgrades[type].level++;
-                updateDisplay();
-                saveGame();
-            } else {
-                alert(languageData[currentLanguage].notEnoughCoins);
-            }
-        }
-
-        // Event Listeners
-        document.getElementById("boost-nav").addEventListener("click", function() {
-            hideAllContainers();
-            document.getElementById("boost-container").style.display = "block";
-        });
-
-        document.getElementById("home-nav").addEventListener("click", function() {
-            hideAllContainers();
-            document.getElementById("home-container").style.display = "block";
-        });
-
-        document.getElementById("earn-nav").addEventListener("click", function() {
-            hideAllContainers();
-            document.getElementById("earn-container").style.display = "block";
-        });
-
-        document.getElementById("friends-nav").addEventListener("click", function() {
-            hideAllContainers();
-            document.getElementById("friends-container").style.display = "block";
-        });
-
-        document.getElementById('farm-button').addEventListener('click', handleFarmClick);
-        document.getElementById('farm-button').addEventListener('touchstart', handleFarmClick);
-
-        document.getElementById('click-upgrade').addEventListener('click', () => {
-            handleUpgrade('click');
-        });
-
-        document.getElementById('auto-upgrade').addEventListener('click', () => {
-            handleUpgrade('auto');
-        });
-
-        document.getElementById('energy-upgrade').addEventListener('click', () => {
-            handleUpgrade('energy');
-        });
-
-        // Otomatik İşlemler
-        setInterval(() => {
-            if (gameState.autoCollectPower > 0) {
-                gameState.coins += gameState.autoCollectPower;
-                updateDisplay();
-                updateAchievements(); // Coin arttıkça başarımları güncelle
-                console.log(`Otomatik Toplama: +${gameState.autoCollectPower} Coin`);
-                saveGame();
-            }
-        }, 1000);
-
-        // Enerji Yenileme Oranını Artırma (5'ten 20'ye)
-        setInterval(() => {
-            if (gameState.energy < 1000) {
-                gameState.energy = Math.min(gameState.energy + 20, 1000); // 20'ye çıkarıldı
-                updateDisplay();
-                console.log(`Enerji Yenileniyor: ${gameState.energy}`);
-                saveGame();
-            }
-        }, 1000);
-
-        // XP Ekleyen setInterval
-        setInterval(() => {
-            addXP(gameState.xpMultiplier);
-            updateDailyRewardTimer();
-            console.log(`Her saniye +${gameState.xpMultiplier} XP`);
-            saveGame();
-        }, 1000);
-
-        // Sayfa Yüklendiğinde
-        window.addEventListener("load", () => {
-            loadGame();
-
-            // Başlangıçta Boost bölümünü göster
-            hideAllContainers();
-            document.getElementById("boost-container").style.display = "block";
-
-            // Dil Ayarını Güncelle
-            updateLanguage();
-
-            // Günlük İpucu Gösterme
-            displayDailyTip();
-
-            // Referans işleme
-            processReferral();
-
-            // Countdown Başlatma
-            if (lastCollected) {
-                const oneDay = 24 * 60 * 60 * 1000;
-                const now = Date.now();
-                const remainingTime = Math.max(0, oneDay - (now - lastCollected));
-                if (remainingTime > 0) {
-                    document.querySelector('.start-button').disabled = true;
-                    countdownInterval = setInterval(() => {
-                        const now = Date.now();
-                        const remainingTime = Math.max(0, oneDay - (now - lastCollected));
-                        if (remainingTime > 0) {
-                            document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].remainingTime(formatTime(remainingTime));
-                        } else {
-                            document.getElementById('daily-reward-timer').textContent = languageData[currentLanguage].rewardReady;
-                            document.querySelector('.start-button').disabled = false;
-                            clearInterval(countdownInterval);
-                        }
-                    }, 1000);
-                }
-            }
-
-            // Arkadaş Listesini Yükle
-            loadFriendList();
-
-            // Sosyal Paylaşım Butonlarını Güncelle
-            addSocialShareButtons();
-
-            // Gün Sayısını Artır
-            incrementDaysLoggedIn();
-        });
-
-        // Dil Seçimi Butonları
-        document.getElementById('lang-tr').addEventListener('click', () => setLanguage('tr'));
-        document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
-
-        // Oyun Kapatılırken Kaydetme
-        window.addEventListener("beforeunload", saveGame);
-
-        // Gün Sayısını Artırma Fonksiyonu
-        function incrementDaysLoggedIn() {
-            const today = new Date().toDateString();
-            if (lastLoginDate !== today) {
-                daysLoggedIn++;
-                lastLoginDate = today;
-                localStorage.setItem('daysLoggedIn', daysLoggedIn);
-                localStorage.setItem('lastLoginDate', lastLoginDate);
-                updateHomeDisplay();
-                console.log(`Gün Sayısı Artırıldı: ${daysLoggedIn}`);
-            }
-        }
-
-        // Günlük İpucu Fonksiyonu
-        function displayDailyTip() {
-            const dailyTips = currentLanguage === 'tr' ? [
-                "Enerjinizi daha verimli kullanmak için enerji yükseltmelerini tercih edin!",
-                "Otomatik toplayıcılarınızı yükselterek daha fazla coin kazanın!",
-                "Seviye ödüllerini kaçırmayın, her seviyede büyük ödüller sizi bekliyor!",
-                "Daha fazla XP kazanmak için farm butonuna sık sık tıklayın!"
-            ] : [
-                "Prioritize energy upgrades to use your energy more efficiently!",
-                "Upgrade your auto collectors to earn more coins!",
-                "Don't miss level rewards; great prizes await at each level!",
-                "Click the farm button frequently to earn more XP!"
-            ];
-            const today = new Date().getDate();
-            const tipIndex = today % dailyTips.length;
-            document.getElementById('daily-tip').textContent = `${languageData[currentLanguage].dailyTip} ${dailyTips[tipIndex]}`;
-        }
-
-        // Referans İşleme Fonksiyonu
-        function processReferral() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const referralId = urlParams.get('referral');
-
-            if (referralId) { // Referans kontrolü yap
-                // Kendi kullanıcı ID'nizi alın ya da oluşturun
-                let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-                if (!currentUser) {
-                    currentUser = createNewUser();
-                }
-
-                if (referralId !== currentUser.id) { // Kendini referans yapmayı engelle
-                    let referrerData = JSON.parse(localStorage.getItem(`user_${referralId}`));
-                    if (referrerData && !referrerData.referralsMade) {
-                        referrerData.coins += 20000;
-                        referrerData.referrals += 1;
-                        referrerData.referralsMade = true; // Aynı referansın tekrar kullanılmasını engelle
-                        localStorage.setItem(`user_${referralId}`, JSON.stringify(referrerData));
-
-                        alert(`Bir arkadaşınızı davet ettiniz ve 20.000 Coin kazandınız!`);
-                        // Kendi referans bilgilerinizi güncelle
-                        gameState.referrals += 1;
-                        saveGame();
-                        updateDisplay();
-                    }
-                }
-
-                // Referans linkini temizle
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        }
-
-        // Dil Değiştirme Fonksiyonu
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            localStorage.setItem('language', lang);
-            updateLanguage();
-        }
-
-        // Metinleri Güncelleme Fonksiyonu
-        function updateLanguage() {
-            const lang = languageData[currentLanguage];
-
-            // Başlıkları güncelleme
-            document.getElementById('welcome-message').textContent = lang.welcomeMessage;
-            document.getElementById('game-title').textContent = lang.gameTitle;
-            document.getElementById('player-stats-title').textContent = lang.playerStatsTitle;
-            document.getElementById('total-coins-stat').childNodes[0].textContent = `${lang.totalCoinsStat} `;
-            document.getElementById('level-stat').childNodes[0].textContent = `${lang.levelStat} `;
-            document.getElementById('xp-stat').childNodes[0].textContent = `${lang.xpStat} `;
-            document.getElementById('energy-stat').childNodes[0].textContent = `${lang.energyStat} `;
-            document.getElementById('achievements-title').textContent = lang.achievementsTitle;
-            document.getElementById('progress-title').textContent = lang.progressTitle;
-            document.getElementById('daily-tip').textContent = lang.dailyTip;
-
-            // Boost Bölümü (Geliştir)
-            document.getElementById('farm-button').textContent = lang.farmButton;
-            document.getElementById('boost-section-title').textContent = lang.boostSectionTitle;
-            document.getElementById('click-upgrade-text').textContent = lang.clickUpgrade;
-            document.getElementById('auto-upgrade-text').textContent = lang.autoUpgrade;
-            document.getElementById('energy-upgrade-text').textContent = lang.energyUpgrade;
-            document.getElementById('click-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.click.cost.toLocaleString()} coin`;
-            document.getElementById('auto-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.auto.cost.toLocaleString()} coin`;
-            document.getElementById('energy-cost').textContent = `${lang.upgradeCost} ${gameState.upgrades.energy.cost.toLocaleString()} coin`;
-
-            // Kaynak Başlıkları
-            document.getElementById('coin-title').textContent = lang.coinTitle;
-            document.getElementById('cps-title').textContent = lang.cpsTitle;
-            document.getElementById('energy-title').textContent = lang.energyTitle;
-            document.getElementById('xp-title').textContent = lang.xpTitle;
-
-            // Earn Bölümü (Kazanç)
-            document.getElementById('daily-reward-title').textContent = lang.dailyRewardTitle;
-            document.getElementById('collect-daily-reward-button').textContent = lang.collectDailyRewardButton;
-            document.getElementById('level-rewards-title').textContent = lang.levelRewardsTitle;
-
-            // Level Rewards Texts
-            document.getElementById('level-reward-10-text').textContent = lang.levelRewardText(10, 1000);
-            document.getElementById('level-reward-20-text').textContent = lang.levelRewardText(20, 2000);
-            document.getElementById('level-reward-30-text').textContent = lang.levelRewardText(30, 5000);
-            document.getElementById('level-reward-40-text').textContent = lang.levelRewardText(40, 7000);
-            document.getElementById('level-reward-50-text').textContent = lang.levelRewardText(50, 10000);
-            document.getElementById('level-reward-100-text').textContent = lang.levelRewardText(100, 50000);
-
-            // Friends Bölümü (Arkadaşlar)
-            document.getElementById('friends-title').textContent = lang.friendsTitle;
-            document.getElementById('total-referrals-text').childNodes[0].textContent = `${lang.totalReferralsText} `;
-            document.getElementById('invite-link-text').textContent = lang.inviteLinkText;
-
-            // Navigasyon Çubuğu
-            document.getElementById('nav-home-text').textContent = lang.navHome;
-            document.getElementById('nav-earn-text').textContent = lang.navEarn;
-            document.getElementById('nav-boost-text').textContent = lang.navBoost;
-            document.getElementById('nav-friends-text').textContent = lang.navFriends;
-
-            // Başarımlar
-            loadAchievements();
-
-            // Günlük Ödül Zamanlayıcısı
-            updateDailyRewardTimer();
-        }
-
-        // Ödül Çarkını Açma Fonksiyonu
-        function openRewardWheel() {
-            const now = Date.now();
-            const oneDay = 24 * 60 * 60 * 1000;
-
-            if (now - lastCollected >= oneDay) {
-                document.getElementById('reward-wheel-modal').style.display = 'flex';
-            } else {
-                const remainingTime = oneDay - (now - lastCollected);
-                alert(languageData[currentLanguage].dailyRewardCooldown(formatTime(remainingTime)));
-            }
-        }
-
-        // Ödül Çarkını Kapatma Fonksiyonu
-        document.getElementById('close-modal').addEventListener('click', () => {
-            document.getElementById('reward-wheel-modal').style.display = 'none';
-        });
-
-        // Ödül Çarkını Döndürme Fonksiyonu
-        document.getElementById('spin-button').addEventListener('click', () => {
-            spinWheel();
-        });
-
-        let isSpinning = false;
-
-        function spinWheel() {
-            if (isSpinning) return;
-            isSpinning = true;
-
-            const wheel = document.getElementById('reward-wheel');
-            const randomDegree = Math.floor(Math.random() * 360) + 3600; // Minimum 10 dönüş
-            wheel.style.transform = `rotate(${randomDegree}deg)`;
-
-            wheel.addEventListener('transitionend', () => {
-                const actualDegree = randomDegree % 360;
-                let reward;
-                if (actualDegree >= 0 && actualDegree < 60) {
-                    reward = { type: 'coin', amount: 500 };
-                } else if (actualDegree >= 60 && actualDegree < 120) {
-                    reward = { type: 'xp', amount: 1000 };
-                } else if (actualDegree >= 120 && actualDegree < 180) {
-                    reward = { type: 'energy', amount: 50 };
-                } else if (actualDegree >= 180 && actualDegree < 240) {
-                    reward = { type: 'cps', amount: 1 };
-                } else if (actualDegree >= 240 && actualDegree < 300) {
-                    reward = { type: 'coin', amount: 200 };
-                } else {
-                    reward = { type: 'xp', amount: 500 };
-                }
-
-                applyReward(reward);
-                wheel.style.transition = 'none';
-                wheel.style.transform = `rotate(${actualDegree}deg)`;
-                setTimeout(() => {
-                    wheel.style.transition = 'transform 5s ease-out';
-                }, 100);
-
-                isSpinning = false;
-                document.getElementById('reward-wheel-modal').style.display = 'none';
-            }, { once: true });
-        }
-
-        // Ödülü Uygulama Fonksiyonu
-        function applyReward(reward) {
-            switch(reward.type) {
-                case 'coin':
-                    gameState.coins += reward.amount;
-                    alert(`${reward.amount} Coin kazandınız!`);
-                    break;
-                case 'xp':
-                    addXP(reward.amount);
-                    alert(`${reward.amount} XP kazandınız!`);
-                    break;
-                case 'energy':
-                    gameState.energy += reward.amount;
-                    alert(`${reward.amount} Enerji kazandınız!`);
-                    break;
-                case 'cps':
-                    gameState.autoCollectPower += reward.amount;
-                    alert(`${reward.amount} CPS kazandınız!`);
-                    break;
-                default:
-                    console.log("Bilinmeyen ödül:", reward);
-            }
-            updateDisplay();
-            saveGame();
-        }
-
-        // Event Listener for Reward Wheel Modal Click Outside
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('reward-wheel-modal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // Gün Sayısını Artırma Fonksiyonu
-        // (Bu fonksiyon yukarıda zaten tanımlanmış, duplicate olmadığından emin olun)
-        // function incrementDaysLoggedIn() { ... }
-
-        // Oyun Verilerini Kaydetme Fonksiyonu
-        // function saveGame() { ... }
-
-        // Oyun Verilerini Yükleme Fonksiyonu
-        // function loadGame() { ... }
-
-        // Display Güncelleme Fonksiyonu
-        // function updateDisplay() { ... }
-
-        // Upgrade Butonlarının Güncellenmesi Fonksiyonu
-        // function updateUpgradeButtons() { ... }
-
-        // Referansları Görüntüleme Fonksiyonu
-        // function updateFriendsDisplay() { ... }
-
-        // Arkadaş Listesini Yükleme Fonksiyonu
-        // function loadFriendList() { ... }
-
-        // Sosyal Paylaşım Fonksiyonları
-        // function shareOnFacebook() { ... }
-        // function shareOnTwitter() { ... }
-        // function shareOnWhatsApp() { ... }
-
-        // Invite Link Oluşturma Fonksiyonu
-        // function generateInviteLink() { ... }
-
-        // Sosyal Paylaşım Butonlarına Invite Link Ekleme Fonksiyonu
-        // function addSocialShareButtons() { ... }
-
-        // Kullanıcı Oluşturma Fonksiyonu
-        // function createNewUser() { ... }
-
-        // Dil Verileri
-        const languageData = {
-            tr: {
-                welcomeMessage: "Hoş Geldiniz No1Game'e!",
-                gameTitle: "No1Game",
-                playerStatsTitle: "Oyuncu İstatistikleri",
-                totalCoinsStat: "Toplam Coin:",
-                levelStat: "Seviye:",
-                xpStat: "XP:",
-                energyStat: "Enerji:",
-                achievementsTitle: "Başarımlar",
-                progressTitle: "Seviye İlerlemesi",
-                dailyTip: "Günlük İpucu: Daha fazla enerji kazanmak için enerji yükseltmelerini tercih edin!",
-                farmButton: "FARM",
-                boostSectionTitle: "Geliştir Bölümü",
-                clickUpgrade: "Tıklama Güçlendirmesi",
-                autoUpgrade: "CPS Arttırma",
-                energyUpgrade: "Enerji Yükseltme",
-                upgradeCost: "Maliyet:",
-                // Başarımlar
-                achievement1: "50.000 Coin Kazandınız!",
-                achievement2: "100.000 Coin Kazandınız!",
-                achievement3: "200.000 Coin Kazandınız!",
-                achievement4: "300.000 Coin Kazandınız!",
-                achievement5: "1.000.000 Coin Kazandınız!",
-                achievement6: "500 Farm Yaptınız!",
-                // Navigasyon
-                navHome: "Ana Sayfa",
-                navEarn: "Kazanç",
-                navBoost: "Geliştir",
-                navFriends: "Arkadaşlar",
-                // Diğer Metinler
-                cpsTitle: "CPS",
-                coinTitle: "Coin",
-                energyTitle: "Enerji",
-                xpTitle: "XP",
-                dailyRewardTitle: "Giriş Ödülü",
-                collectDailyRewardButton: "5000 Coin Al",
-                levelRewardsTitle: "Seviye Ödülleri",
-                friendsTitle: "Arkadaşlar",
-                totalReferralsText: "Toplam Davet Edilen Kişi Sayısı:",
-                inviteLinkText: "Davet Linkin:",
-                levelRewardText: (level, xp) => `sv${level}: ${xp} XP`,
-                notEnoughEnergy: "Enerjiniz yeterli değil!",
-                notEnoughCoins: "Yeterli coininiz yok!",
-                rewardAlreadyClaimed: "Bu ödülü zaten aldınız!",
-                insufficientLevel: "Yeterli seviyeye ulaşmadınız!",
-                rewardCollected: (xp) => `${xp} XP kazandınız!`,
-                dailyRewardCollected: "5000 Coin kazandınız!",
-                dailyRewardCooldown: (time) => `Giriş ödülünüzü zaten aldınız. ${time} sonra tekrar deneyin.`,
-                rewardReady: "Ödül hazır!",
-                remainingTime: (time) => `Kalan süre: ${time}`,
-                levelUpMessage: (level) => `Tebrikler! ${level}. seviyeye ulaştınız!`,
-                // Diğer metinler...
-                claimButton: "Al",
-                claimedButton: "Alındı",
-                levelUnreached: "Seviye Ulaşılamadı",
-                spinButton: "Çarkı Döndür",
-                closeButton: "Kapat"
-            },
-            en: {
-                welcomeMessage: "Welcome to No1Game!",
-                gameTitle: "No1Game",
-                playerStatsTitle: "Player Statistics",
-                totalCoinsStat: "Total Coins:",
-                levelStat: "Level:",
-                xpStat: "XP:",
-                energyStat: "Energy:",
-                achievementsTitle: "Achievements",
-                progressTitle: "Level Progress",
-                dailyTip: "Daily Tip: Prioritize energy upgrades to gain more energy!",
-                farmButton: "FARM",
-                boostSectionTitle: "Boost Section",
-                clickUpgrade: "Click Enhancement",
-                autoUpgrade: "Increase CPS",
-                energyUpgrade: "Energy Upgrade",
-                upgradeCost: "Cost:",
-                // Achievements
-                achievement1: "You've earned 50,000 Coins!",
-                achievement2: "You've earned 100,000 Coins!",
-                achievement3: "You've earned 200,000 Coins!",
-                achievement4: "You've earned 300,000 Coins!",
-                achievement5: "You've earned 1,000,000 Coins!",
-                achievement6: "You've farmed 500 times!",
-                // Navigation
-                navHome: "Home",
-                navEarn: "Earn",
-                navBoost: "Boost",
-                navFriends: "Friends",
-                // Other Texts
-                cpsTitle: "CPS",
-                coinTitle: "Coin",
-                energyTitle: "Energy",
-                xpTitle: "XP",
-                dailyRewardTitle: "Daily Reward",
-                collectDailyRewardButton: "Collect 5000 Coins",
-                levelRewardsTitle: "Level Rewards",
-                friendsTitle: "Friends",
-                totalReferralsText: "Total Referrals:",
-                inviteLinkText: "Your Invite Link:",
-                levelRewardText: (level, xp) => `lv${level}: ${xp} XP`,
-                notEnoughEnergy: "You don't have enough energy!",
-                notEnoughCoins: "You don't have enough coins!",
-                rewardAlreadyClaimed: "You have already claimed this reward!",
-                insufficientLevel: "You haven't reached the required level!",
-                rewardCollected: (xp) => `You gained ${xp} XP!`,
-                dailyRewardCollected: "You gained 5000 Coins!",
-                dailyRewardCooldown: (time) => `You have already collected your daily reward. Try again in ${time}.`,
-                rewardReady: "Reward is ready!",
-                remainingTime: (time) => `Time remaining: ${time}`,
-                levelUpMessage: (level) => `Congratulations! You've reached level ${level}!`,
-                // Diğer texts...
-                claimButton: "Claim",
-                claimedButton: "Claimed",
-                levelUnreached: "Level Unreached",
-                spinButton: "Spin Wheel",
-                closeButton: "Close"
-            }
-        };
-
-        // Günlük Ödül Çarkı İşlevselliği
-
-        // Oyun Kaydetme ve Yükleme Fonksiyonları
-        // (Bu fonksiyonlar daha önce tanımlandı, duplicate olmadığından emin olun)
-
-        // Initialize or Load Current User
-        function initializeUser() {
-            let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!currentUser) {
-                currentUser = createNewUser();
-            }
-        }
-
-        // Initialize the game
-        initializeUser();
-
-    </script>
+      </div>`;
+    }
+
+    /* Marquee item üretici (karışık + logolu) */
+    function createMarqueeItem(site){
+      const hasUrl = site.url && site.url !== '#';
+      const logo = site.logo && site.logo.trim() !== '' ? `<img src="${site.logo}" alt="${site.name}" onerror="this.remove();">`
+                                                        : `<i class="fas fa-gem" style="color:${site.color}"></i>`;
+      return `
+        <div class="marquee-item" style="border-color:${site.color}">
+          <div class="logo-wrap">${logo}</div>
+          <span class="name">${site.name.toUpperCase()}</span>
+          <a ${hasUrl ? `href="${site.url}" target="_blank" rel="noopener noreferrer"` : 'href="#"'} class="btn-mini"${hasUrl?'': ' style="opacity:.6;pointer-events:none"'}>GİRİŞ YAP</a>
+        </div>`;
+    }
+
+    /* Dizi karıştırma + seçim */
+    function shuffle(arr){
+      const a = arr.slice();
+      for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    /* Render gridler */
+    document.getElementById('sitesGrid').innerHTML = mainSponsors.map(createSiteCard).join('');
+    document.getElementById('vipGrid').innerHTML   = vipSites.map(createSiteCard).join('');
+
+    /* Marquee: Ana + VIP karışık (örnek: 12 öğe), sonra kopyasını ekleyip sonsuz akış */
+    const combined = [...mainSponsors, ...vipSites];
+    const selectionCount = Math.min(12, combined.length);
+    const mixed = shuffle(combined).slice(0, selectionCount);
+
+    const marqueeRow = document.getElementById('marqueeRow');
+    const marqueeHTML = mixed.map(createMarqueeItem).join('');
+    marqueeRow.innerHTML = marqueeHTML + marqueeHTML; // loop için iki kez ekle
+  </script>
 </body>
 </html>
