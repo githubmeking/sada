@@ -5,47 +5,32 @@
     <title>Deneme Bonusu Siteleri</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             background: #0f172a;
             color: #fff;
         }
-
         .page {
             min-height: 100vh;
             background: #020617;
             padding: 20px 12px 40px;
         }
-
         .page-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 18px;
         }
-
         .page-header img {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            object-fit: cover;
+            width: 36px; height: 36px; border-radius: 8px; object-fit: cover;
         }
-
         .page-header-title {
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 18px; font-weight: 600;
         }
-
         .cards {
             max-width: 480px;
             margin: 0 auto;
@@ -53,7 +38,6 @@
             flex-direction: column;
             gap: 18px;
         }
-
         .card {
             background: #020617;
             border-radius: 16px;
@@ -61,219 +45,133 @@
             border: 1px solid #1f2937;
             box-shadow: 0 8px 20px rgba(0,0,0,0.55);
         }
-
         .card-top {
             display: flex;
             gap: 12px;
             align-items: center;
             margin-bottom: 10px;
         }
-
         .card-logo {
-            width: 72px;
-            height: 72px;
-            border-radius: 10px;
-            background: #020617;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            width:72px;
+            height:72px;
+            border-radius:10px;
+            background:#020617;
+            display:flex;align-items:center;justify-content:center;
+            overflow:hidden;
         }
-
         .card-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width:100%;height:100%;object-fit:cover;
         }
-
-        .card-top-info {
-            flex: 1;
-        }
-
         .card-name {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-size: 16px; font-weight: 700;
         }
-
         .rating-box {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: #020617;
-            border: 1px solid #1f2937;
+            display:inline-flex;align-items:center;gap:6px;
+            padding:4px 10px;
+            border-radius:999px;
+            background:#020617;border:1px solid #1f2937;
+            margin-top:6px;
         }
-
-        .stars {
-            color: #fbbf24;
-            font-size: 13px;
-            letter-spacing: 1px;
-        }
-
-        .rating-text {
-            font-size: 12px;
-            font-weight: 600;
-        }
-
+        .stars { color:#fbbf24;font-size:13px;letter-spacing:1px; }
+        .rating-text { font-size:12px;font-weight:600; }
         .card-description {
-            margin-top: 10px;
-            padding: 10px 12px;
-            border-radius: 12px;
-            background: #020617;
-            border: 1px solid #1f2937;
-            font-size: 14px;
-            line-height: 1.4;
+            margin-top:10px;padding:10px 12px;border-radius:12px;
+            background:#020617;border:1px solid #1f2937;
+            font-size:14px;line-height:1.4;
         }
-
         .card-payments {
-            margin-top: 10px;
-            padding: 10px 12px;
-            border-radius: 12px;
-            background: #020617;
-            border: 1px solid #1f2937;
+            margin-top: 10px; padding: 10px 12px; border-radius: 12px;
+            background: #020617; border: 1px solid #1f2937;
         }
-
-        .pay-title {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .pay-methods {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
+        .pay-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .pay-methods { display: flex; flex-wrap: wrap; gap: 6px; }
         .pay-badge {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 999px;
-            border: 1px solid #4b5563;
-            background: #020617;
+            font-size: 11px; padding: 4px 8px; border-radius: 999px;
+            border: 1px solid #4b5563; background: #020617;
         }
-
-        .card-footer {
-            margin-top: 12px;
-        }
-
+        .card-footer { margin-top: 12px; }
         .btn-register {
-            width: 100%;
-            border: none;
-            outline: none;
-            padding: 11px 14px;
-            border-radius: 999px;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            background: #2563eb;
-            color: #fff;
-            cursor: pointer;
+            width:100%;border:none;outline:none;padding:11px 14px;
+            border-radius:999px;font-size:15px;font-weight:700;
+            text-transform:uppercase;background:#2563eb;color:#fff;
+            cursor:pointer;
         }
-
-        .btn-register:hover {
-            filter: brightness(1.05);
-        }
-
-        /* Desktop için hafif genişlik */
-        @media (min-width: 768px) {
-            .page {
-                display: flex;
-                justify-content: center;
-            }
-        }
+        .btn-register:hover { filter: brightness(1.05); }
     </style>
 </head>
+
 <body>
 <div class="page">
-    <!-- Üst başlık -->
+
     <header class="page-header">
         <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg" alt="Logo">
         <div class="page-header-title">Deneme Bonusu Siteleri</div>
     </header>
 
-    <!-- Kartlar -->
-    <div class="cards">
+    <div class="cards" id="cards"></div>
 
-        <!-- KART 1 -->
-        <div class="card">
-            <div class="card-top">
-                <div class="card-logo">
-                    <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg" alt="BAHIZZ">
-                </div>
-                <div class="card-top-info">
-                    <div class="card-name">BAHIZZ</div>
-                    <div class="rating-box">
-                        <div class="stars">★★★★★</div>
-                        <div class="rating-text">5/5</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-description">
-                Yatırım Şartsız ve Çekim Limitsiz<br>
-                <strong>500 TL Deneme Bonusu</strong>
-            </div>
-
-            <div class="card-payments">
-                <div class="pay-title">Ödeme Yöntemleri</div>
-                <div class="pay-methods">
-                    <span class="pay-badge">Visa</span>
-                    <span class="pay-badge">Mastercard</span>
-                    <span class="pay-badge">Papara</span>
-                    <span class="pay-badge">Bitcoin</span>
-                </div>
-            </div>
-
-            <div class="card-footer">
-                <a href="https://ornek-link.com" target="_blank">
-                    <button class="btn-register">KAYDOLUN</button>
-                </a>
-            </div>
-        </div>
-
-        <!-- KART 2 (örnek) -->
-        <div class="card">
-            <div class="card-top">
-                <div class="card-logo">
-                    <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg" alt="LORDPALACE">
-                </div>
-                <div class="card-top-info">
-                    <div class="card-name">LORDPALACE CASINO</div>
-                    <div class="rating-box">
-                        <div class="stars">★★★★★</div>
-                        <div class="rating-text">5/5</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-description">
-                <strong>250 TL Deneme Bonusu</strong><br>
-                Slot ve canlı casino oyunlarında geçerli.
-            </div>
-
-            <div class="card-payments">
-                <div class="pay-title">Ödeme Yöntemleri</div>
-                <div class="pay-methods">
-                    <span class="pay-badge">Papara</span>
-                    <span class="pay-badge">MeFete</span>
-                    <span class="pay-badge">Apple Pay</span>
-                </div>
-            </div>
-
-            <div class="card-footer">
-                <a href="https://ornek-link2.com" target="_blank">
-                    <button class="btn-register">KAYDOLUN</button>
-                </a>
-            </div>
-        </div>
-
-        <!-- Yeni siteleri buraya aynı kart yapısını kopyalayıp ekleyebilirsin -->
-
-    </div>
 </div>
+
+<script>
+// GITHUB PAGES ÜZERİNDEKİ JSON LİNKİ
+const jsonURL = "https://raw.githubusercontent.com/githubmeking/sada/main/sites.json";
+
+async function loadSites() {
+    try {
+        const response = await fetch(jsonURL + "?v=" + Date.now()); // cache bypass
+        const data = await response.json();
+        renderCards(data);
+    } catch (e) {
+        document.getElementById("cards").innerHTML =
+            "<div style='padding:20px;text-align:center;color:red;'>Veri yüklenemedi.</div>";
+    }
+}
+
+function renderCards(sites) {
+    const container = document.getElementById("cards");
+    container.innerHTML = "";
+
+    sites.forEach(site => {
+        const card = `
+            <div class="card">
+                <div class="card-top">
+                    <div class="card-logo">
+                        <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg">
+                    </div>
+                    <div class="card-top-info">
+                        <div class="card-name">${site.name}</div>
+                        <div class="rating-box">
+                            <div class="stars">★★★★★</div>
+                            <div class="rating-text">5/5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-description">
+                    ${site.description}<br>
+                    <strong>${site.bonus}</strong>
+                </div>
+
+                <div class="card-payments">
+                    <div class="pay-title">Ödeme Yöntemleri</div>
+                    <div class="pay-methods">
+                        ${site.payments.map(p => `<span class="pay-badge">${p}</span>`).join("")}
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <a href="${site.url}" target="_blank">
+                        <button class="btn-register">KAYDOLUN</button>
+                    </a>
+                </div>
+            </div>
+        `;
+        container.innerHTML += card;
+    });
+}
+
+loadSites();
+</script>
+
 </body>
 </html>
