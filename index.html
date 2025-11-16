@@ -74,6 +74,10 @@
             background:#2563eb; color:#fff; cursor:pointer;
             margin-top:12px;
         }
+
+        @media (min-width:768px) {
+            .page { display:flex; justify-content:center; }
+        }
     </style>
 </head>
 
@@ -81,7 +85,7 @@
 <div class="page">
 
     <header class="page-header">
-        <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg">
+        <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg" alt="Logo">
         <div class="page-header-title">Deneme Bonusu Siteleri</div>
     </header>
 
@@ -89,37 +93,30 @@
 
 </div>
 
-
-<!-- ========== JSON VERİSİ TEK DOSYADA ========== -->
+<!-- ========= BU ARAYI BOT OTOMATİK DOLDURACAK ========= -->
+<!-- SITES_DATA_START -->
 <script>
-const sites = [
-  {
-    "name": "BAHIZZ",
-    "bonus": "500 TL Deneme Bonusu",
-    "description": "Yatırım Şartsız ve Çekim Limitsiz 500 TL Deneme Bonusu",
-    "payments": ["Visa", "Mastercard", "Papara", "Bitcoin"],
-    "url": "https://ornek-link.com"
-  },
-  {
-    "name": "LORDPALACE CASINO",
-    "bonus": "250 TL Deneme Bonusu",
-    "description": "Slot ve canlı casino oyunlarında geçerli.",
-    "payments": ["Papara", "MeFete", "Apple Pay"],
-    "url": "https://ornek-link2.com"
-  }
-];
+const sites = [];
 </script>
+<!-- SITES_DATA_END -->
+<!-- ========= BU ARAYI BOT OTOMATİK DOLDURACAK ========= -->
 
-<!-- ========== RENDER SCRIPT ========== -->
 <script>
 function renderCards() {
     const cards = document.getElementById("cards");
+    cards.innerHTML = "";
+
+    if (!Array.isArray(sites) || sites.length === 0) {
+        cards.innerHTML = "<div style='padding:20px;text-align:center;color:#f87171;'>Henüz kayıtlı site yok.</div>";
+        return;
+    }
+
     sites.forEach(site => {
         const html = `
             <div class="card">
                 <div class="card-top">
                     <div class="card-logo">
-                        <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg">
+                        <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg" alt="${site.name}">
                     </div>
                     <div>
                         <div class="card-name">${site.name}</div>
@@ -140,7 +137,7 @@ function renderCards() {
                     ${site.payments.map(p => `<span class="pay-badge">${p}</span>`).join("")}
                 </div>
 
-                <a href="${site.url}" target="_blank">
+                <a href="${site.url}" target="_blank" rel="noopener noreferrer">
                     <button class="btn-register">KAYDOLUN</button>
                 </a>
             </div>
