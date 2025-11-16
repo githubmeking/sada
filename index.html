@@ -8,95 +8,72 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0f172a;
-            color: #fff;
-        }
-        .page {
-            min-height: 100vh;
-            background: #020617;
-            padding: 20px 12px 40px;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#0f172a; color:#fff; }
+        .page { min-height:100vh; background:#020617; padding:20px 12px 40px; }
+
         .page-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 18px;
+            display:flex; align-items:center; gap:10px; margin-bottom:18px;
         }
         .page-header img {
-            width: 36px; height: 36px; border-radius: 8px; object-fit: cover;
+            width:36px; height:36px; border-radius:8px; object-fit:cover;
         }
-        .page-header-title {
-            font-size: 18px; font-weight: 600;
-        }
+        .page-header-title { font-size:18px; font-weight:600; }
+
         .cards {
-            max-width: 480px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
+            max-width:480px; margin:0 auto;
+            display:flex; flex-direction:column; gap:18px;
         }
+
         .card {
-            background: #020617;
-            border-radius: 16px;
-            padding: 14px;
-            border: 1px solid #1f2937;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.55);
+            background:#020617; border-radius:16px; padding:14px;
+            border:1px solid #1f2937; box-shadow:0 8px 20px rgba(0,0,0,0.55);
         }
+
         .card-top {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 10px;
+            display:flex; gap:12px; align-items:center; margin-bottom:10px;
         }
+
         .card-logo {
-            width:72px;
-            height:72px;
-            border-radius:10px;
-            background:#020617;
-            display:flex;align-items:center;justify-content:center;
-            overflow:hidden;
+            width:72px; height:72px; border-radius:10px;
+            background:#020617; display:flex; align-items:center;
+            justify-content:center; overflow:hidden;
         }
-        .card-logo img {
-            width:100%;height:100%;object-fit:cover;
-        }
-        .card-name {
-            font-size: 16px; font-weight: 700;
-        }
+        .card-logo img { width:100%; height:100%; object-fit:cover; }
+
+        .card-name { font-size:16px; font-weight:700; margin-bottom:8px; }
+
         .rating-box {
-            display:inline-flex;align-items:center;gap:6px;
-            padding:4px 10px;
-            border-radius:999px;
-            background:#020617;border:1px solid #1f2937;
-            margin-top:6px;
+            display:inline-flex; gap:6px; align-items:center;
+            padding:4px 10px; border-radius:999px;
+            background:#020617; border:1px solid #1f2937;
         }
-        .stars { color:#fbbf24;font-size:13px;letter-spacing:1px; }
-        .rating-text { font-size:12px;font-weight:600; }
+
+        .stars { color:#fbbf24; font-size:13px; }
+        .rating-text { font-size:12px; font-weight:600; }
+
         .card-description {
-            margin-top:10px;padding:10px 12px;border-radius:12px;
-            background:#020617;border:1px solid #1f2937;
-            font-size:14px;line-height:1.4;
+            margin-top:10px; padding:10px 12px; border-radius:12px;
+            background:#020617; border:1px solid #1f2937; font-size:14px;
+            line-height:1.4;
         }
+
         .card-payments {
-            margin-top: 10px; padding: 10px 12px; border-radius: 12px;
-            background: #020617; border: 1px solid #1f2937;
+            margin-top:10px; padding:10px 12px; border-radius:12px;
+            background:#020617; border:1px solid #1f2937;
         }
-        .pay-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-        .pay-methods { display: flex; flex-wrap: wrap; gap: 6px; }
+        .pay-title { font-size:13px; font-weight:600; margin-bottom:6px; }
         .pay-badge {
-            font-size: 11px; padding: 4px 8px; border-radius: 999px;
-            border: 1px solid #4b5563; background: #020617;
+            font-size:12px; padding:4px 8px; border-radius:999px;
+            border:1px solid #4b5563; margin-right:6px; background:#020617;
         }
-        .card-footer { margin-top: 12px; }
+
         .btn-register {
-            width:100%;border:none;outline:none;padding:11px 14px;
-            border-radius:999px;font-size:15px;font-weight:700;
-            text-transform:uppercase;background:#2563eb;color:#fff;
-            cursor:pointer;
+            width:100%; padding:11px; border:none;
+            border-radius:999px; font-size:15px; font-weight:700;
+            background:#2563eb; color:#fff; cursor:pointer;
+            margin-top:12px;
         }
-        .btn-register:hover { filter: brightness(1.05); }
     </style>
 </head>
 
@@ -104,7 +81,7 @@
 <div class="page">
 
     <header class="page-header">
-        <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg" alt="Logo">
+        <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg">
         <div class="page-header-title">Deneme Bonusu Siteleri</div>
     </header>
 
@@ -112,33 +89,39 @@
 
 </div>
 
+
+<!-- ========== JSON VERİSİ TEK DOSYADA ========== -->
 <script>
-// GITHUB PAGES ÜZERİNDEKİ JSON LİNKİ
-const jsonURL = "https://raw.githubusercontent.com/githubmeking/sada/main/sites.json";
+const sites = [
+  {
+    "name": "BAHIZZ",
+    "bonus": "500 TL Deneme Bonusu",
+    "description": "Yatırım Şartsız ve Çekim Limitsiz 500 TL Deneme Bonusu",
+    "payments": ["Visa", "Mastercard", "Papara", "Bitcoin"],
+    "url": "https://ornek-link.com"
+  },
+  {
+    "name": "LORDPALACE CASINO",
+    "bonus": "250 TL Deneme Bonusu",
+    "description": "Slot ve canlı casino oyunlarında geçerli.",
+    "payments": ["Papara", "MeFete", "Apple Pay"],
+    "url": "https://ornek-link2.com"
+  }
+];
+</script>
 
-async function loadSites() {
-    try {
-        const response = await fetch(jsonURL + "?v=" + Date.now()); // cache bypass
-        const data = await response.json();
-        renderCards(data);
-    } catch (e) {
-        document.getElementById("cards").innerHTML =
-            "<div style='padding:20px;text-align:center;color:red;'>Veri yüklenemedi.</div>";
-    }
-}
-
-function renderCards(sites) {
-    const container = document.getElementById("cards");
-    container.innerHTML = "";
-
+<!-- ========== RENDER SCRIPT ========== -->
+<script>
+function renderCards() {
+    const cards = document.getElementById("cards");
     sites.forEach(site => {
-        const card = `
+        const html = `
             <div class="card">
                 <div class="card-top">
                     <div class="card-logo">
                         <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg">
                     </div>
-                    <div class="card-top-info">
+                    <div>
                         <div class="card-name">${site.name}</div>
                         <div class="rating-box">
                             <div class="stars">★★★★★</div>
@@ -154,23 +137,19 @@ function renderCards(sites) {
 
                 <div class="card-payments">
                     <div class="pay-title">Ödeme Yöntemleri</div>
-                    <div class="pay-methods">
-                        ${site.payments.map(p => `<span class="pay-badge">${p}</span>`).join("")}
-                    </div>
+                    ${site.payments.map(p => `<span class="pay-badge">${p}</span>`).join("")}
                 </div>
 
-                <div class="card-footer">
-                    <a href="${site.url}" target="_blank">
-                        <button class="btn-register">KAYDOLUN</button>
-                    </a>
-                </div>
+                <a href="${site.url}" target="_blank">
+                    <button class="btn-register">KAYDOLUN</button>
+                </a>
             </div>
         `;
-        container.innerHTML += card;
+        cards.insertAdjacentHTML("beforeend", html);
     });
 }
 
-loadSites();
+renderCards();
 </script>
 
 </body>
