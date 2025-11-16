@@ -96,82 +96,14 @@
 <!-- ========= BU ARAYI BOT OTOMATİK DOLDURACAK ========= -->
 <!-- SITES_DATA_START -->
 <script>
-const sites = [
-  {
-    "name": "BAHIZZ",
-    "bonus": "500 TL Deneme Bonusu",
-    "description": "Yatırım Şartsız ve Çekim Limitsiz 500 TL",
-    "payments": [
-      "Visa",
-      "Mastercard",
-      "Papara",
-      "Bitcoin"
-    ],
-    "url": "https://ornek-link.com"
-  },
-  {
-    "name": "BAHIkcvkjb",
-    "bonus": "500 TL Deneme Bonusu",
-    "description": "Yatırım Şartsız ve Çekim Limitsiz 500 TL",
-    "payments": [
-      "Visa",
-      "Mastercard",
-      "Papara",
-      "Bitcoin"
-    ],
-    "url": "https://ornek-link.com"
-  },
-  {
-    "name": "TESTSİTE",
-    "bonus": "300 TL Bonus",
-    "description": "Bu bir deneme açıklamasıdır.",
-    "payments": [
-      "Visa",
-      "Mastercard",
-      "Papara"
-    ],
-    "url": "https://google.com"
-  },
-  {
-    "name": "SUPERBET",
-    "bonus": "700 TL Deneme Bonusu",
-    "description": "Anında yatırmsız bonus veren en yeni site.",
-    "payments": [
-      "Visa",
-      "Mastercard",
-      "Papara",
-      "Bitcoin"
-    ],
-    "url": "https://superbet.com"
-  },
-  {
-    "name": "TESTSITE",
-    "bonus": "150 TL Deneme Bonusu",
-    "description": "Bu otomatik güncelleme testidir.",
-    "payments": [
-      "Visa",
-      "Mastercard",
-      "Papara"
-    ],
-    "url": "https://google.com"
-  },
-  {
-    "name": "HÜRFATHER",
-    "bonus": "150 TL Deneme Bonusu",
-    "description": "Bu otomatik güncelleme testidir.",
-    "payments": [
-      "Visa",
-      "Mastercard",
-      "Papara"
-    ],
-    "url": "https://google.com"
-  }
-];
+const sites = [];
 </script>
 <!-- SITES_DATA_END -->
 <!-- ========= BU ARAYI BOT OTOMATİK DOLDURACAK ========= -->
 
 <script>
+const DEFAULT_LOGO = "https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg";
+
 function renderCards() {
     const cards = document.getElementById("cards");
     cards.innerHTML = "";
@@ -182,11 +114,13 @@ function renderCards() {
     }
 
     sites.forEach(site => {
+        const logo = site.logo && site.logo.trim() ? site.logo : DEFAULT_LOGO;
+
         const html = `
             <div class="card">
                 <div class="card-top">
                     <div class="card-logo">
-                        <img src="https://i.ibb.co/dw9ZXy4C/MG-20251105-135850-704.jpg" alt="${site.name}">
+                        <img src="${logo}" alt="${site.name}">
                     </div>
                     <div>
                         <div class="card-name">${site.name}</div>
