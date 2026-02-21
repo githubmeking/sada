@@ -7,58 +7,19 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #1a1a1a;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .overlay {
-      position: absolute;
-      text-align: center;
-      background: rgba(0,0,0,0.9);
-      padding: 40px;
-      border-radius: 15px;
-      z-index: 10;
-      border: 1px solid #444;
-      max-width: min(520px, 92vw);
-    }
-    button {
-      padding: 15px 40px;
-      font-size: 1.2rem;
-      background: #fff;
-      color: #000;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-    button:hover { background: #ccc; transform: scale(1.05); }
-    canvas { display: none; background: #000; border: 2px solid #333; touch-action: none; }
-    #restart-screen { display: none; }
-    #timer {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 24px;
-      font-weight: bold;
-      color: #00ffcc;
-      font-family: 'Courier New', Courier, monospace;
-      display: none;
-      user-select: none;
-    }
-    #score-sent { font-size: 0.9rem; color: #00ffcc; margin-top: 10px; }
+    body { margin: 0; background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden; }
+    .overlay { position:absolute; text-align:center; background: rgba(0,0,0,0.9); padding:40px; border-radius:15px; z-index:10; border:1px solid #444; max-width:min(520px, 92vw); }
+    button { padding:15px 40px; font-size:1.2rem; background:#fff; color:#000; border:none; cursor:pointer; border-radius:5px; font-weight:bold; transition:0.2s; }
+    button:hover { background:#ccc; transform:scale(1.05); }
+    canvas { display:none; background:#000; border:2px solid #333; touch-action:none; }
+    #restart-screen { display:none; }
+    #timer { position:absolute; top:20px; right:20px; font-size:24px; font-weight:bold; color:#00ffcc; font-family:'Courier New', Courier, monospace; display:none; user-select:none; }
+    #score-sent { font-size:0.9rem; color:#00ffcc; margin-top:10px; }
   </style>
 </head>
 <body>
   <script>
-    if (window.Telegram && window.Telegram.WebApp) {
+    if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
     }
@@ -129,15 +90,23 @@
       clearInterval(timerInterval);
     }
 
+    function isTelegramWebApp() {
+      const tg = window.Telegram?.WebApp;
+      return Boolean(tg && typeof tg.sendData === "function" && tg.initData);
+    }
+
     function sendScoreToBot(seconds) {
       const tg = window.Telegram?.WebApp;
-      if (!tg) {
-        scoreSentEl.innerText = "Telegram WebApp yok.";
+
+      if (!isTelegramWebApp()) {
+        scoreSentEl.innerText = "Skor yalnız Telegram içinde gönderilir. Oyunu bot butonundan aç.";
         return;
       }
+
       try {
-        tg.sendData(JSON.stringify({ score: seconds }));
-        scoreSentEl.innerText = "Skor gönderildi!";
+        tg.sendData(JSON.stringify({ score: Number(seconds) }));
+        scoreSentEl.innerText = "Skor Telegram'a iletildi.";
+        tg.close(); // kritik: bazı client'larda data'nın chat'e düşmesini garantiler
       } catch (e) {
         scoreSentEl.innerText = "Skor gönderilemedi.";
       }
