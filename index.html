@@ -2,158 +2,176 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Deneme Bonusu Siteleri</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <title>Pong - Zamana Karşı!</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Inter',sans-serif; background:#0f172a; color:#fff; }
-        .page { min-height:100vh; background:#020617; padding:20px 12px 40px; }
+        body { margin: 0; background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        .overlay { position: absolute; text-align: center; background: rgba(0,0,0,0.9); padding: 40px; border-radius: 15px; z-index: 10; border: 1px solid #444; }
+        
+        button { padding: 15px 40px; font-size: 1.2rem; background: #fff; color: #000; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.2s; }
+        button:hover { background: #ccc; transform: scale(1.05); }
+        
+        canvas { display: none; background: #000; border: 2px solid #333; cursor: none; }
+        #restart-screen { display: none; }
 
-        .page-header {
-            display:flex; align-items:center; gap:10px; margin-bottom:18px;
-        }
-        .page-header img {
-            width:36px; height:36px; border-radius:8px; object-fit:cover;
-        }
-        .page-header-title { font-size:18px; font-weight:600; }
-
-        .cards {
-            max-width:480px; margin:0 auto;
-            display:flex; flex-direction:column; gap:18px;
-        }
-
-        .card {
-            background:#020617; border-radius:16px; padding:14px;
-            border:1px solid #1f2937; box-shadow:0 8px 20px rgba(0,0,0,0.55);
-        }
-
-        .card-top {
-            display:flex; gap:12px; align-items:center; margin-bottom:10px;
-        }
-
-        .card-logo {
-            width:72px; height:72px; border-radius:10px;
-            background:#020617; display:flex; align-items:center;
-            justify-content:center; overflow:hidden;
-        }
-        .card-logo img { width:100%; height:100%; object-fit:cover; }
-
-        .card-name { font-size:16px; font-weight:700; margin-bottom:8px; }
-
-        .rating-box {
-            display:inline-flex; gap:6px; align-items:center;
-            padding:4px 10px; border-radius:999px;
-            background:#020617; border:1px solid #1f2937;
-        }
-
-        .stars { color:#fbbf24; font-size:13px; }
-        .rating-text { font-size:12px; font-weight:600; }
-
-        .card-description {
-            margin-top:10px; padding:10px 12px; border-radius:12px;
-            background:#020617; border:1px solid #1f2937; font-size:14px;
-            line-height:1.4;
-        }
-
-        .card-payments {
-            margin-top:10px; padding:10px 12px; border-radius:12px;
-            background:#020617; border:1px solid #1f2937;
-        }
-        .pay-title { font-size:13px; font-weight:600; margin-bottom:6px; }
-        .pay-badge {
-            font-size:12px; padding:4px 8px; border-radius:999px;
-            border:1px solid #4b5563; margin-right:6px; background:#020617;
-        }
-
-        .btn-register {
-            width:100%; padding:11px; border:none;
-            border-radius:999px; font-size:15px; font-weight:700;
-            background:#2563eb; color:#fff; cursor:pointer;
-            margin-top:12px;
-        }
-
-        @media (min-width:768px) {
-            .page { display:flex; justify-content:center; }
+        /* Sayaç Tasarımı */
+        #timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ffcc;
+            font-family: 'Courier New', Courier, monospace;
+            display: none;
         }
     </style>
 </head>
-
 <body>
-<div class="page">
 
-    <header class="page-header">
-        <img src="https://i.ibb.co/Wj8GsrK/MG-20251228-001018-906.jpg" alt="Logo">
-        <div class="page-header-title">Deneme Bonusu Siteleri</div>
-    </header>
+    <div id="timer">SÜRE: 0s</div>
 
-    <div class="cards" id="cards"></div>
+    <div id="start-screen" class="overlay">
+        <h1>PONG: SURVIVAL</h1>
+        <p>Bakalım kaç saniye dayanabileceksin?</p>
+        <button onclick="startGame()">OYUNA BAŞLA</button>
+    </div>
 
-</div>
+    <div id="restart-screen" class="overlay">
+        <h2 id="final-score" style="color: #ff4444;"></h2>
+        <button onclick="resetGame()">TEKRAR BAŞLA</button>
+    </div>
 
-<!-- ========= BU ARAYI BOT OTOMATİK DOLDURACAK ========= -->
-<!-- SITES_DATA_START -->
-<script>
-const sites = [];
-</script>
-<!-- SITES_DATA_END -->
-<!-- ========= BU ARAYI BOT OTOMATİK DOLDURACAK ========= -->
+    <canvas id="pongCanvas"></canvas>
 
-<script>
-const DEFAULT_LOGO = "https://i.ibb.co/Wj8GsrK/MG-20251228-001018-906.jpg";
+    <script>
+        const canvas = document.getElementById("pongCanvas");
+        const ctx = canvas.getContext("2d");
+        const startScreen = document.getElementById("start-screen");
+        const restartScreen = document.getElementById("restart-screen");
+        const timerElement = document.getElementById("timer");
+        const finalScoreElement = document.getElementById("final-score");
 
-function renderCards() {
-    const cards = document.getElementById("cards");
-    cards.innerHTML = "";
+        canvas.width = 600;
+        canvas.height = 400;
 
-    if (!Array.isArray(sites) || sites.length === 0) {
-        cards.innerHTML = "<div style='padding:20px;text-align:center;color:#f87171;'>Henüz kayıtlı site yok.</div>";
-        return;
-    }
+        let paddleWidth = 100;
+        let paddleHeight = 15;
+        let paddleX = (canvas.width - paddleWidth) / 2;
 
-    sites.forEach(site => {
-        const logo = site.logo && site.logo.trim() ? site.logo : DEFAULT_LOGO;
+        let ballRadius = 8;
+        let x, y, dx, dy, ballColor;
+        let gameRunning = false;
+        
+        // Zamanlayıcı Değişkenleri
+        let startTime;
+        let elapsedTime = 0;
+        let timerInterval;
 
-        const html = `
-            <div class="card">
-                <div class="card-top">
-                    <div class="card-logo">
-                        <img src="${logo}" alt="${site.name}">
-                    </div>
-                    <div>
-                        <div class="card-name">${site.name}</div>
-                        <div class="rating-box">
-                            <div class="stars">★★★★★</div>
-                            <div class="rating-text">5/5</div>
-                        </div>
-                    </div>
-                </div>
+        function getRandomColor() {
+            const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FFFF33', '#00FFFF', '#FF8C00', '#FF007F'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
 
-                <div class="card-description">
-                    ${site.description}<br>
-                    <strong>${site.bonus}</strong>
-                </div>
+        function initBall() {
+            x = canvas.width / 2;
+            y = canvas.height - 30;
+            dx = 4;
+            dy = -4;
+            ballColor = "white";
+        }
 
-                <div class="card-payments">
-                    <div class="pay-title">Ödeme Yöntemleri</div>
-                    ${site.payments.map(p => `<span class="pay-badge">${p}</span>`).join("")}
-                </div>
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                timerElement.innerText = `SÜRE: ${elapsedTime}s`;
+            }, 1000);
+        }
 
-                <a href="${site.url}" target="_blank" rel="noopener noreferrer">
-                    <button class="btn-register">KAYDOLUN</button>
-                </a>
-            </div>
-        `;
-        cards.insertAdjacentHTML("beforeend", html);
-    });
-}
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
 
-renderCards();
-</script>
+        document.addEventListener("mousemove", (e) => {
+            let relativeX = e.clientX - canvas.offsetLeft;
+            if(relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+            }
+        });
 
+        function startGame() {
+            startScreen.style.display = "none";
+            canvas.style.display = "block";
+            timerElement.style.display = "block";
+            initBall();
+            gameRunning = true;
+            startTimer();
+            draw();
+        }
+
+        function resetGame() {
+            restartScreen.style.display = "none";
+            elapsedTime = 0;
+            timerElement.innerText = "SÜRE: 0s";
+            initBall();
+            if (!gameRunning) {
+                gameRunning = true;
+                startTimer();
+                draw();
+            }
+        }
+
+        function draw() {
+            if (!gameRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Topu Çiz
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+            ctx.fillStyle = ballColor;
+            ctx.fill();
+            ctx.closePath();
+
+            // Raketi Çiz
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.closePath();
+
+            // Çarpmalar
+            if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+                ballColor = getRandomColor();
+            }
+            if(y + dy < ballRadius) {
+                dy = -dy;
+                ballColor = getRandomColor();
+            } 
+            else if(y + dy > canvas.height - ballRadius - 10) {
+                if(x > paddleX && x < paddleX + paddleWidth) {
+                    dy = -dy;
+                    ballColor = getRandomColor();
+                    dx *= 1.02; 
+                    dy *= 1.02;
+                } else if(y + dy > canvas.height) {
+                    // OYUN BİTTİ
+                    gameRunning = false;
+                    stopTimer();
+                    finalScoreElement.innerText = `EYVAH! ${elapsedTime} SANİYE DAYANDIN :D`;
+                    restartScreen.style.display = "block";
+                }
+            }
+
+            x += dx;
+            y += dy;
+            
+            if (gameRunning) {
+                requestAnimationFrame(draw);
+            }
+        }
+    </script>
 </body>
 </html>
-
-
