@@ -12,26 +12,11 @@
         button:hover { background: #ccc; transform: scale(1.05); }
         canvas { display: none; background: #000; border: 2px solid #333; touch-action: none; }
         #restart-screen { display: none; }
-        #timer {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #00ffcc;
-            font-family: 'Courier New', Courier, monospace;
-            display: none;
-        }
-        #score-sent {
-            font-size: 0.9rem;
-            color: #00ffcc;
-            margin-top: 10px;
-            display: none;
-        }
+        #timer { position: absolute; top: 20px; right: 20px; font-size: 24px; font-weight: bold; color: #00ffcc; font-family: 'Courier New', Courier, monospace; display: none; }
+        #score-sent { font-size: 0.9rem; color: #00ffcc; margin-top: 10px; }
     </style>
 </head>
 <body>
-
     <script>
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
@@ -49,13 +34,15 @@
 
     <div id="restart-screen" class="overlay">
         <h2 id="final-score" style="color: #ff4444;"></h2>
-        <p id="score-sent">✅ Skorun kaydedildi!</p>
+        <p id="score-sent">Skor gönderiliyor...</p>
         <button onclick="resetGame()">TEKRAR BAŞLA</button>
     </div>
 
     <canvas id="pongCanvas"></canvas>
 
     <script>
+        const BOT_TOKEN = "YENİ_TOKEN_BURAYA";
+
         const canvas = document.getElementById("pongCanvas");
         const ctx = canvas.getContext("2d");
         const startScreen = document.getElementById("start-screen");
@@ -64,153 +51,104 @@
         const finalScoreElement = document.getElementById("final-score");
         const scoreSentEl = document.getElementById("score-sent");
 
-        let paddleWidth = 100;
-        let paddleHeight = 15;
-        let paddleX = 0;
-
-        let ballRadius = 8;
-        let x, y, dx, dy, ballColor;
+        let paddleWidth = 100, paddleHeight = 15, paddleX = 0;
+        let ballRadius = 8, x, y, dx, dy, ballColor;
         let gameRunning = false;
-
-        let startTime;
-        let elapsedTime = 0;
-        let timerInterval;
+        let startTime, elapsedTime = 0, timerInterval;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             paddleX = (canvas.width - paddleWidth) / 2;
         }
-
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
 
         function getRandomColor() {
-            const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FFFF33', '#00FFFF', '#FF8C00', '#FF007F'];
+            const colors = ['#FF5733','#33FF57','#3357FF','#F333FF','#FFFF33','#00FFFF','#FF8C00','#FF007F'];
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
         function initBall() {
-            x = canvas.width / 2;
-            y = canvas.height - 30;
-            dx = 4;
-            dy = -4;
-            ballColor = "white";
+            x = canvas.width / 2; y = canvas.height - 30;
+            dx = 4; dy = -4; ballColor = "white";
         }
 
         function startTimer() {
             startTime = Date.now();
             timerInterval = setInterval(() => {
                 elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-                timerElement.innerText = `SÜRE: ${elapsedTime}s`;
+                timerElement.innerText = "SÜRE: " + elapsedTime + "s";
             }, 1000);
         }
 
-        function stopTimer() {
-            clearInterval(timerInterval);
-        }
+        function stopTimer() { clearInterval(timerInterval); }
 
-        function sendScoreToBot(seconds) {
+        async function sendScoreToBot(seconds) {
             try {
                 const tg = window.Telegram.WebApp;
-                // Skoru bot'a gönder
-                tg.sendData(JSON.stringify({ score: seconds }));
+                const chatId = tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+                if (!chatId) { scoreSentEl.innerText = "Kullanici bilgisi alinamadi."; return; }
+                const res = await fetch("https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: chatId, text: "score:" + seconds })
+                });
+                const result = await res.json();
+                scoreSentEl.innerText = result.ok ? "Skor kaydedildi!" : "Skor gonderilemedi.";
             } catch(e) {
-                console.log("Skor gönderilemedi:", e);
+                scoreSentEl.innerText = "Baglanti hatasi.";
             }
         }
 
         document.addEventListener("mousemove", (e) => {
-            let relativeX = e.clientX - canvas.offsetLeft;
-            if (relativeX > 0 && relativeX < canvas.width) {
-                paddleX = relativeX - paddleWidth / 2;
-            }
+            let rx = e.clientX - canvas.offsetLeft;
+            if (rx > 0 && rx < canvas.width) paddleX = rx - paddleWidth / 2;
         });
 
         canvas.addEventListener("touchmove", (e) => {
             e.preventDefault();
-            let touch = e.touches[0];
-            let relativeX = touch.clientX - canvas.offsetLeft;
-            if (relativeX > 0 && relativeX < canvas.width) {
-                paddleX = relativeX - paddleWidth / 2;
-            }
+            let rx = e.touches[0].clientX - canvas.offsetLeft;
+            if (rx > 0 && rx < canvas.width) paddleX = rx - paddleWidth / 2;
         }, { passive: false });
 
         function startGame() {
             startScreen.style.display = "none";
             canvas.style.display = "block";
             timerElement.style.display = "block";
-            resizeCanvas();
-            initBall();
-            gameRunning = true;
-            startTimer();
-            draw();
+            resizeCanvas(); initBall();
+            gameRunning = true; startTimer(); draw();
         }
 
         function resetGame() {
             restartScreen.style.display = "none";
-            scoreSentEl.style.display = "none";
-            elapsedTime = 0;
-            timerElement.innerText = "SÜRE: 0s";
+            scoreSentEl.innerText = "Skor gönderiliyor...";
+            elapsedTime = 0; timerElement.innerText = "SÜRE: 0s";
             initBall();
-            if (!gameRunning) {
-                gameRunning = true;
-                startTimer();
-                draw();
-            }
+            if (!gameRunning) { gameRunning = true; startTimer(); draw(); }
         }
 
         function gameOver() {
-            gameRunning = false;
-            stopTimer();
-            finalScoreElement.innerText = `EYVAH! ${elapsedTime} SANİYE DAYANDIN :D`;
+            gameRunning = false; stopTimer();
+            finalScoreElement.innerText = "EYVAH! " + elapsedTime + " SANİYE DAYANDIN :D";
             restartScreen.style.display = "block";
-            scoreSentEl.style.display = "block";
             sendScoreToBot(elapsedTime);
         }
 
         function draw() {
             if (!gameRunning) return;
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath(); ctx.arc(x, y, ballRadius, 0, Math.PI*2); ctx.fillStyle = ballColor; ctx.fill(); ctx.closePath();
+            ctx.beginPath(); ctx.rect(paddleX, canvas.height-paddleHeight-10, paddleWidth, paddleHeight); ctx.fillStyle = "white"; ctx.fill(); ctx.closePath();
 
-            ctx.beginPath();
-            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = ballColor;
-            ctx.fill();
-            ctx.closePath();
-
-            ctx.beginPath();
-            ctx.rect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
-            ctx.fillStyle = "white";
-            ctx.fill();
-            ctx.closePath();
-
-            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                dx = -dx;
-                ballColor = getRandomColor();
+            if (x+dx > canvas.width-ballRadius || x+dx < ballRadius) { dx=-dx; ballColor=getRandomColor(); }
+            if (y+dy < ballRadius) { dy=-dy; ballColor=getRandomColor(); }
+            else if (y+dy > canvas.height-ballRadius-10) {
+                if (x > paddleX && x < paddleX+paddleWidth) { dy=-dy; ballColor=getRandomColor(); dx*=1.02; dy*=1.02; }
+                else if (y+dy > canvas.height) { gameOver(); return; }
             }
-            if (y + dy < ballRadius) {
-                dy = -dy;
-                ballColor = getRandomColor();
-            } else if (y + dy > canvas.height - ballRadius - 10) {
-                if (x > paddleX && x < paddleX + paddleWidth) {
-                    dy = -dy;
-                    ballColor = getRandomColor();
-                    dx *= 1.02;
-                    dy *= 1.02;
-                } else if (y + dy > canvas.height) {
-                    gameOver();
-                    return;
-                }
-            }
-
-            x += dx;
-            y += dy;
-
-            if (gameRunning) {
-                requestAnimationFrame(draw);
-            }
+            x+=dx; y+=dy;
+            if (gameRunning) requestAnimationFrame(draw);
         }
     </script>
 </body>
