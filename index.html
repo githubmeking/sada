@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Pong - Zamana Karşı!</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        * { box-sizing: border-box; }
         body { margin: 0; background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        
         .overlay { position: absolute; text-align: center; background: rgba(0,0,0,0.9); padding: 40px; border-radius: 15px; z-index: 10; border: 1px solid #444; }
-        
         button { padding: 15px 40px; font-size: 1.2rem; background: #fff; color: #000; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.2s; }
         button:hover { background: #ccc; transform: scale(1.05); }
-        
-        canvas { display: none; background: #000; border: 2px solid #333; cursor: none; }
+        canvas { display: none; background: #000; border: 2px solid #333; touch-action: none; }
         #restart-screen { display: none; }
-
-        /* Sayaç Tasarımı */
         #timer {
             position: absolute;
             top: 20px;
@@ -28,6 +25,13 @@
     </style>
 </head>
 <body>
+
+    <script>
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
+    </script>
 
     <div id="timer">SÜRE: 0s</div>
 
@@ -52,21 +56,26 @@
         const timerElement = document.getElementById("timer");
         const finalScoreElement = document.getElementById("final-score");
 
-        canvas.width = 600;
-        canvas.height = 400;
-
         let paddleWidth = 100;
         let paddleHeight = 15;
-        let paddleX = (canvas.width - paddleWidth) / 2;
+        let paddleX = 0;
 
         let ballRadius = 8;
         let x, y, dx, dy, ballColor;
         let gameRunning = false;
-        
-        // Zamanlayıcı Değişkenleri
+
         let startTime;
         let elapsedTime = 0;
         let timerInterval;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            paddleX = (canvas.width - paddleWidth) / 2;
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
 
         function getRandomColor() {
             const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FFFF33', '#00FFFF', '#FF8C00', '#FF007F'];
@@ -93,17 +102,29 @@
             clearInterval(timerInterval);
         }
 
+        // Mouse kontrolü
         document.addEventListener("mousemove", (e) => {
             let relativeX = e.clientX - canvas.offsetLeft;
-            if(relativeX > 0 && relativeX < canvas.width) {
+            if (relativeX > 0 && relativeX < canvas.width) {
                 paddleX = relativeX - paddleWidth / 2;
             }
         });
+
+        // Dokunmatik kontrol (Telegram mobil için şart!)
+        canvas.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+            let touch = e.touches[0];
+            let relativeX = touch.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+            }
+        }, { passive: false });
 
         function startGame() {
             startScreen.style.display = "none";
             canvas.style.display = "block";
             timerElement.style.display = "block";
+            resizeCanvas();
             initBall();
             gameRunning = true;
             startTimer();
@@ -126,38 +147,33 @@
             if (!gameRunning) return;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Topu Çiz
+
             ctx.beginPath();
-            ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
             ctx.fillStyle = ballColor;
             ctx.fill();
             ctx.closePath();
 
-            // Raketi Çiz
             ctx.beginPath();
             ctx.rect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
             ctx.fillStyle = "white";
             ctx.fill();
             ctx.closePath();
 
-            // Çarpmalar
-            if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
                 dx = -dx;
                 ballColor = getRandomColor();
             }
-            if(y + dy < ballRadius) {
+            if (y + dy < ballRadius) {
                 dy = -dy;
                 ballColor = getRandomColor();
-            } 
-            else if(y + dy > canvas.height - ballRadius - 10) {
-                if(x > paddleX && x < paddleX + paddleWidth) {
+            } else if (y + dy > canvas.height - ballRadius - 10) {
+                if (x > paddleX && x < paddleX + paddleWidth) {
                     dy = -dy;
                     ballColor = getRandomColor();
-                    dx *= 1.02; 
+                    dx *= 1.02;
                     dy *= 1.02;
-                } else if(y + dy > canvas.height) {
-                    // OYUN BİTTİ
+                } else if (y + dy > canvas.height) {
                     gameRunning = false;
                     stopTimer();
                     finalScoreElement.innerText = `EYVAH! ${elapsedTime} SANİYE DAYANDIN :D`;
@@ -167,7 +183,7 @@
 
             x += dx;
             y += dy;
-            
+
             if (gameRunning) {
                 requestAnimationFrame(draw);
             }
