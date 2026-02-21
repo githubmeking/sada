@@ -22,6 +22,12 @@
             font-family: 'Courier New', Courier, monospace;
             display: none;
         }
+        #score-sent {
+            font-size: 0.9rem;
+            color: #00ffcc;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -43,6 +49,7 @@
 
     <div id="restart-screen" class="overlay">
         <h2 id="final-score" style="color: #ff4444;"></h2>
+        <p id="score-sent">✅ Skorun kaydedildi!</p>
         <button onclick="resetGame()">TEKRAR BAŞLA</button>
     </div>
 
@@ -55,6 +62,7 @@
         const restartScreen = document.getElementById("restart-screen");
         const timerElement = document.getElementById("timer");
         const finalScoreElement = document.getElementById("final-score");
+        const scoreSentEl = document.getElementById("score-sent");
 
         let paddleWidth = 100;
         let paddleHeight = 15;
@@ -102,7 +110,16 @@
             clearInterval(timerInterval);
         }
 
-        // Mouse kontrolü
+        function sendScoreToBot(seconds) {
+            try {
+                const tg = window.Telegram.WebApp;
+                // Skoru bot'a gönder
+                tg.sendData(JSON.stringify({ score: seconds }));
+            } catch(e) {
+                console.log("Skor gönderilemedi:", e);
+            }
+        }
+
         document.addEventListener("mousemove", (e) => {
             let relativeX = e.clientX - canvas.offsetLeft;
             if (relativeX > 0 && relativeX < canvas.width) {
@@ -110,7 +127,6 @@
             }
         });
 
-        // Dokunmatik kontrol (Telegram mobil için şart!)
         canvas.addEventListener("touchmove", (e) => {
             e.preventDefault();
             let touch = e.touches[0];
@@ -133,6 +149,7 @@
 
         function resetGame() {
             restartScreen.style.display = "none";
+            scoreSentEl.style.display = "none";
             elapsedTime = 0;
             timerElement.innerText = "SÜRE: 0s";
             initBall();
@@ -141,6 +158,15 @@
                 startTimer();
                 draw();
             }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            stopTimer();
+            finalScoreElement.innerText = `EYVAH! ${elapsedTime} SANİYE DAYANDIN :D`;
+            restartScreen.style.display = "block";
+            scoreSentEl.style.display = "block";
+            sendScoreToBot(elapsedTime);
         }
 
         function draw() {
@@ -174,10 +200,8 @@
                     dx *= 1.02;
                     dy *= 1.02;
                 } else if (y + dy > canvas.height) {
-                    gameRunning = false;
-                    stopTimer();
-                    finalScoreElement.innerText = `EYVAH! ${elapsedTime} SANİYE DAYANDIN :D`;
-                    restartScreen.style.display = "block";
+                    gameOver();
+                    return;
                 }
             }
 
